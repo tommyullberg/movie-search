@@ -1,5 +1,5 @@
 {
-  "name": "icon-finder",
+  "name": "movie-search",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,6 +10,11 @@
     "@types/node": "^16.18.34",
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.4",
+    "@uidotdev/usehooks": "^2.0.1",
+    "axios": "^0.21.4",
+    "axios-cache-adapter": "^2.7.3",
+    "localforage": "^1.10.0",
+    "mdb-react-ui-kit": "^6.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -39,5 +44,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "tailwindcss": "^3.3.2"
   }
 }
