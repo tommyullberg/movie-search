@@ -1,0 +1,35 @@
+.Header {}
+
+.navbar {
+  min-height: 60px !important;
+}
+
+.Header .navbar .container-fluid {
+  min-width: 315px;
+}
+
+.top-logo {
+  font: 900 36px/1 var(--font-title);
+  font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem);
+  text-transform: uppercase;
+  background-image: linear-gradient(to right, #ff0000, #00ff00);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@media screen and (max-width: 580px) {
+  .top-logo {
+    font-size: 24px;
+    font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem);
+  }
+
+}
+
+@media screen and (max-width: 400px) {
+  .top-logo {
+    font-size: 18px;
+    font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem);
+  }
+
+}

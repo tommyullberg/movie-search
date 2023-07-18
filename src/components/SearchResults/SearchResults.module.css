@@ -1,0 +1,41 @@
+.search-results {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: start;
+  gap: 20px;
+}
+
+.mask {
+  background-color: rgba(251, 251, 251, 0.15);
+}
+
+
+.res-item {
+  position: relative;
+  width: 100%;
+  max-width: 246px;
+  flex: 1 1 180px;
+  transition: max-width .3s ease-in-out;
+  -webkit-transition: max-width .3s ease-in-out;
+  -moz-transition: max-width .3s ease-in-out;
+  -ms-transition: max-width .3s ease-in-out;
+  -o-transition: max-width .3s ease-in-out;
+}
+@media screen and (min-width: 400px) {
+  .res-item {
+    max-width: 220px;
+  }
+}
+
+.card-body {
+  position: relative;
+}
+
+.gauge {
+  position: absolute;
+  top: -25px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+}
