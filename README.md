@@ -8,3 +8,4 @@ Fetching movies and details from the API at [The Movie DB](https://www.themovied
 - React useContext
 - CSS modules
 - Axios w cache
+
