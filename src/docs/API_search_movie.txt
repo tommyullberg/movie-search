@@ -1,0 +1,393 @@
+JS:
+
+const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ZDkzNDM2MDY4MDFlN2M4ZTg4ZGI4MDIyZDU4ZDczNiIsInN1YiI6IjY0OGQ3MmZjNDJiZjAxMDBlNDllMmYwNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fK5V-siVy95A00Sm-Wl9GfbLIQHd2Bk32GLVqzEQkiU'
+  }
+};
+
+fetch('https://api.themoviedb.org/3/search/movie?query=extracti&include_adult=false&language=en-US&page=1', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+
+
+
+
+
+
+
+
+  {
+  "page": 1,
+  "results": [
+    {
+      "adult": false,
+      "backdrop_path": "/wRxLAw4l17LqiFcPLkobriPTZAw.jpg",
+      "genre_ids": [
+        28,
+        53
+      ],
+      "id": 697843,
+      "original_language": "en",
+      "original_title": "Extraction 2",
+      "overview": "Tasked with extracting a family who is at the mercy of a Georgian gangster, Tyler Rake infiltrates one of the world's deadliest prisons in order to save them. But when the extraction gets hot, and the gangster dies in the heat of battle, his equally ruthless brother tracks down Rake and his team to Sydney, in order to get revenge.",
+      "popularity": 430.389,
+      "poster_path": "/7gKI9hpEMcZUQpNgKrkDzJpbnNS.jpg",
+      "release_date": "2023-06-12",
+      "title": "Extraction 2",
+      "video": false,
+      "vote_average": 8.098,
+      "vote_count": 123
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/1R6cvRtZgsYCkh8UFuWFN33xBP4.jpg",
+      "genre_ids": [
+        18,
+        28,
+        53
+      ],
+      "id": 545609,
+      "original_language": "en",
+      "original_title": "Extraction",
+      "overview": "Tyler Rake, a fearless mercenary who offers his services on the black market, embarks on a dangerous mission when he is hired to rescue the kidnapped son of a Mumbai crime lord.",
+      "popularity": 245.994,
+      "poster_path": "/nygOUcBKPHFTbxsYRFZVePqgPK6.jpg",
+      "release_date": "2020-04-24",
+      "title": "Extraction",
+      "video": false,
+      "vote_average": 7.344,
+      "vote_count": 5034
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/2h7v7e9zcCripIdieTQ0bWIR0V9.jpg",
+      "genre_ids": [
+        28
+      ],
+      "id": 218381,
+      "original_language": "en",
+      "original_title": "Extraction",
+      "overview": "A major feature exclusively for digital, EXTRACTION follows a U.S. Black Ops team member who finds himself the only survivor of a botched prisoner extraction mission. Forced to fight his way out of a maximum-security Chechen prison, he must keep his target alive in order to catch a terrorist arms-dealer who is a threat to thousands of lives.",
+      "popularity": 18.116,
+      "poster_path": "/aAU27tuWBrIcOhxLyxd1QgFgXSi.jpg",
+      "release_date": "2013-09-05",
+      "title": "Extraction",
+      "video": false,
+      "vote_average": 5.1,
+      "vote_count": 38
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/pak4TKvX3j7sqXcjwQCh5yzpUbN.jpg",
+      "genre_ids": [
+        28,
+        53
+      ],
+      "id": 326425,
+      "original_language": "en",
+      "original_title": "Extraction",
+      "overview": "When a former CIA operative is kidnapped by a group of terrorists, his son learns there is no plan for his father to be saved—so he launches his own rescue operation.",
+      "popularity": 14.506,
+      "poster_path": "/96FQG1MyR9mJFcvPBZAdfsVqaMO.jpg",
+      "release_date": "2015-12-18",
+      "title": "Extraction",
+      "video": false,
+      "vote_average": 4.6,
+      "vote_count": 334
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/xMa7qwRm7qR7aVarV8lDZFgeZYJ.jpg",
+      "genre_ids": [
+        28,
+        16
+      ],
+      "id": 704882,
+      "original_language": "en",
+      "original_title": "Predators: Moments of Extraction",
+      "overview": "Moments of Extraction is an animated short film shows what each character of Predators movie was doing when they were captured by the Predators. Created exclusively for the Blu-ray release of Predators (2010) movie.",
+      "popularity": 1.389,
+      "poster_path": "/15OAlt31GuYW3lzet7yQh3ubPMr.jpg",
+      "release_date": "2010-10-19",
+      "title": "Predators: Moments of Extraction",
+      "video": false,
+      "vote_average": 4.4,
+      "vote_count": 5
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/oru1a9PXhfx5O25TdnGVA5DrR8e.jpg",
+      "genre_ids": [
+        27
+      ],
+      "id": 832227,
+      "original_language": "en",
+      "original_title": "Tooth Fairy: The Last Extraction",
+      "overview": "Corey and his daughter, Sally, decide to go on a summer break with friends, Diane, Christy, Toby and Benny. Little do they know, Corey's past is going to catch up to him.",
+      "popularity": 2.688,
+      "poster_path": "/yfOQDFtmuzkqsiTcGepIw7P3ywS.jpg",
+      "release_date": "2021-09-02",
+      "title": "Tooth Fairy: The Last Extraction",
+      "video": false,
+      "vote_average": 2.5,
+      "vote_count": 2
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/v2Pe01MmVxyZjSkVvUa51od9aOA.jpg",
+      "genre_ids": [
+        10752,
+        28
+      ],
+      "id": 274285,
+      "original_language": "en",
+      "original_title": "Sector 4: Extraction",
+      "overview": "Action - When an elite band of private mercenaries known as Black Knight gets caught behind enemy lines in a Middle East combat zone, their only hope for survival lies with the team leader, who has escaped but vows to return. -  Salman Bokhari, Steven Dell, Eric Roberts",
+      "popularity": 2.765,
+      "poster_path": "/52HibuY7ynRne1vPABNn9Fv44eO.jpg",
+      "release_date": "2014-07-22",
+      "title": "Sector 4: Extraction",
+      "video": false,
+      "vote_average": 3.575,
+      "vote_count": 20
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [
+        878,
+        28,
+        53
+      ],
+      "id": 845844,
+      "original_language": "en",
+      "original_title": "Extraction Point",
+      "overview": "An alien visitor must race against time to reach his extraction point after his UFO is forced to crash down on Earth.",
+      "popularity": 4.239,
+      "poster_path": "/u1rPneODYRIYhLG18JaVOHT8X9H.jpg",
+      "release_date": "2021-06-29",
+      "title": "Extraction Point",
+      "video": false,
+      "vote_average": 5.7,
+      "vote_count": 35
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [],
+      "id": 619266,
+      "original_language": "en",
+      "original_title": "Extraction: The Raft of the Medusa",
+      "overview": "Extraction: The Raft of the Medusa portrays a brief moment of euphoria as the occupants on the raft spot a glimpsic illusion for their drift, hoping and praying to be rescued. We can almost hear the hoarse cries in an attempt to draw attention to their desperate plight, mustering their last ounce of strength to the void. This is their last chance of survival.",
+      "popularity": 6.019,
+      "poster_path": "/fCUAI05qYZMHFE1VNOgaGiERMNb.jpg",
+      "release_date": "2019-09-01",
+      "title": "Extraction: The Raft of the Medusa",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/1MsCOiuUoYhXYgPkNORFRMxfdNa.jpg",
+      "genre_ids": [
+        28
+      ],
+      "id": 307168,
+      "original_language": "en",
+      "original_title": "Extraction Day",
+      "overview": "Jacob Bradley wakes up in a warehouse in the midst of a tactical raid, with no memory and no idea who he is. He is found by a young woman who helps him escape, and tells him that no matter what happens, he must survive. A terrorist organization is on the cusp of releasing a virus. They have provided the antidote to only a select few, to ensure the recreation of a utopian world and before he lost his memory, Jacob was one of the few people who had discovered the details. If they are to survive, he needs to rebuild the pieces of his past. They find themselves in a race for survival, for themselves and the rest of mankind, that will demand everything they have, and reveal that Jacob has always been closer to the truth then anyone ever thought.",
+      "popularity": 2.871,
+      "poster_path": "/zwnvpZvGkh9n7jvOn1MAxU31vHM.jpg",
+      "release_date": "2014-10-20",
+      "title": "Extraction Day",
+      "video": false,
+      "vote_average": 5.7,
+      "vote_count": 7
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [
+        18,
+        878
+      ],
+      "id": 452182,
+      "original_language": "en",
+      "original_title": "Extraction",
+      "overview": "Jack longs to escape his monotonous routine, but obedience to society and fear of change leave him with more of the same: a busy, yet unfulfilled existence. In this off-kilter world, a group of extractors are targeting those who have neglected to truly live. Jack is next.",
+      "popularity": 1.378,
+      "poster_path": "/mG0gUWYB1wDq2x5Gtn8UEd2ZsBL.jpg",
+      "release_date": "2015-11-03",
+      "title": "Extraction",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [
+        99
+      ],
+      "id": 1080153,
+      "original_language": "en",
+      "original_title": "Sahnehaye Estekhraj",
+      "overview": "An archival constellation from the still and moving images of the British Petroleum Archives, documenting the expansive colonial network behind the British geophysical expeditions that spanned across Iran in the early 20th century.",
+      "popularity": 0.6,
+      "poster_path": null,
+      "release_date": "2023-02-18",
+      "title": "Scenes of Extraction",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [
+        28,
+        80,
+        53
+      ],
+      "id": 446616,
+      "original_language": "en",
+      "original_title": "Extraction",
+      "overview": "An Extraction Specialist and his team will go to extreme lengths to protect hard working American's against the unknown enemies that live within it's borders, but while maintaining the highest level of security to protect their families who are unaware of their true identities.",
+      "popularity": 1.126,
+      "poster_path": "/p3x6iskULfI7ukTYYEv4CrIMhsj.jpg",
+      "release_date": "2015-12-31",
+      "title": "Extraction",
+      "video": false,
+      "vote_average": 7,
+      "vote_count": 1
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/nVUkqtgabni3kbb2ZaZ7NqDYUXG.jpg",
+      "genre_ids": [
+        16
+      ],
+      "id": 859367,
+      "original_language": "de",
+      "original_title": "Extraction",
+      "overview": "",
+      "popularity": 0.616,
+      "poster_path": null,
+      "release_date": "2021-07-14",
+      "title": "Extraction",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [],
+      "id": 674658,
+      "original_language": "en",
+      "original_title": "Extraction of Lunar",
+      "overview": "Like gentle tides, or inhaling and exhaling with the rhythm of the moon, a girl is under the influence.",
+      "popularity": 0.6,
+      "poster_path": "/lGgqYQZZVfzFUBF56lvpAJVfbGx.jpg",
+      "release_date": "",
+      "title": "Extraction of Lunar",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [],
+      "id": 674919,
+      "original_language": "en",
+      "original_title": "Extractions",
+      "overview": "A personal film about Canada's extraction industry and its detrimental effects on the land and Indigenous peoples. This film parallels resource extraction with the booming child apprehension Industry. As the filmmaker reviews her life and how these Industries have affected her, she also reflects on having her own eggs retrieved and frozen to make an Indigenous baby.",
+      "popularity": 0.6,
+      "poster_path": "/22JHlkiufhWuYaWom1TBEmicz9p.jpg",
+      "release_date": "2018-12-31",
+      "title": "Extractions",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [],
+      "id": 986506,
+      "original_language": "en",
+      "original_title": "Friday The 13th: Extraction",
+      "overview": "When private military company, Chase Defense International, learns of a massacre involving a search and rescue party near Crystal Lake, the company's CEO takes a personal interest in apprehending the masked killer--though her intentions may be less than admirable…",
+      "popularity": 1.21,
+      "poster_path": "/9ERIedMGX6RrkcAfKMohkGupmnz.jpg",
+      "release_date": "",
+      "title": "Friday The 13th: Extraction",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [
+        16
+      ],
+      "id": 234458,
+      "original_language": "en",
+      "original_title": "Driven to Extraction",
+      "overview": "Sidney- a goofy elephant- is always trying to fit in, but never quite does.",
+      "popularity": 0.6,
+      "poster_path": null,
+      "release_date": "1963-06-28",
+      "title": "Driven to Extraction",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/hRw7rF8UC61LDStHn7pMlwL0zBX.jpg",
+      "genre_ids": [
+        28,
+        35
+      ],
+      "id": 832711,
+      "original_language": "en",
+      "original_title": "The Extraction",
+      "overview": "As the sun sets, a shady operation begins within the city. However, not everything is as it seems, and this operation has a caffeinated twist...",
+      "popularity": 0.6,
+      "poster_path": "/59yowcFowIgiZEOP9z4H5WrY4cd.jpg",
+      "release_date": "2021-05-23",
+      "title": "The Extraction",
+      "video": false,
+      "vote_average": 6,
+      "vote_count": 2
+    },
+    {
+      "adult": false,
+      "backdrop_path": null,
+      "genre_ids": [
+        99
+      ],
+      "id": 1133782,
+      "original_language": "ja",
+      "original_title": "トゥインクル・ノーラ・ロック・ミィ 抽出",
+      "overview": "This is a short special on Twinkle NORA Rock Me!. Where staff members and NORA's VA are interviewed, The band Vigilante is interviewed and performs the NORA theme. Plus we see the adventures of a live action NORA.",
+      "popularity": 0.6,
+      "poster_path": "/6nnizblGPGswmSQGGVadcMsCdij.jpg",
+      "release_date": "1986-01-21",
+      "title": "Twinkle NORA Rock Me - The Extraction",
+      "video": false,
+      "vote_average": 0,
+      "vote_count": 0
+    }
+  ],
+  "total_pages": 2,
+  "total_results": 22
+}

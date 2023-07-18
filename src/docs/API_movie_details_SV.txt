@@ -1,0 +1,92 @@
+JS:
+
+const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ZDkzNDM2MDY4MDFlN2M4ZTg4ZGI4MDIyZDU4ZDczNiIsInN1YiI6IjY0OGQ3MmZjNDJiZjAxMDBlNDllMmYwNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fK5V-siVy95A00Sm-Wl9GfbLIQHd2Bk32GLVqzEQkiU'
+  }
+};
+
+fetch('https://api.themoviedb.org/3/movie/697843?language=sv', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+
+
+
+
+  {
+  "adult": false,
+  "backdrop_path": "/wRxLAw4l17LqiFcPLkobriPTZAw.jpg",
+  "belongs_to_collection": {
+    "id": 735127,
+    "name": "Extraction Collection",
+    "poster_path": "/xWjWROptqUHgMkBIbEhMMqqo5Us.jpg",
+    "backdrop_path": "/gxBbFVb2SUWtHTJQXjwAtEPTWcA.jpg"
+  },
+  "budget": 0,
+  "genres": [
+    {
+      "id": 28,
+      "name": "Action"
+    },
+    {
+      "id": 53,
+      "name": "Thriller"
+    }
+  ],
+  "homepage": "",
+  "id": 697843,
+  "imdb_id": "tt12263384",
+  "original_language": "en",
+  "original_title": "Extraction 2",
+  "overview": "Efter att ha flörtat med döden tar den skickliga kommandosoldaten Tyler Rake sig an ännu ett livsfarligt uppdrag: att frita en brutal gangsters tillfångatagna familj.",
+  "popularity": 430.389,
+  "poster_path": "/7gKI9hpEMcZUQpNgKrkDzJpbnNS.jpg",
+  "production_companies": [
+    {
+      "id": 106544,
+      "logo_path": "/psd84iF7PTGrKf4yFOStKj8JbAh.png",
+      "name": "AGBO",
+      "origin_country": "US"
+    },
+    {
+      "id": 104576,
+      "logo_path": "/sNhEzePPkxW3AKqr3l0h7I1k0hR.png",
+      "name": "Filmhaus Films",
+      "origin_country": "AT"
+    }
+  ],
+  "production_countries": [
+    {
+      "iso_3166_1": "AT",
+      "name": "Austria"
+    },
+    {
+      "iso_3166_1": "US",
+      "name": "United States of America"
+    }
+  ],
+  "release_date": "2023-06-12",
+  "revenue": 0,
+  "runtime": 123,
+  "spoken_languages": [
+    {
+      "english_name": "English",
+      "iso_639_1": "en",
+      "name": "English"
+    },
+    {
+      "english_name": "Georgian",
+      "iso_639_1": "ka",
+      "name": "ქართული"
+    }
+  ],
+  "status": "Released",
+  "tagline": "",
+  "title": "Extraction 2",
+  "video": false,
+  "vote_average": 8.098,
+  "vote_count": 123
+}
