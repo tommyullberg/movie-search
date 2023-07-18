@@ -94,6 +94,7 @@ body#appBody {
 }
 
 body#appBody {
+  scrollbar-gutter: stable both-edges;
   background-color: var(--bg-dark);
 }
 
