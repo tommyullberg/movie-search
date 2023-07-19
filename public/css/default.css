@@ -11,6 +11,7 @@
 
   --bg-dark: #111;
   --bg-mid: #333;
+  --logo-color: #39b421;
 
   --mdb-font-roboto: "Roboto", sans-serif;
   --mdb-bg-opacity: 1;
@@ -94,6 +95,7 @@ body#appBody {
 }
 
 body#appBody {
+  overflow: -moz-scrollbars-vertical;
   scrollbar-gutter: stable both-edges;
   background-color: var(--bg-dark);
 }
@@ -102,13 +104,16 @@ body#appBody.has-modal {
   overflow-y: hidden;
 }
 
+.top-logo {
+  background-image: url(../images/bg-metal-texture.jpg) !important;
+}
 
 .card {
   --mdb-card-border-width: 1px;
   --mdb-card-border-color: var(--mdb-border-color-translucent);
   --mdb-card-border-radius: 0.5rem;
   --mdb-card-box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
-  --mdb-card-bg: var(--mdb-dark);
+  --mdb-card-bg: #272424;
   position: relative;
   display: flex;
   flex-grow: 1;
@@ -127,13 +132,16 @@ body#appBody.has-modal {
 }
 
 .card-header {
-  --mdb-card-header-border-width: 2px;
-  --mdb-card-header-color: #39b421;
+  --mdb-card-header-border-width: 1px;
+  --mdb-card-header-color: rgba(255, 255, 255, 0.7);
+  --mdb-card-header-background-color: #222;
   border-bottom: var(--mdb-card-header-border-width) solid var(--mdb-card-header-color);
+  background-color: var(--mdb-card-header-background-color) !important;
 }
 
 .card-header h1 {
   font-size: 1.5rem;
+  font-size: clamp(1rem, 0.2105rem + 4.2105vw, 1.5rem);
   color: var(--mdb-card-header-color);
 }
 
@@ -185,4 +193,8 @@ body#appBody.has-modal {
 .res-item--date .res-item--date-label {
   font-weight: var(--font-results-released-weight);
   margin-right: .5rem;
+}
+
+.bg-image {
+  position: static;
 }

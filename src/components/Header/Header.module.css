@@ -10,12 +10,18 @@
 
 .top-logo {
   font: 900 36px/1 var(--font-title);
-  font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem);
+  /* font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem); */
+  font-size: clamp(2.25rem, 1.2614rem + 2.7273vw, 2.625rem);
   text-transform: uppercase;
-  background-image: linear-gradient(to right, #ff0000, #00ff00);
+  /* background-image: linear-gradient(to right, #ff0000, #00ff00); */
+  /* background-image: url(%PUBLIC_URL%/images/bg-metal-texture.jpg); */
+  background: var(--logo-color) repeat;
+  background-size: 90px;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+  background-blend-mode: luminosity;
+  background-position: 50%;
 }
 
 @media screen and (max-width: 580px) {

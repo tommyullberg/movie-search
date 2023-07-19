@@ -2,7 +2,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
   gap: 20px;
 }
 
@@ -14,7 +14,7 @@
 .res-item {
   position: relative;
   width: 100%;
-  max-width: 246px;
+  max-width: 160px;
   flex: 1 1 180px;
   transition: max-width .3s ease-in-out;
   -webkit-transition: max-width .3s ease-in-out;
@@ -24,7 +24,7 @@
 }
 @media screen and (min-width: 400px) {
   .res-item {
-    max-width: 220px;
+    max-width: 246px;
   }
 }
 

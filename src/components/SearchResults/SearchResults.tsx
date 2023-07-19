@@ -4,6 +4,7 @@ import { formatDate } from '../../utils/helpers';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { Modal } from '../Modal';
 import { MovieDetails } from '../MovieDetails';
+import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
 import styles from './SearchResults.module.css';
 
@@ -50,7 +51,7 @@ export function SearchResults() {
     console.log('movieId: ' + movieId);
     try {
       const data = await getMovieById(movieId);
-      console.log('data: ' + data);
+      /* console.log('data: ' + data); */
       updateSelectedMovieId(movieId);
       updateMovieData(data);
     } catch (error) {
@@ -72,7 +73,7 @@ export function SearchResults() {
           <div className='image'>
             <div className='wrapper'>
               <a
-                className='image'
+                className='image stretched-link'
                 href='#!openMovieDetails'
                 title={result.title}
                 onClick={(event: FormEvent<Element>) =>
@@ -109,14 +110,18 @@ export function SearchResults() {
           </div>
 
           <div className={`gauge ${styles['gauge']}`}>
-            <object
+            {/* <object
               id={`gauge${result.id}`}
               data-value={result.vote_average}
               className='gauges'
-              data='/images/gauge.svg'
+              data={gaugeSrc}
               type='image/svg+xml'>
               Gauge
-            </object>
+            </object> */}
+            <GaugeSVG
+              id={result.id}
+              vote_average={result.vote_average}
+            />
           </div>
         </div>
       </div>

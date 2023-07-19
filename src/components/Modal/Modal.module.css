@@ -22,8 +22,8 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
 }
 
 .content {
@@ -50,15 +50,14 @@
   -o-transition: all 0.3s ease-out;
 }
 
-/* Not full screen modal */
-
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 600px) and (min-height: 500px) {
   .content {
     max-width: 800px;
     margin: 2rem;
     padding: 3rem;
     max-height: calc(100vh - 4rem - 60px);
     max-height: calc(100dvh - 4rem - 60px);
+    max-height: clamp(300px, 85vh, calc(100dvh - 90px));
   }
 }
 
@@ -98,7 +97,7 @@
     -moz-transform: scale(1);
     -ms-transform: scale(1);
     -o-transform: scale(1);
-}
+  }
 }
 
 .closeBtn:hover,

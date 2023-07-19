@@ -34,7 +34,7 @@ export function SearchForm() {
       <div className='card mb-3'>
         <div className='card-header py-3'>
           <h1 className='mb-0 text-center'>
-            <strong>Search</strong>
+            <strong>Find your favorite movies!</strong>
           </h1>{/*
           searchTerm: {searchTerm}<br />
           searchCategory: {searchCategory} */}
