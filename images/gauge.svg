@@ -5,5 +5,5 @@
     <ellipse id="borderFill" rx="77.895406" ry="77.895406" transform="matrix(0-1-1 0 145.329734 325.695406)" fill="none" stroke="#222222" stroke-width="20" stroke-miterlimit="1" stroke-dasharray="489.43" />
     <ellipse id="borderVal" rx="77.895406" ry="77.895406" transform="matrix(0-1 1 0 145.329734 325.695406)" fill="none" stroke="#00ee00" stroke-width="20" stroke-miterlimit="1" stroke-dashoffset="367.5" stroke-dasharray="489.43" />
   </g>
-  <text id="percentVal" x="50%" y="45%" text-anchor="middle" alignment-baseline="middle" font-family="'Orbitron', Arial, sans-serif" font-size="50" font-weight="900" fill="#1ee100"></text>
+  <text id="percentVal" x="50%" y="47%" text-anchor="middle" alignment-baseline="middle" font-family="'Orbitron', Arial, sans-serif" font-size="50" font-weight="900" fill="#1ee100"></text>
 </svg>
