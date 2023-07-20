@@ -75,7 +75,7 @@
 /* Title */
 
 h1.movieTitle {
-  width: max-content;
+  width: fit-content;
   max-width: calc(100vw - 4rem);
   max-width: calc(100dvw - 4rem);
   font: 900 2.2rem/1.2 var(--font-heading);

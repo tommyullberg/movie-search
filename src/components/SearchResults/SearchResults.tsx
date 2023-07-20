@@ -79,7 +79,7 @@ export function SearchResults() {
                 onClick={(event: FormEvent<Element>) =>
                   openModal(result.id, event)
                 }>
-                {!result.poster_path ? (
+                {null === result.poster_path || !result.poster_path.length ? (
                   <div className='image-missing'></div>
                 ) : (
                   <img
@@ -110,14 +110,6 @@ export function SearchResults() {
           </div>
 
           <div className={`gauge ${styles['gauge']}`}>
-            {/* <object
-              id={`gauge${result.id}`}
-              data-value={result.vote_average}
-              className='gauges'
-              data={gaugeSrc}
-              type='image/svg+xml'>
-              Gauge
-            </object> */}
             <GaugeSVG
               id={result.id}
               vote_average={result.vote_average}

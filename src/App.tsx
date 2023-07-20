@@ -10,7 +10,7 @@ export default function App() {
     <SearchContextProvider>
       <Header />
       <main>
-        <div className='container-fluid pt-4'>
+        <div className='container-fluid'>
           <SearchForm />
           <SearchResults />
         </div>

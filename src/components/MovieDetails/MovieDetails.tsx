@@ -46,12 +46,17 @@ export function MovieDetails() {
 
         <div className={styles.movieInfoTwoCol}>
           <div className={styles.posterContainer}>
-            <img
-              className={styles.posterImage}
-              src={`${URL_IMAGE_POSTER_w500}${movieData?.poster_path}`}
-              srcSet={`${URL_IMAGE_POSTER_w500}${movieData?.poster_path} 1x, ${URL_IMAGE_POSTER_w780}${movieData?.poster_path} 2x`}
-              alt={movieData?.title}
-            />
+            {null === movieData?.poster_path ||
+            !movieData?.poster_path.length ? (
+              <div className='image-missing'></div>
+            ) : (
+              <img
+                className={styles.posterImage}
+                src={`${URL_IMAGE_POSTER_w500}${movieData?.poster_path}`}
+                srcSet={`${URL_IMAGE_POSTER_w500}${movieData?.poster_path} 1x, ${URL_IMAGE_POSTER_w780}${movieData?.poster_path} 2x`}
+                alt={movieData?.title}
+              />
+            )}
           </div>
           <div className={styles.movieInfo}>
             <p>{movieData?.overview}</p>

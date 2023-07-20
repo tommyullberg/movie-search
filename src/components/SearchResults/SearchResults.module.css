@@ -14,7 +14,7 @@
 .res-item {
   position: relative;
   width: 100%;
-  max-width: 160px;
+  max-width: calc(50% - 10px);
   flex: 1 1 180px;
   transition: max-width .3s ease-in-out;
   -webkit-transition: max-width .3s ease-in-out;
@@ -22,14 +22,20 @@
   -ms-transition: max-width .3s ease-in-out;
   -o-transition: max-width .3s ease-in-out;
 }
-@media screen and (min-width: 400px) {
-  .res-item {
-    max-width: 246px;
-  }
-}
 
 .card-body {
   position: relative;
+  padding: 1rem .5rem .5rem .5rem;
+}
+
+@media screen and (min-width: 430px) {
+  .res-item {
+    max-width: 246px;
+  }
+
+  .card-body {
+    padding: .5rem .8rem;
+  }
 }
 
 .gauge {

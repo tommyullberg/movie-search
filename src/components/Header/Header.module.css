@@ -1,11 +1,13 @@
 .Header {}
 
 .navbar {
-  min-height: 60px !important;
+  height: 70px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .Header .navbar .container-fluid {
-  min-width: 315px;
+  min-width: 310px;
 }
 
 .top-logo {

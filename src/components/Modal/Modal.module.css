@@ -1,6 +1,6 @@
 .modal {
   position: fixed;
-  top: 60px;
+  top: 70px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -35,7 +35,7 @@
   max-height: 10000px;
   margin: 0;
   padding: 1rem;
-  box-shadow: 0 0 50px 0 rgb(210, 96, 30);
+  box-shadow: 0 0 20px 0 rgba(28, 218, 11, .8);
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -55,8 +55,8 @@
     max-width: 800px;
     margin: 2rem;
     padding: 3rem;
-    max-height: calc(100vh - 4rem - 60px);
-    max-height: calc(100dvh - 4rem - 60px);
+    max-height: calc(100vh - 4rem - 70px);
+    max-height: calc(100dvh - 4rem - 70px);
     max-height: clamp(300px, 85vh, calc(100dvh - 90px));
   }
 }
@@ -66,7 +66,56 @@
 }
 
 .modal.animating .content {
-  animation: modalFlip 0.5s ease-out;
+  animation: modalFlip 0.7s ease-out, modalGlow 1s ease-out;
+  -webkit-animation: modalFlip 0.7s ease-out, modalGlow 1s ease-out;
+}
+
+@keyframes modalGlow {
+  0% {
+    box-shadow: 0 0 3000px 3000px rgb(255, 255, 255);
+  }
+
+  40% {
+    box-shadow: 0 0 4000px 1000px rgb(255, 95, 95);
+  }
+
+  70% {
+    box-shadow: 0 0 1500px 50px rgb(255, 0, 0);
+  }
+
+  80% {
+    box-shadow: 0 0 40px 5px rgba(199, 59, 16, .7);
+  }
+
+  100% {
+    box-shadow: 0 0 20px 0 rgba(28, 218, 11, .8);
+  }
+}
+
+@keyframes modalFlip {
+  0% {
+    transform: scale(.01) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
+    -webkit-transform: scale(.01) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
+    -moz-transform: scale(.01) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
+    -ms-transform: scale(.01) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
+    -o-transform: scale(.01) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
+  }
+
+  60% {
+    transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
+    -webkit-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
+    -moz-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
+    -ms-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
+    -o-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
+  }
+
+  100% {
+    transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
+    -webkit-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
+    -moz-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
+    -ms-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
+    -o-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
+  }
 }
 
 .closeBtn {
@@ -103,30 +152,4 @@
 .closeBtn:hover,
 .closeBtn:focus {
   opacity: 1;
-}
-
-@keyframes modalFlip {
-  0% {
-    transform: scale(.1) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
-    -webkit-transform: scale(.1) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
-    -moz-transform: scale(.1) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
-    -ms-transform: scale(.1) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
-    -o-transform: scale(.1) rotateZ(-180deg) rotate3d(1, 0, 0, -180deg);
-  }
-
-  60% {
-    transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
-    -webkit-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
-    -moz-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
-    -ms-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
-    -o-transform: scale(.6) rotateZ(-80deg) rotate3d(1, 0, 0, -80deg);
-  }
-
-  100% {
-    transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
-    -webkit-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
-    -moz-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
-    -ms-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
-    -o-transform: scale(1) rotateZ(0deg) rotate3d(1, 0, 0, 0deg);
-  }
 }

@@ -5,8 +5,10 @@
   --font-title: 'Orbitron', sans-serif;
   --font-heading: 'Barlow Condensed', sans-serif;
   --font-text: 'Roboto', sans-serif;
-  --font-results-title: 500 1.1rem/1.3rem var(--font-heading);
-  --font-results-released: 700 .9rem/1.3 var(--font-text);
+  --font-results-title-sm: 500 clamp(0.8rem, -0.0727rem + 4.3636vw, 1.1rem)/1.2 var(--font-heading);
+  --font-results-title: 500 1.1rem/1.2 var(--font-heading);
+  --font-results-released-sm: 700 clamp(0.7rem, 0.1182rem + 2.9091vw, 0.9rem)/1.2 var(--font-text);
+  --font-results-released: 700 .9rem/1.2 var(--font-text);
   --font-results-released-weight: 400;
 
   --bg-dark: #111;
@@ -104,6 +106,25 @@ body#appBody.has-modal {
   overflow-y: hidden;
 }
 
+main .container-fluid {
+  margin: 0 0 .8rem 0;
+  padding: 0 .8rem;
+  border-top: 1rem solid transparent;
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+}
+
+@media screen and (min-width: 430px) {
+  main .container-fluid {
+    margin: 0 0 1.5rem 0;
+    padding: 0 1.5rem;
+    border-top: 1.5rem solid transparent;
+  }
+}
+
 .top-logo {
   background-image: url(../images/bg-metal-texture.jpg) !important;
 }
@@ -179,20 +200,40 @@ body#appBody.has-modal {
 
 
 .res-item--title {
-  font: var(--font-results-title);
+  font: var(--font-results-title-sm);
   color: rgb(108, 213, 255);
   word-break: break-word;
   overflow: hidden;
+  transition: font-size .3s ease-in-out;
+  -webkit-transition: font-size .3s ease-in-out;
+  -moz-transition: font-size .3s ease-in-out;
+  -ms-transition: font-size .3s ease-in-out;
+  -o-transition: font-size .3s ease-in-out;
 }
 
 .res-item--date {
-  font: var(--font-results-released);
+  font: var(--font-results-released-sm);
   color: rgba(255, 255, 255, 0.8);
+  transition: font-size .3s ease-in-out;
+  -webkit-transition: font-size .3s ease-in-out;
+  -moz-transition: font-size .3s ease-in-out;
+  -ms-transition: font-size .3s ease-in-out;
+  -o-transition: font-size .3s ease-in-out;
 }
 
 .res-item--date .res-item--date-label {
   font-weight: var(--font-results-released-weight);
   margin-right: .5rem;
+}
+
+@media screen and (min-width: 430px) {
+  .res-item--title {
+    font: var(--font-results-title);
+  }
+
+  .res-item--date {
+    font: var(--font-results-released);
+  }
 }
 
 .bg-image {
