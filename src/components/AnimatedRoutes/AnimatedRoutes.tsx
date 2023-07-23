@@ -12,7 +12,7 @@ export function AnimatedRoutes() {
   return (
     <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path='/' element={<Home />} />
+        <Route path='/' index element={<Home />} />
         <Route path='/about' element={<About />} />
         <Route path='*' element={<NoPage404 />} />
       </Routes>
