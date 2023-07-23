@@ -11,12 +11,9 @@
 }
 
 .top-logo {
-  font: 900 36px/1 var(--font-title);
-  /* font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem); */
-  font-size: clamp(2.25rem, 1.2614rem + 2.7273vw, 2.625rem);
+  font: 900 24px/1 var(--font-title);
+  font-size: clamp(1rem, -0.3393rem + 7.1429vw, 2.25rem);
   text-transform: uppercase;
-  /* background-image: linear-gradient(to right, #ff0000, #00ff00); */
-  /* background-image: url(%PUBLIC_URL%/images/bg-metal-texture.jpg); */
   background: var(--logo-color) repeat;
   background-size: 90px;
   background-clip: text;
@@ -26,18 +23,22 @@
   background-position: 50%;
 }
 
-@media screen and (max-width: 580px) {
+@media screen and (min-width: 580px) {
   .top-logo {
-    font-size: 24px;
-    font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem);
+    font-size: 36px;
+    font-size: clamp(2.25rem, 1.2614rem + 2.7273vw, 2.625rem);
   }
-
 }
 
-@media screen and (max-width: 400px) {
-  .top-logo {
-    font-size: 18px;
-    font-size: clamp(1.125rem, -0.2596rem + 6.9231vw, 2.25rem);
-  }
 
+.icon {
+  font-size: 1rem;
+  font-size: clamp(0.8rem, 0.4rem + 2.1333vw, 2rem);
+  color: var(--site-yellow);
+}
+
+.icon:hover,
+.icon:focus,
+.icon:active {
+  color: var(--site-yellow-dark);
 }

@@ -30,14 +30,10 @@ export function SearchForm() {
   };
 
   return (
-    <section className={styles.SearchForm}>
+    <section>
       <div className='card mb-3'>
         <div className='card-header py-3'>
-          <h1 className='mb-0 text-center'>
-            <strong>Find your favorite movies!</strong>
-          </h1>{/*
-          searchTerm: {searchTerm}<br />
-          searchCategory: {searchCategory} */}
+          <h1 className='mb-0 text-center'>Find your favorite movies!</h1>
         </div>
         <div className='card-body'>
           <form className='max-w-lg mx-auto' onSubmit={handleSearch}>
@@ -64,36 +60,36 @@ export function SearchForm() {
                 type='submit'
                 className={`btn ${
                   searchTerm.length ? 'btn-success' : 'btn-primary'
-                } ripple ripple-surface`}>
+                }`}>
                 <i className='fas fa-search'></i>
               </button>
             </div>
-            <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 mx-auto'>
+            <div className={styles.buttons}>
               <button
-                className={`ripple ripple-surface btn ${
+                className={`btn ${
                   searchCategory === 'trending' ? 'btn-success' : 'btn-primary'
-                } mx-0 px-0`}
+                } ${styles.btn}`}
                 onClick={() => handleCategoryClick('trending')}>
                 Trending
               </button>
               <button
-                className={`ripple ripple-surface btn ${
+                className={`btn ${
                   searchCategory === 'popular' ? 'btn-success' : 'btn-primary'
-                } mx-0 px-0`}
+                } ${styles.btn}`}
                 onClick={() => handleCategoryClick('popular')}>
                 Popular
               </button>
               <button
-                className={`ripple ripple-surface btn ${
+                className={`btn ${
                   searchCategory === 'toprated' ? 'btn-success' : 'btn-primary'
-                } mx-0 px-0`}
+                } ${styles.btn}`}
                 onClick={() => handleCategoryClick('toprated')}>
                 Top rated
               </button>
               <button
-                className={`ripple ripple-surface btn ${
+                className={`btn ${
                   searchCategory === 'upcoming' ? 'btn-success' : 'btn-primary'
-                } mx-0 px-0`}
+                } ${styles.btn}`}
                 onClick={() => handleCategoryClick('upcoming')}>
                 Upcoming
               </button>
