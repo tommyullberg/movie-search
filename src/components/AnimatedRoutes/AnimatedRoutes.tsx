@@ -8,12 +8,13 @@ import { AnimatePresence } from 'framer-motion';
 
 
 export function AnimatedRoutes() {
-  const location = useLocation();
+  const location   = useLocation();
+  const publicPath = process.env.PUBLIC_URL;
   return (
     <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path='/' index element={<Home />} />
-        <Route path='/about' element={<About />} />
+        <Route path={`${publicPath}/`} index element={<Home />} />
+        <Route path={`${publicPath}/about`} element={<About />} />
         <Route path='*' element={<NoPage404 />} />
       </Routes>
     </AnimatePresence>
