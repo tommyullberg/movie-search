@@ -92,16 +92,10 @@ export function SearchResults() {
               </a>
             </div>
           </div>
-          <a
-            href='#!openMovieDetails'
-            onClick={(event: FormEvent<Element>) =>
-              openModal(result.id, event)
-            }>
-            <div className={styles.mask}></div>
-          </a>
+          <div className={styles.mask}></div>
         </div>
         <div className={`card-body ${styles['card-body']}`}>
-          <div className='d-flex flex-col justify-content-between h-100'>
+          <div className='d-flex flex-column justify-content-between h-100'>
             <h2 className='card-title res-item--title'>{result.title}</h2>
             <p className='card-text res-item--date'>
               <span className='res-item--date-label'>Released:</span>

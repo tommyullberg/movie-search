@@ -1,5 +1,4 @@
 main {
   max-width: 1400px;
-  margin-inline: auto;
-  margin-block: 70px 2rem !important;
+  margin: 70px auto 2rem auto !important;
 }

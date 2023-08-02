@@ -22,17 +22,17 @@ export const formatYear = (dateString: string) => {
 export const shiftHeadingsDown = (html: string) => {
   const headings = [5, 4, 3, 2, 1];
   let modifiedHtml = html;
-  console.log('before', modifiedHtml);
+  // console.log('before', modifiedHtml);
   headings.forEach((heading, index) => {
     const nextHeading = headings[index - 1] || 6;
     const regexOpen = new RegExp(`<h${heading}`, 'g');
     const regexClose = new RegExp(`${heading}h>`, 'g');
-    console.log(heading, '=>', nextHeading);
+    // console.log(heading, '=>', nextHeading);
     modifiedHtml = modifiedHtml
       .replace(regexOpen, `<h${nextHeading}`)
       .replace(regexClose, `${nextHeading}h>`);
   });
-  console.log('after', modifiedHtml);
+  // console.log('after', modifiedHtml);
 
   return modifiedHtml;
 };

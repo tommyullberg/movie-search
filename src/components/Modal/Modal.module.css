@@ -65,7 +65,7 @@
   transform: scale(1);
 }
 
-.modal.animating .content {
+.modal.animating.isNotMobile .content {
   animation: modalFlip 0.7s ease-out, modalGlow 1s ease-out;
   -webkit-animation: modalFlip 0.7s ease-out, modalGlow 1s ease-out;
 }
@@ -124,7 +124,9 @@
   top: 10px;
   right: 10px;
   opacity: .7;
+  box-shadow: 3px 3px 4px 0 rgba(0, 0, 0, .8), inset 1px 1px 2px 0 rgba(255, 255, 255, .5), inset -1px -1px 2px 0 rgba(0, 0, 0, .5);
   transform-origin: 50%;
+  translate: 0 0;
   transition: all 0.3s ease-out;
   -webkit-transition: all 0.3s ease-out;
   -moz-transition: all 0.3s ease-out;
@@ -150,6 +152,8 @@
 }
 
 .closeBtn:hover,
-.closeBtn:focus {
+.closeBtn:focus,
+.closeBtn:active {
   opacity: 1;
+  translate: 2px 2px;
 }

@@ -9,14 +9,29 @@ export function Header() {
   return (
     <header className={styles.Header}>
       <nav
+        id='navbar'
         className={`${styles.navbar} navbar navbar-expand-lg navbar-dark bg-dark fixed-top mx-auto`}>
         <div className='container-fluid justify-content-center'>
-          <NavLink className='navbar-brand ms-auto' to={`${publicPath}/`} end>
+          <div id='headerLeft' className='navbar-nav flex-row d-none d-sm-flex invisible'>
+            <div className='nav-link mx-1'>
+              <FontAwesomeIcon className={styles.icon} icon={faHouse} />
+            </div>
+            <div className='nav-link mx-1'>
+              <FontAwesomeIcon
+                className={styles.icon}
+                icon={faCircleQuestion}
+              />
+            </div>
+          </div>
+          <NavLink
+            className='navbar-brand flex-grow-1'
+            to={`${publicPath}/`}
+            end>
             <span className={`top-logo ${styles['top-logo']}`}>
               TMDB - The Movie DB
             </span>
           </NavLink>
-          <div className='navbar-nav ms-auto flex-row'>
+          <div id='headerRight' className='navbar-nav flex-row'>
             <NavLink
               className='nav-link mx-1'
               to={`${publicPath}/`}

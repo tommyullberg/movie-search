@@ -7,7 +7,6 @@ Source code here:
 Online here:
 
 - <a href="https://tommyullberg.github.io/movie-search/" target="_blank">Github Pages</a>
-- <a href="http://www.ullberg.net/movie-search/" target="_blank">ullberg.net</a>
 
 ## About
 

@@ -1,6 +1,11 @@
-.Header {}
+.Header {
+  width: 100vw;
+  width: 100dvw;
+}
 
 .navbar {
+  width: 100vw;
+  width: 100dvw;
   height: 70px !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -14,6 +19,7 @@
   font: 900 24px/1 var(--font-title);
   font-size: clamp(1rem, -0.3393rem + 7.1429vw, 2.25rem);
   text-transform: uppercase;
+  margin: 0 auto;
   background: var(--logo-color) repeat;
   background-size: 90px;
   background-clip: text;

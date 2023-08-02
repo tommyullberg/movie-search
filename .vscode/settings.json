@@ -1,0 +1,13 @@
+{
+  "editor.wordWrap": "on",
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+  "editor.guides.bracketPairs": "active",
+  "explorer.compactFolders": false,
+  "explorer.copyRelativePathSeparator": "/",
+  "explorer.fileNesting.enabled": true,
+  "spring.initializr.defaultGroupId": "net.ullberg",
+  "spring.initializr.defaultJavaVersion": "11",
+  "spring.initializr.defaultLanguage": "Java",
+  "spring.initializr.defaultOpenProjectMethod": "Open",
+  "spring.initializr.defaultPackaging": "JAR"
+}

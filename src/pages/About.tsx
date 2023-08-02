@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { variants, transition } from '../utils/pageAnimations';
-import { useLocation } from 'react-router-dom';
-import { marked } from 'marked';
 import { shiftHeadingsDown } from '../utils/helpers';
+import { marked } from 'marked';
+import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  variants,
+  transition,
+  onAnimationStart,
+  onAnimationComplete
+} from '../utils/pageAnimations';
 
 export default function Home() {
   const location = useLocation();
@@ -14,23 +19,13 @@ export default function Home() {
   const publicPath = process.env.PUBLIC_URL;
   const readmeFile = `${publicPath}/README.md`;
 
+  document.getElementById('appBody')?.setAttribute('class', 'about');
+
   useEffect(() => {
     const fetchTextFile = async () => {
-      const cacheName      = 'readme-cache';
-      const cacheKey       = 'readme.md';
-      const cacheStorage   = await caches.open(cacheName);
-      const cachedResponse = await cacheStorage.match(cacheKey);
-
-      if (cachedResponse) {
-        const text = await cachedResponse.text();
-        setMarkdownContent(text);
-      } else {
-        const response = await fetch(readmeFile);
-        const clonedResponse = response.clone();
-        const text = await response.text();
-        setMarkdownContent(text);
-        cacheStorage.put(cacheKey, clonedResponse);
-      }
+      const response = await fetch(readmeFile);
+      const text = await response.text();
+      setMarkdownContent(text);
     };
     fetchTextFile();
   }, [readmeFile]);
@@ -52,7 +47,9 @@ export default function Home() {
       animate='animate'
       exit='exit'
       transition={transition}
-      custom={direction}>
+      custom={direction}
+      onAnimationStart={onAnimationStart}
+      onAnimationComplete={onAnimationComplete}>
       <section>
         <div className='card mb-3'>
           <div className='card-header py-3'>

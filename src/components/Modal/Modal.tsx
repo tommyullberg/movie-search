@@ -1,5 +1,6 @@
 import React, { useState, ReactElement } from 'react';
 import ReactDOM from 'react-dom';
+import { isMobile } from 'is-mobile';
 import { MovieDetails } from '../MovieDetails';
 import styles from './Modal.module.css';
 
@@ -32,9 +33,9 @@ export function Modal({ isOpening, isOpen, closeModal }: ModalProps) {
 
   return ReactDOM.createPortal(
     <div
-      className={`${styles.modal} ${
-        isOpen ? `${styles.open} is-open` : ''
-      } ${isAnimating ? styles.animating : ''}`}>
+      className={`${styles.modal} ${isOpen ? `${styles.open} is-open` : ''} ${
+        isAnimating ? styles.animating : ''
+      } ${isMobile() ? styles.isMobile : styles.isNotMobile}`}>
       <div className={styles.overlay} onClick={closeModalWithAnimation} />
       <div className={`${styles.content} ${isOpen ? styles.open : ''}`}>
         <MovieDetails />

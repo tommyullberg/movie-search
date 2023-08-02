@@ -121,6 +121,22 @@ body#appBody.has-modal {
   overflow-y: hidden;
 }
 
+main.is-mobile {
+  background-color: green;
+}
+
+main.is-not-mobile {
+  background-color: red;
+}
+
+.page-wrapper {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 main .container-fluid {
   margin: 0 0 .8rem 0;
   padding: 0 .8rem;
@@ -143,9 +159,15 @@ main .container-fluid {
 main .container-fluid.content {
   position: relative;
   width: 100%;
-  max-width: 800px;
-  margin-inline: auto;
+  max-width: 1300px;
+  /*
+  margin-inline: auto; */
+  margin: 0 auto 2rem auto;
   padding: 0 1rem;
+}
+
+#appBody.about main .container-fluid.content {
+  max-width: 800px;
 }
 
 .top-logo {
@@ -347,3 +369,24 @@ main .container-fluid.content {
 .bg-image {
   position: static;
 }
+
+img {
+  width: 100%;
+  height: auto;
+}
+
+a:focus,
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px #39b421 !important;
+}
+
+/*
+.form-outline .form-control:focus~.form-notch div.form-notch-leading,
+.form-outline .form-control:focus~.form-notch div.form-notch-trailing {
+  border-color: rgb(57, 180, 33) !important;
+}
+
+.form-outline .form-control:focus~.form-label {
+  color: hsl(0, 0%, 100%);
+} */
