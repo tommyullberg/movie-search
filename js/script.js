@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
 
-
 const formatDate = (inputDate) => {
-  var date = new Date(inputDate);
-  var options = { day: '2-digit', month: 'short', year: 'numeric' };
-  var outputDate = date.toLocaleDateString('en-US', options);
+  const date = new Date(inputDate);
+  const options = { day: '2-digit', month: 'short', year: 'numeric' };
+  const outputDate = date.toLocaleDateString('en-US', options);
   return outputDate;
 };
 
@@ -31,20 +30,20 @@ const colorMap = new Map([
   [10.0, '#00ee00']
 ]);
 
+let oTryTimer = null,
+  svgElement = null;
+
 function addClassToSvgGauge(svgId, voteValue) {
   addClassToSvgGaugeTry(svgId, voteValue, 0);
 }
 
-let oTryTimer = null,
-   svgElement = null
-
-function addClassToSvgGaugeTry(svgId, voteValue, tryCount) {
-  console.log('svgId: ' + svgId + ', voteValue: ' + voteValue + ', tryCount: ' + tryCount);
+function addClassToSvgGaugeTry(svgId, voteValue, tryCount) {/*
+  console.log('svgId: ' + svgId + ', voteValue: ' + voteValue + ', tryCount: ' + tryCount); */
   if (tryCount > 10) {
     if (svgElement) {
       svgElement.remove();
     }
-    window.clearTimeout(oTryTimer);
+    if (oTryTimer) window.clearTimeout(oTryTimer);
     return;
   }
   try {
@@ -88,3 +87,16 @@ function addClassToSvgGaugeTry(svgId, voteValue, tryCount) {
     }, 100);
   }
 }
+
+
+jQuery(document).ready(($) => {
+  const setHeaderSidesWidth = () => {
+    const $headerL = $('#headerLeft');
+    const $headerR = $('#headerRight');
+    if ($headerL.length && $headerR.length) {
+      $headerL.width($headerR.width());
+    }
+  };
+  window.setTimeout(setHeaderSidesWidth, 100);
+  $(window).on('resize', setHeaderSidesWidth);
+});
