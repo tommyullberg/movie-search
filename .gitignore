@@ -23,5 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 *test*
-/docs
 /assets
+/src/docs
+
+README-DEPLOY.txt
