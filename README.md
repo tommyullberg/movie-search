@@ -8,19 +8,19 @@ Online here:
 
 - <a href="https://tommyullberg.github.io/movie-search/" target="_blank">Github Pages</a>
 
-## Background
-
-Never had anything on my own GitHub until I started applying for jobs this summer, so I thought I'd better put something there, just to show I exist, since some job descriptions says they wish to see a portfolio, if possible.
-
-I would like to have time to make some kind of portfolio. But I can't put our clients' sites here, so maybe I put some images or some modules extracted to a stand-alone simple site. I'll see what I have time for.
-
 ## About
 
-I start by refreshing my React knowledge a bit and just put it on GH-pages.
+Movie Search is a project I started in 2023 to refresh my React skills. Since then, I have continued developing my skills and completed courses in DevOps, React, and TypeScript, building on 25 years of experience with HTML, CSS, JavaScript, and other web development technologies. I use this project to put that learning into practice and improve the app incrementally.
 
-Fetching movies and details from the API at [The Movie DB](https://www.themoviedb.org/).
+The app uses the [TMDB API](https://www.themoviedb.org/) to search for movies by title, browse trending, popular, top-rated, and upcoming movies, and view movie details. It is built with React and TypeScript and deployed to GitHub Pages.
 
-## Technices
+## Planned next steps
+
+- Migrate the legacy Create React App setup to Vite.
+- Expand automated UI test coverage and improve accessibility, including support for reduced motion.
+- Explore additional TMDB data, such as trailers, cast, and crew.
+
+## Technologies
 
 - React / TypeScript
 - React useContext
@@ -32,7 +32,7 @@ Fetching movies and details from the API at [The Movie DB](https://www.themovied
 - JS CacheStorage
 - CSS modules
 - Some MDBootstrap CSS
-- CSS animations 
+- CSS animations
 - SVG manipulation/animation
 
 --------------------------------
