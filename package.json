@@ -32,6 +32,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "prepare": "husky",
     "start": "react-scripts start",
     "check:api": "node scripts/check-tmdb-api.js",
     "predeploy": "npm run build",
@@ -59,7 +60,10 @@
     ]
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@types/axios": "^0.14.0",
-    "gh-pages": "^5.0.0"
+    "gh-pages": "^5.0.0",
+    "husky": "^9.1.7"
   }
 }

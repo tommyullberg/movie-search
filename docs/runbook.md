@@ -4,7 +4,7 @@ This runbook covers how to install, run, build, test, and deploy the Movie Searc
 
 ## Prerequisites
 
-- Node.js and npm installed.
+- Node.js 22.12 or newer and npm installed (Commitlint 21 requires Node.js 22.12+).
 - Git installed.
 - Access to the [movie-search GitHub repository](https://github.com/tommyullberg/movie-search) to push changes and publish the site.
 
@@ -75,7 +75,7 @@ The project uses `gh-pages` to publish the contents of `build/` to the `gh-pages
 
 	```sh
 	git status --short --branch
-	git add docs/runbook.md package.json src/App.test.tsx src/components/SearchForm/SearchForm.tsx src/utils/apiUtils.ts .env.example scripts/check-tmdb-api.js
+	git add .commitlintrc.cjs .husky/commit-msg .env.example docs/runbook.md package-lock.json package.json scripts/check-tmdb-api.js src/App.test.tsx src/components/SearchForm/SearchForm.tsx src/utils/apiUtils.ts
 	git --no-pager diff --cached
 	```
 
@@ -86,7 +86,18 @@ The project uses `gh-pages` to publish the contents of `build/` to the `gh-pages
 	git push origin main
 	```
 
-	Useful types include `feat`, `fix`, `test`, `docs`, `build`, and `ci`. Use a matching type so future changelog or commit filters can classify changes consistently. Keep secrets and credentials out of commit messages and tracked files.
+	Husky runs Commitlint automatically before each local commit. Allowed types are `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, and `test`. A scope such as `api`, `repo`, or `ui` is optional and must be lowercase. The summary is required, must not end in a period, and the complete header must be at most 100 characters. Breaking changes may use `!` before the colon, for example `feat(api)!: replace authentication`.
+
+	Valid examples:
+
+	```text
+	fix: handle empty API results
+	chore(repo): remove local-only files
+	test(ui): cover About navigation
+	feat(api)!: replace the authentication flow
+	```
+
+	Invalid examples include `update(api): change request` (type is not allowed), `chore(repo):` (missing summary), and `fix(API): handle errors` (scope is not lowercase). For future CI installs and fresh clones, `npm install` runs `npm run prepare` to register Husky. The local hook can be bypassed with `--no-verify`; a future CI check can enforce the policy on GitHub too. Keep credentials out of commit messages and tracked files.
 
 3. When preparing the V1 release, run the automated tests and optional live API check:
 
