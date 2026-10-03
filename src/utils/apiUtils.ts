@@ -1,4 +1,3 @@
-import React from 'react';
 import axios, { AxiosRequestConfig } from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import qs from 'qs';
@@ -7,6 +6,22 @@ import { MovieDetailsModel } from '../model/MovieDetailsModel';
 
 const DEBUG: boolean = true;
 const CACHE_KEY: string = 'TMDB-API';
+const apiReadAccessToken = process.env.REACT_APP_TMDB_READ_ACCESS_TOKEN;
+
+const getRequestOptions = (): AxiosRequestConfig => {
+  if (!apiReadAccessToken) {
+    throw new Error(
+      'TMDB API read access token is not configured. Set REACT_APP_TMDB_READ_ACCESS_TOKEN in .env.local.'
+    );
+  }
+
+  return {
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${apiReadAccessToken}`
+    }
+  };
+};
 
 const createCacheAdapter = () => {
   const cache = setupCache({
@@ -31,16 +46,10 @@ const api = axios.create({
   adapter: createCacheAdapter()
 });
 
-
-const options: AxiosRequestConfig = {
-  headers: {
-    accept: 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3ZDkzNDM2MDY4MDFlN2M4ZTg4ZGI4MDIyZDU4ZDczNiIsInN1YiI6IjY0OGQ3MmZjNDJiZjAxMDBlNDllMmYwNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fK5V-siVy95A00Sm-Wl9GfbLIQHd2Bk32GLVqzEQkiU'
-  }
-};
-
-export async function fetchSearchResults(searchTerm: string, searchCategory: string) {
+export async function fetchSearchResults(
+  searchTerm: string,
+  searchCategory: string
+) {
   try {
     let url = '';
 
@@ -71,7 +80,7 @@ export async function fetchSearchResults(searchTerm: string, searchCategory: str
     }
 
     if (url !== '') {
-      const response = await api.get(url, options);
+      const response = await api.get(url, getRequestOptions());
       const results = response.data.results;
 
       console.log(results);
@@ -85,13 +94,14 @@ export async function fetchSearchResults(searchTerm: string, searchCategory: str
   return [];
 }
 
-
-export async function getMovieById(movieId: number): Promise<MovieDetailsModel> {
+export async function getMovieById(
+  movieId: number
+): Promise<MovieDetailsModel> {
   try {
     if (movieId > 0) {
       const url = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
 
-      const response = await api.get(url, options);
+      const response = await api.get(url, getRequestOptions());
       const data = response.data;
 
       console.log(data);

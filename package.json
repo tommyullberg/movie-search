@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "check:api": "node scripts/check-tmdb-api.js",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "build": "react-scripts build",

@@ -18,9 +18,11 @@ export function SearchForm() {
     updateSearchCategory('');
   };
 
-  const handleCategoryClick = (category: string) => {
+  const handleCategoryClick = async (category: string) => {
     updateSearchCategory(category);
     updateSearchTerm('');
+    const results = await fetchSearchResults('', category);
+    updateSearchResults(results);
   };
 
   const handleSearch = async (event: React.FormEvent) => {
@@ -58,6 +60,7 @@ export function SearchForm() {
               </div>
               <button
                 type='submit'
+                aria-label='Search movies'
                 className={`btn ${
                   searchTerm.length ? 'btn-success' : 'btn-primary'
                 }`}>
@@ -66,6 +69,7 @@ export function SearchForm() {
             </div>
             <div className={styles.buttons}>
               <button
+                type='button'
                 className={`btn ${
                   searchCategory === 'trending' ? 'btn-success' : 'btn-primary'
                 } ${styles.btn}`}
@@ -73,6 +77,7 @@ export function SearchForm() {
                 Trending
               </button>
               <button
+                type='button'
                 className={`btn ${
                   searchCategory === 'popular' ? 'btn-success' : 'btn-primary'
                 } ${styles.btn}`}
@@ -80,6 +85,7 @@ export function SearchForm() {
                 Popular
               </button>
               <button
+                type='button'
                 className={`btn ${
                   searchCategory === 'toprated' ? 'btn-success' : 'btn-primary'
                 } ${styles.btn}`}
@@ -87,6 +93,7 @@ export function SearchForm() {
                 Top rated
               </button>
               <button
+                type='button'
                 className={`btn ${
                   searchCategory === 'upcoming' ? 'btn-success' : 'btn-primary'
                 } ${styles.btn}`}

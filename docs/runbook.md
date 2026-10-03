@@ -17,27 +17,47 @@ This runbook covers how to install, run, build, test, and deploy the Movie Searc
 	cd movie-search
 	```
 
-2. Install dependencies:
+2. Create a local environment file from the example:
+
+	```sh
+	cp .env.example .env.local
+	```
+
+	Set `REACT_APP_TMDB_READ_ACCESS_TOKEN` in `.env.local` to your TMDB API Read Access Token. Do not commit `.env.local`; it is ignored by Git. The tracked `.env.example` intentionally contains no credential.
+
+3. Install dependencies:
 
 	```sh
 	npm install
 	```
 
-3. Start the development server:
+4. Start the development server:
 
 	```sh
 	npm start
 	```
 
-	Create React App opens the app at [http://localhost:3000](http://localhost:3000). The development server reloads when source files change.
+	Create React App opens the app at [http://localhost:3000](http://localhost:3000). The development server reloads when source files change. Restart it after changing `.env.local`; CRA reads environment variables at startup.
+
+The CRA build embeds `REACT_APP_*` values in the client bundle. Moving the token to `.env.local` prevents accidentally committing it in the source tree, but does not keep it secret from visitors to a static GitHub Pages deployment. Only use a credential intended for a public client; use a server-side proxy if the credential must remain private. The previously committed token should be revoked or rotated in TMDB.
 
 ## Test and build
 
-Run the test suite:
+Run the automated app tests:
 
 ```sh
-npm test
+npm test -- --watchAll=false
 ```
+
+The tests in `src/App.test.tsx` verify the main heading and search controls, all four category buttons, a movie-title search, and navigation to the About page. TMDB search results and the About page's README request are mocked, so these tests do not use the local credential or require network access. The result fixture proves that returned results are rendered; it does not prove that TMDB is reachable.
+
+To make a real request to TMDB before deployment, run the optional API smoke check:
+
+```sh
+npm run check:api
+```
+
+It uses `REACT_APP_TMDB_READ_ACCESS_TOKEN` from `.env.local`, requests the Popular Movies endpoint, and reports only the result count or a failure status. It requires internet access. It does not run as part of `npm test` or `npm run build`.
 
 Create a production build:
 
@@ -45,31 +65,47 @@ Create a production build:
 npm run build
 ```
 
-The optimized static site is written to the `build/` directory. The `homepage` setting in `package.json` is configured for the GitHub Pages project path, so the generated asset URLs use the correct base path.
+The build compiles the app without making a live API request, so it does not require TMDB availability. The optimized static site is written to `build/`. The `homepage` setting in `package.json` is configured for the GitHub Pages project path. CRA embeds `REACT_APP_*` values in the bundle, so the credential remains visible to site visitors.
 
 ## Deploy to GitHub Pages
 
 The project uses `gh-pages` to publish the contents of `build/` to the `gh-pages` branch. The `predeploy` script automatically builds the app before the deploy script runs.
 
-1. Commit and push the changes you want to publish to the repository's source branch (`main`, or `master` if that is the branch in use):
+1. Review and stage only the files you intend to commit. Never stage `.env.local`:
 
 	```sh
-	git add .
-	git commit -m "Describe the changes"
+	git status --short --branch
+	git add docs/runbook.md package.json src/App.test.tsx src/components/SearchForm/SearchForm.tsx src/utils/apiUtils.ts .env.example scripts/check-tmdb-api.js
+	git --no-pager diff --cached
+	```
+
+2. Commit using the Conventional Commits format `<type>(<scope>): <summary>`. For example:
+
+	```sh
+	git commit -m "feat(api): configure TMDB credentials and add smoke check"
 	git push origin main
 	```
 
-	If the repository uses `master`, replace `main` in the push command with `master`.
+	Useful types include `feat`, `fix`, `test`, `docs`, `build`, and `ci`. Use a matching type so future changelog or commit filters can classify changes consistently. Keep secrets and credentials out of commit messages and tracked files.
 
-2. From the project directory, publish the app:
+3. When preparing the V1 release, run the automated tests and optional live API check:
+
+	```sh
+	npm test -- --watchAll=false
+	npm run check:api
+	```
+
+	The API check requires a valid local `.env.local` and internet access. It is separate from the mocked tests and from the build.
+
+4. If the package version should match V1, update `package.json` to `1.0.0`, then commit and push that version change before deploying. Build and publish from the tested `main` commit:
 
 	```sh
 	npm run deploy
 	```
 
-	This runs `npm run build`, then publishes the generated `build/` directory to the `gh-pages` branch.
+	This runs `npm run build`, then publishes `build/` to `gh-pages`. GitHub Pages serves that branch; pushing to `main` alone does not update the site.
 
-3. In the GitHub repository, open **Settings > Pages** and configure the publishing source as:
+5. In the GitHub repository, open **Settings > Pages** and configure the publishing source as:
 
 	- **Source:** Deploy from a branch
 	- **Branch:** `gh-pages`
@@ -77,7 +113,16 @@ The project uses `gh-pages` to publish the contents of `build/` to the `gh-pages
 
 	Save the settings if you changed them. The Pages source branch is `gh-pages`; it is separate from the source branch where you develop the app.
 
-4. After GitHub Pages finishes publishing, visit [https://tommyullberg.github.io/movie-search/](https://tommyullberg.github.io/movie-search/). The initial publish or a new deploy can take a few minutes to appear.
+6. After GitHub Pages finishes publishing, visit [https://tommyullberg.github.io/movie-search/](https://tommyullberg.github.io/movie-search/). The initial publish or a new deploy can take a few minutes to appear.
+
+7. Once the deployed site is verified, tag the exact tested source commit and push the annotated V1 tag:
+
+	```sh
+	git tag -a v1.0.0 -m "Release v1.0.0"
+	git push origin v1.0.0
+	```
+
+Future CI/CD can use Conventional Commit prefixes for changelog classification and version tags for releases. Configure tag-triggered automation to validate semantic versions greater than `2.0.0`; a commit prefix alone should not deploy a release.
 
 ## Deployment checks
 
