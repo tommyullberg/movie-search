@@ -16,24 +16,21 @@ The app uses the [TMDB API](https://www.themoviedb.org/) to search for movies by
 
 ## Planned next steps
 
-- Migrate the legacy Create React App setup to Vite.
 - Expand automated UI test coverage and improve accessibility, including support for reduced motion.
 - Explore additional TMDB data, such as trailers, cast, and crew.
 
 ## Technologies
 
-- React / TypeScript
-- React useContext
-- React useState
-- React Router
-- Framer Motion
-- Axios with cache
-- Marked (Markdown parser)
-- JS CacheStorage
-- CSS modules
-- Some MDBootstrap CSS
-- CSS animations
-- SVG manipulation/animation
+- React 19 / TypeScript
+- Vite (Bundler & Dev Server)
+- Context API (Search & Theme/Dark Mode)
+- React Router 7
+- Framer Motion 14
+- Native Fetch API with CacheStorage
+- Marked 18 (Markdown parser)
+- CSS Modules & Custom Properties
+- MDBootstrap CSS
+- Husky & Commitlint (Conventional Commits)
 
 --------------------------------
 
