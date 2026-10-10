@@ -14,32 +14,29 @@ export default function About() {
   const location = useLocation();
   const direction = location.state?.direction || 'right';
 
-  const [markdownContent, setMarkdownContent] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
-  const publicPath = import.meta.env.BASE_URL;
-  const readmeFile = `${publicPath}README.md`;
 
   useEffect(() => {
     document.getElementById('appBody')?.setAttribute('class', 'about');
   }, []);
 
   useEffect(() => {
-    const fetchTextFile = async () => {
-      const response = await fetch(readmeFile);
-      const text = await response.text();
-      setMarkdownContent(text);
+    const loadMarkdown = async () => {
+      try {
+        // Use Vite's dynamic import with ?raw to get the file contents as a string
+        const readmeModule = await import('../../README.md?raw');
+        const text = readmeModule.default;
+        
+        const rawHtml = marked(text);
+        const transformedHtmlContent = shiftHeadingsDown(rawHtml as string);
+        setHtmlContent(transformedHtmlContent);
+      } catch (err) {
+        console.error("Could not load README.md", err);
+      }
     };
-    fetchTextFile();
-  }, [readmeFile]);
+    loadMarkdown();
+  }, []);
 
-  useEffect(() => {
-    const transformMarkdown = async () => {
-      const htmlContent = marked(markdownContent);
-      const transformedHtmlContent = shiftHeadingsDown(htmlContent);
-      setHtmlContent(transformedHtmlContent);
-    };
-    transformMarkdown();
-  }, [markdownContent]);
 
   return (
     <motion.div

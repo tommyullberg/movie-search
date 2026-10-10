@@ -1,26 +1,31 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleQuestion, faHouse } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion, faHouse, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { useTheme } from '../../contexts/ThemeContext';
 import styles from './Header.module.css';
 
 export function Header() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <header className={styles.Header}>
       <nav
         id='navbar'
-        className={`${styles.navbar} navbar navbar-expand-lg navbar-dark bg-dark fixed-top mx-auto`}>
+        className={`${styles.navbar} navbar navbar-expand-lg ${theme === 'light' ? 'navbar-light bg-light' : 'navbar-dark bg-dark'} fixed-top mx-auto`}>
         <div className='container-fluid justify-content-center'>
-          <div id='headerLeft' className='navbar-nav flex-row d-none d-sm-flex invisible'>
-            <div className='nav-link mx-1'>
-              <FontAwesomeIcon className={styles.icon} icon={faHouse} />
-            </div>
-            <div className='nav-link mx-1'>
+          <div id='headerLeft' className='navbar-nav flex-row d-none d-sm-flex'>
+            <button
+              className='nav-link mx-1 btn btn-link'
+              onClick={toggleTheme}
+              aria-label='Toggle theme'
+              title='Toggle Dark/Light Mode'>
               <FontAwesomeIcon
                 className={styles.icon}
-                icon={faCircleQuestion}
+                icon={theme === 'dark' ? faSun : faMoon}
+                fixedWidth
               />
-            </div>
+            </button>
           </div>
           <NavLink
             className='navbar-brand flex-grow-1'

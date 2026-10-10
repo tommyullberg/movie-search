@@ -57,7 +57,7 @@ export function Modal({ movieId, isOpen, closeModal }: ModalProps) {
     >
       <MovieDetails />
       <button
-        className={`btn btn-danger btn-floating ${styles.closeBtn}`}
+        className={styles.closeBtn}
         onClick={closeModal}
         aria-label='Close'>
         <i className='fas fa-times'></i>

@@ -2,10 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&display=swap');
 
 :root {
-
-  --bg-dark: #111;
-  --bg-mid: #333;
-
   --site-green: #39b421;
   --site-blue: #3c80d8;
   --site-lilac: #b421b4;
@@ -21,11 +17,13 @@
   --font-results-released: 700 .9rem/1.2 var(--font-text);
   --font-results-released-weight: 400;
 
+
   --text-font-h2: 500 2rem/1.2 var(--font-heading);
   --text-font-h3: 500 1.6rem/1.2 var(--font-heading);
   --text-font-h4: 500 1.2rem/1.2 var(--font-heading);
   --text-font: 400 1rem/1.3 var(--font-text);
   --text-header-color: var(--site-yellow);
+  --text-checkmark-color: yellow;
   --text-header-line-color: var(--site-green);
 
   --logo-color: var(--site-green);
@@ -106,15 +104,51 @@
 }
 
 
+
+[data-theme="dark"] {
+  --bg-dark: #0a0a0a;
+  --bg-mid: #222;
+  --site-card-bg: #1a1a1a;
+  --text-primary: #fff;
+  --text-secondary: rgba(255, 255, 255, 0.8);
+  --text-link-title: rgb(108, 213, 255);
+  --card-header-title: var(--site-yellow);
+  /* Classic warm yellow for dark mode */
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.5), 0 10px 20px -2px rgba(0, 0, 0, 0.4);
+  --modal-bg: #1a1a1a;
+  --header-bg: #222;
+}
+
+[data-theme="light"] {
+  --bg-dark: #d2d5d9;
+  --bg-mid: #c5c9cf;
+  --site-card-bg: #ffffff;
+  --text-primary: #212529;
+  --text-secondary: rgba(0, 0, 0, 0.9);
+  --text-link-title: rgb(21, 101, 192);
+  --card-header-title: #585;
+  /* Muted green for light mode */
+  --card-border: rgba(0, 0, 0, 0.15);
+  --card-shadow: 0 4px 20px -3px rgba(0, 0, 0, 0.1), 0 10px 20px -2px rgba(0, 0, 0, 0.05);
+  --modal-bg: #ffffff;
+  --header-bg: #e9ecef;
+  --text-header-color: forestgreen;
+  --text-checkmark-color: forestgreen;
+}
+
+
 html,
 body#appBody {
   font-family: var(--font-text);
+  color: var(--text-primary);
 }
 
 body#appBody {
   overflow: -moz-scrollbars-vertical;
   scrollbar-gutter: stable both-edges;
   background-color: var(--bg-dark);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body#appBody.has-modal {
@@ -176,39 +210,38 @@ main .container-fluid.content {
 
 .card {
   --mdb-card-border-width: 1px;
-  --mdb-card-border-color: var(--mdb-border-color-translucent);
+  --mdb-card-border-color: var(--card-border);
   --mdb-card-border-radius: 0.5rem;
-  --mdb-card-box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
-  --mdb-card-bg: #272424;
+  --mdb-card-box-shadow: var(--card-shadow);
   position: relative;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
   min-width: 0;
   word-wrap: break-word;
-  background-color: var(--mdb-card-bg);
+  background-color: var(--site-card-bg) !important;
+  -webkit-background-clip: border-box;
   background-clip: border-box;
   border: var(--mdb-card-border-width) solid var(--mdb-card-border-color);
   border-radius: var(--mdb-card-border-radius);
   box-shadow: var(--mdb-card-box-shadow);
-  -webkit-border-radius: var(--mdb-card-border-radius);
-  -moz-border-radius: var(--mdb-card-border-radius);
-  -ms-border-radius: var(--mdb-card-border-radius);
-  -o-border-radius: var(--mdb-card-border-radius);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card-header {
   --mdb-card-header-border-width: 1px;
-  --mdb-card-header-color: rgba(255, 255, 255, 0.7);
-  --mdb-card-header-background-color: #222;
-  border-bottom: var(--mdb-card-header-border-width) solid var(--mdb-card-header-color);
+  --mdb-card-header-color: var(--text-secondary);
+  --mdb-card-header-background-color: var(--header-bg);
+  border-bottom: var(--mdb-card-header-border-width) solid var(--card-border);
   background-color: var(--mdb-card-header-background-color) !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card-header h1 {
   font-size: 1.5rem;
   font-size: clamp(1rem, 0.2105rem + 4.2105vw, 1.5rem);
-  color: var(--mdb-card-header-color);
+  color: var(--card-header-title);
+  transition: color 0.3s ease;
 }
 
 .text {
@@ -292,13 +325,19 @@ main .container-fluid.content {
   left: 0;
   font-size: 1.2rem;
   line-height: 1.3rem;
-  color: yellow;
+  color: var(--text-checkmark-color);
 }
 
 
 .form-control {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  color: #fff !important;
+  background-color: var(--card-border) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.form-control::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 
@@ -331,24 +370,16 @@ main .container-fluid.content {
 
 .res-item--title {
   font: var(--font-results-title-sm);
-  color: rgb(108, 213, 255);
+  color: var(--text-link-title);
   word-break: break-word;
   overflow: hidden;
-  transition: font-size .3s ease-in-out;
-  -webkit-transition: font-size .3s ease-in-out;
-  -moz-transition: font-size .3s ease-in-out;
-  -ms-transition: font-size .3s ease-in-out;
-  -o-transition: font-size .3s ease-in-out;
+  transition: font-size .3s ease-in-out, color 0.3s ease;
 }
 
 .res-item--date {
   font: var(--font-results-released-sm);
-  color: rgba(255, 255, 255, 0.8);
-  transition: font-size .3s ease-in-out;
-  -webkit-transition: font-size .3s ease-in-out;
-  -moz-transition: font-size .3s ease-in-out;
-  -ms-transition: font-size .3s ease-in-out;
-  -o-transition: font-size .3s ease-in-out;
+  color: var(--text-secondary);
+  transition: font-size .3s ease-in-out, color 0.3s ease;
 }
 
 .res-item--date .res-item--date-label {
