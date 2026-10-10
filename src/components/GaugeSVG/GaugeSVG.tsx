@@ -29,11 +29,12 @@ const roundToDecimalIfNeeded = (val: number) => {
 export function GaugeSVG({ id, vote_average }: GaugeSVGProps) {
   const maxGaugeValue = 490.0;
   
+  const safeVote = vote_average || 0;
   // Calculate value and color
-  const decimalPercent = (vote_average * 10.0) / 100.0;
+  const decimalPercent = (safeVote * 10.0) / 100.0;
   const strokeDashoffset = maxGaugeValue - (decimalPercent * maxGaugeValue);
-  const colorVal = COLOR_MAP[Math.floor(vote_average)] || '#00ee00';
-  const textVal = roundToDecimalIfNeeded(vote_average);
+  const colorVal = COLOR_MAP[Math.floor(safeVote)] || '#00ee00';
+  const textVal = roundToDecimalIfNeeded(safeVote);
 
   return (
     <svg

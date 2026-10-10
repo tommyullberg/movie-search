@@ -1,5 +1,5 @@
 import React, { FormEvent } from 'react';
-import { getMovieById } from '../../utils/apiUtils';
+import { getMovieById, fetchSearchResults } from '../../utils/apiUtils';
 import { formatDate } from '../../utils/helpers';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { Modal } from '../Modal';
@@ -27,8 +27,22 @@ export interface SearchResult {
 }
 
 export function SearchResults() {
-  const { searchResults, error, selectedMovieId, updateSelectedMovieId, updateMovieData } =
-    useSearchContext();
+  const { 
+    searchResults, 
+    isLoading,
+    isFetchingMore,
+    page,
+    totalPages,
+    searchTerm,
+    searchCategory,
+    appendSearchResults,
+    updatePage,
+    updateIsFetchingMore,
+    error, 
+    selectedMovieId, 
+    updateSelectedMovieId, 
+    updateMovieData 
+  } = useSearchContext();
 
   const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500 } = imageConfig;
 
@@ -46,6 +60,17 @@ export function SearchResults() {
   const closeModal = () => {
     updateSelectedMovieId(0);
     updateMovieData(null);
+  };
+
+  const handleLoadMore = async () => {
+    if (page < totalPages) {
+      updateIsFetchingMore(true);
+      const nextPage = page + 1;
+      updatePage(nextPage);
+      const { results } = await fetchSearchResults(searchTerm, searchCategory, nextPage);
+      appendSearchResults(results as SearchResult[]);
+      updateIsFetchingMore(false);
+    }
   };
 
   if (error) {
@@ -119,7 +144,41 @@ export function SearchResults() {
             </div>
           </motion.div>
         ))}
+
+        {isLoading && Array.from({ length: 10 }).map((_, i) => (
+          <div key={`skeleton-${i}`} className={`card ${styles['res-item']} ${styles['skeleton-card']}`}>
+            <div className={styles['skeleton-image']}></div>
+            <div className={`card-body ${styles['card-body']}`}>
+              <div className={styles['skeleton-text']}></div>
+              <div className={`${styles['skeleton-text']} ${styles['skeleton-text-short']}`}></div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory) && (
+        <div className="text-center mt-5 mb-5">
+          <i className="fas fa-film fa-3x text-muted mb-3"></i>
+          <h3 className="text-muted">No movies found</h3>
+          <p className="text-muted">Try a different search term or category.</p>
+        </div>
+      )}
+
+      {page < totalPages && searchResults.length > 0 && !isLoading && (
+        <div className="text-center mt-4 mb-5">
+          <button 
+            className="btn btn-primary btn-lg" 
+            onClick={handleLoadMore}
+            disabled={isFetchingMore}
+          >
+            {isFetchingMore ? (
+              <><i className="fas fa-spinner fa-spin me-2"></i> Loading...</>
+            ) : (
+              'Load More Movies'
+            )}
+          </button>
+        </div>
+      )}
     </section>
   );
 }

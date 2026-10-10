@@ -20,14 +20,19 @@ export function SearchForm() {
     updateSearchTerm,
     updateSearchResults,
     updateIsLoading,
-    updateError
+    updateError,
+    updatePage,
+    updateTotalPages
   } = useSearchContext();
 
   const runSearch = async (term: string, category: string) => {
     updateIsLoading(true);
     updateError(null);
-    const { results, error } = await fetchSearchResults(term, category);
+    updateSearchResults([]); // Clear old results to show skeleton
+    updatePage(1); // Reset page on new search
+    const { results, totalPages, error } = await fetchSearchResults(term, category, 1);
     updateSearchResults(results as SearchResult[]);
+    updateTotalPages(totalPages || 0);
     if (error) updateError(error);
     updateIsLoading(false);
   };
