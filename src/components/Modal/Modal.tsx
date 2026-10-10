@@ -1,53 +1,67 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useLayoutEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { MovieDetails } from '../MovieDetails';
 import styles from './Modal.module.css';
 
 interface ModalProps {
-  isOpening: boolean;
+  movieId: number;
   isOpen: boolean;
   closeModal: () => void;
   children?: React.ReactElement;
 }
 
-export function Modal({ isOpening, isOpen, closeModal }: ModalProps) {
-  const [isAnimating, setIsAnimating] = useState(isOpening);
+export function Modal({ movieId, isOpen, closeModal }: ModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (isOpen && dialog && !dialog.open) {
+      dialog.showModal();
+      document.body.classList.add('has-modal');
+    }
+    return () => {
+      document.body.classList.remove('has-modal');
+    };
+  }, [isOpen]);
 
-  const closeModalWithAnimation = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setIsAnimating(false);
-      closeModal();
-      document.getElementById('appBody')?.classList.remove('has-modal');
-    }, 100);
-  };
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (!isOpen && !isAnimating) {
-    return null;
-  }
+  const animationProps = prefersReducedMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0 }
+      }
+    : {
+        layoutId: `movie-card-${movieId}`,
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { type: 'spring', damping: 25, stiffness: 200 }
+      };
 
-  if (isOpen) {
-    document.getElementById('appBody')?.classList.add('has-modal');
-  }
-
-  return ReactDOM.createPortal(
-    <div
-      className={`${styles.modal} ${isOpen ? `${styles.open} is-open` : ''} ${
-        isAnimating ? styles.animating : ''
-      } ${isMobile ? styles.isMobile : styles.isNotMobile}`}>
-      <div className={styles.overlay} onClick={closeModalWithAnimation} />
-      <div className={`${styles.content} ${isOpen ? styles.open : ''}`}>
-        <MovieDetails />
-        <button
-          className={`ripple ripple-surface btn btn-danger btn-floating ${styles.closeBtn}`}
-          onClick={closeModalWithAnimation}
-          aria-label='Close'>
-          <i className='fas fa-times'></i>
-        </button>
-      </div>
-    </div>,
-    document.getElementById('modal-root')!
+  return (
+    <motion.dialog
+      ref={dialogRef}
+      className={styles.modal}
+      onClose={closeModal}
+      onClick={(e: React.MouseEvent<HTMLDialogElement>) => {
+        if (e.target === dialogRef.current) {
+          closeModal();
+        }
+      }}
+      {...animationProps}
+    >
+      <MovieDetails />
+      <button
+        className={`btn btn-danger btn-floating ${styles.closeBtn}`}
+        onClick={closeModal}
+        aria-label='Close'>
+        <i className='fas fa-times'></i>
+      </button>
+    </motion.dialog>
   );
 }

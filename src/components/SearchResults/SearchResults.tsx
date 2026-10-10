@@ -6,6 +6,7 @@ import { Modal } from '../Modal';
 import { MovieDetails } from '../MovieDetails';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
+import { AnimatePresence, motion } from 'framer-motion';
 import styles from './SearchResults.module.css';
 
 export interface SearchResult {
@@ -60,14 +61,20 @@ export function SearchResults() {
 
   return (
     <section>
-      {selectedMovieId > 0 && (
-        <Modal isOpening={true} isOpen={!!selectedMovieId} closeModal={closeModal}>
-          <MovieDetails />
-        </Modal>
-      )}
+      <AnimatePresence>
+        {selectedMovieId > 0 && (
+          <Modal movieId={selectedMovieId} isOpen={!!selectedMovieId} closeModal={closeModal}>
+            <MovieDetails />
+          </Modal>
+        )}
+      </AnimatePresence>
       <div className={`d-flex flex-wrap align-items-stretch ${styles['search-results']}`}>
         {searchResults.map((result) => (
-          <div key={result.id} className={`card ${styles['res-item']}`}>
+          <motion.div 
+            layoutId={`movie-card-${result.id}`}
+            key={result.id} 
+            className={`card ${styles['res-item']}`}
+          >
             <div
               className='bg-image hover-overlay ripple'
               data-mdb-ripple-color='light'>
@@ -110,7 +117,7 @@ export function SearchResults() {
                 />
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
