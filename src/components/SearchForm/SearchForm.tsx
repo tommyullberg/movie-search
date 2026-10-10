@@ -1,34 +1,51 @@
 import React from 'react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { fetchSearchResults } from '../../utils/apiUtils';
+import { SearchResult } from '../SearchResults';
 import styles from './SearchForm.module.css';
+
+const CATEGORIES = [
+  { key: 'trending', label: 'Trending' },
+  { key: 'popular', label: 'Popular' },
+  { key: 'toprated', label: 'Top rated' },
+  { key: 'upcoming', label: 'Upcoming' }
+] as const;
 
 export function SearchForm() {
   const {
     searchCategory,
     searchTerm,
+    isLoading,
     updateSearchCategory,
     updateSearchTerm,
-    updateSearchResults
+    updateSearchResults,
+    updateIsLoading,
+    updateError
   } = useSearchContext();
 
+  const runSearch = async (term: string, category: string) => {
+    updateIsLoading(true);
+    updateError(null);
+    const { results, error } = await fetchSearchResults(term, category);
+    updateSearchResults(results as SearchResult[]);
+    if (error) updateError(error);
+    updateIsLoading(false);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    updateSearchTerm(value);
+    updateSearchTerm(e.target.value);
     updateSearchCategory('');
   };
 
   const handleCategoryClick = async (category: string) => {
     updateSearchCategory(category);
     updateSearchTerm('');
-    const results = await fetchSearchResults('', category);
-    updateSearchResults(results);
+    await runSearch('', category);
   };
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
-    const results = await fetchSearchResults(searchTerm, searchCategory);
-    updateSearchResults(results);
+    await runSearch(searchTerm, searchCategory);
   };
 
   return (
@@ -48,6 +65,7 @@ export function SearchForm() {
                   autoComplete='off'
                   value={searchTerm}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                 />
                 <label className='form-label' htmlFor='formControlLg'>
                   Search for a movie...
@@ -61,45 +79,24 @@ export function SearchForm() {
               <button
                 type='submit'
                 aria-label='Search movies'
-                className={`btn ${
-                  searchTerm.length ? 'btn-success' : 'btn-primary'
-                }`}>
-                <i className='fas fa-search'></i>
+                disabled={isLoading}
+                className={`btn ${searchTerm.length ? 'btn-success' : 'btn-primary'}`}>
+                {isLoading
+                  ? <i className='fas fa-spinner fa-spin'></i>
+                  : <i className='fas fa-search'></i>}
               </button>
             </div>
             <div className={styles.buttons}>
-              <button
-                type='button'
-                className={`btn ${
-                  searchCategory === 'trending' ? 'btn-success' : 'btn-primary'
-                } ${styles.btn}`}
-                onClick={() => handleCategoryClick('trending')}>
-                Trending
-              </button>
-              <button
-                type='button'
-                className={`btn ${
-                  searchCategory === 'popular' ? 'btn-success' : 'btn-primary'
-                } ${styles.btn}`}
-                onClick={() => handleCategoryClick('popular')}>
-                Popular
-              </button>
-              <button
-                type='button'
-                className={`btn ${
-                  searchCategory === 'toprated' ? 'btn-success' : 'btn-primary'
-                } ${styles.btn}`}
-                onClick={() => handleCategoryClick('toprated')}>
-                Top rated
-              </button>
-              <button
-                type='button'
-                className={`btn ${
-                  searchCategory === 'upcoming' ? 'btn-success' : 'btn-primary'
-                } ${styles.btn}`}
-                onClick={() => handleCategoryClick('upcoming')}>
-                Upcoming
-              </button>
+              {CATEGORIES.map(({ key, label }) => (
+                <button
+                  key={key}
+                  type='button'
+                  disabled={isLoading}
+                  className={`btn ${searchCategory === key ? 'btn-success' : 'btn-primary'} ${styles.btn}`}
+                  onClick={() => handleCategoryClick(key)}>
+                  {label}
+                </button>
+              ))}
             </div>
           </form>
         </div>

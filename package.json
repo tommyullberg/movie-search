@@ -2,6 +2,7 @@
   "homepage": "https://tommyullberg.github.io/movie-search",
   "name": "movie-search",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
@@ -12,58 +13,37 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/marked": "^5.0.1",
-    "@types/node": "^16.18.34",
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.4",
     "@uidotdev/usehooks": "^2.0.1",
-    "axios": "^0.21.4",
-    "axios-cache-adapter": "^2.7.3",
     "framer-motion": "^10.13.0",
-    "is-mobile": "^4.0.0",
-    "localforage": "^1.10.0",
     "marked": "^5.1.1",
     "marked-mangle": "^1.1.0",
     "mdb-react-ui-kit": "^6.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "prepare": "husky",
-    "start": "react-scripts start",
-    "check:api": "node scripts/check-tmdb-api.js",
+    "dev": "vite",
+    "start": "vite",
+    "check:api": "node scripts/check-tmdb-api.cjs",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "deploy": "gh-pages -d dist",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "echo \"Tests: migrate to vitest when ready\""
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
-    "@types/axios": "^0.14.0",
+    "@types/node": "^22.20.5",
+    "@vitejs/plugin-react": "^6.1.2",
     "gh-pages": "^5.0.0",
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4"
   }
 }

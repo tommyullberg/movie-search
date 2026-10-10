@@ -1,55 +1,25 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { setupCache } from 'axios-cache-adapter';
-import qs from 'qs';
-import localforage from 'localforage';
 import { MovieDetailsModel } from '../model/MovieDetailsModel';
 
-const DEBUG: boolean = true;
-const CACHE_KEY: string = 'TMDB-API';
-const apiReadAccessToken = process.env.REACT_APP_TMDB_READ_ACCESS_TOKEN;
+const apiReadAccessToken = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
 
-const getRequestOptions = (): AxiosRequestConfig => {
-  if (!apiReadAccessToken) {
-    throw new Error(
-      'TMDB API read access token is not configured. Set REACT_APP_TMDB_READ_ACCESS_TOKEN in .env.local.'
-    );
+if (!apiReadAccessToken) {
+  throw new Error(
+    'TMDB API read access token is not configured. Set VITE_TMDB_READ_ACCESS_TOKEN in .env.local.'
+  );
+}
+
+const requestOptions = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: `Bearer ${apiReadAccessToken}`
   }
-
-  return {
-    headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${apiReadAccessToken}`
-    }
-  };
 };
-
-const createCacheAdapter = () => {
-  const cache = setupCache({
-    store: localforage.createInstance({
-      name: 'TMDBCache' // Namnet på din cache-databas
-    }),
-    maxAge: 60 * 60 * 1000, // 60 minuter
-    exclude: {
-      query: false
-    },
-    key: (req) => {
-      let key = req.url + qs.stringify(req.params, { addQueryPrefix: true });
-      return `${CACHE_KEY}-${key}`;
-    },
-    debug: DEBUG
-  });
-
-  return cache.adapter;
-};
-
-const api = axios.create({
-  adapter: createCacheAdapter()
-});
 
 export async function fetchSearchResults(
   searchTerm: string,
   searchCategory: string
-) {
+): Promise<{ results: unknown[]; error?: string }> {
   try {
     let url = '';
 
@@ -59,20 +29,16 @@ export async function fetchSearchResults(
     } else {
       switch (searchCategory) {
         case 'trending':
-          url =
-            'https://api.themoviedb.org/3/trending/movie/week?language=en-US';
+          url = 'https://api.themoviedb.org/3/trending/movie/week?language=en-US';
           break;
         case 'popular':
-          url =
-            'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
+          url = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
           break;
         case 'toprated':
-          url =
-            'https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1';
+          url = 'https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1';
           break;
         case 'upcoming':
-          url =
-            'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1';
+          url = 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1';
           break;
         default:
           break;
@@ -80,41 +46,37 @@ export async function fetchSearchResults(
     }
 
     if (url !== '') {
-      const response = await api.get(url, getRequestOptions());
-      const results = response.data.results;
-
-      console.log(results);
-
-      return results;
+      const response = await fetch(url, requestOptions);
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      return { results: data.results };
     }
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error fetching search results from API:', error);
+    return { results: [], error: message };
   }
 
-  return [];
+  return { results: [] };
 }
 
 export async function getMovieById(
   movieId: number
-): Promise<MovieDetailsModel> {
+): Promise<MovieDetailsModel | null> {
   try {
     if (movieId > 0) {
       const url = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
-
-      const response = await api.get(url, getRequestOptions());
-      const data = response.data;
-
-      console.log(data);
-
-      const movieDetails: MovieDetailsModel = {
-        ...data // Spread-operatören kopierar värdena från 'data' till 'movieDetails'
-      };
-
-      return movieDetails;
+      const response = await fetch(url, requestOptions);
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status} ${response.statusText}`);
+      }
+      return await response.json() as MovieDetailsModel;
     }
   } catch (error) {
     console.error('Error fetching movie details from API:', error);
   }
 
-  return {} as MovieDetailsModel;
+  return null;
 }

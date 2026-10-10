@@ -8,7 +8,7 @@ import {
 } from '../utils/pageAnimations';
 
 export default function NoPage404() {
-  const publicPath = process.env.PUBLIC_URL;
+  const publicPath = import.meta.env.BASE_URL;
   return (
     <motion.div
       className='container-fluid content'

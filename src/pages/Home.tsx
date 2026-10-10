@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SearchForm } from '../components/SearchForm';
 import { SearchResults } from '../components/SearchResults';
 import { SearchContextProvider } from '../contexts/SearchContext';
@@ -15,7 +15,9 @@ export default function Home() {
   const location = useLocation();
   const direction = location.state?.direction || 'right';
 
-  document.getElementById('appBody')?.setAttribute('class', 'home');
+  useEffect(() => {
+    document.getElementById('appBody')?.setAttribute('class', 'home');
+  }, []);
 
   return (
     <SearchContextProvider>

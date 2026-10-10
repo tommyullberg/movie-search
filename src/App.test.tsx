@@ -31,7 +31,7 @@ const movieResult: SearchResult = {
 
 beforeEach(() => {
   window.history.pushState({}, '', '/');
-  fetchSearchResultsMock.mockResolvedValue([movieResult]);
+  fetchSearchResultsMock.mockResolvedValue({ results: [movieResult] });
 
   Object.defineProperty(globalThis, 'fetch', {
     configurable: true,

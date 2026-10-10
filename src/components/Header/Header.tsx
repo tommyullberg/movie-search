@@ -5,7 +5,6 @@ import { faCircleQuestion, faHouse } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css';
 
 export function Header() {
-  const publicPath = process.env.PUBLIC_URL;
   return (
     <header className={styles.Header}>
       <nav
@@ -25,7 +24,7 @@ export function Header() {
           </div>
           <NavLink
             className='navbar-brand flex-grow-1'
-            to={`${publicPath}/`}
+            to='/'
             end>
             <span className={`top-logo ${styles['top-logo']}`}>
               TMDB - The Movie DB
@@ -34,7 +33,7 @@ export function Header() {
           <div id='headerRight' className='navbar-nav flex-row'>
             <NavLink
               className='nav-link mx-1'
-              to={`${publicPath}/`}
+              to='/'
               state={{ direction: 'left' }}
               end>
               <FontAwesomeIcon className={styles.icon} icon={faHouse} />
@@ -42,7 +41,7 @@ export function Header() {
             </NavLink>
             <NavLink
               className='nav-link mx-1'
-              to={`${publicPath}/about`}
+              to='/about'
               state={{ direction: 'right' }}
               end>
               <FontAwesomeIcon

@@ -6,12 +6,16 @@ interface SearchContextData {
   searchCategory: string;
   searchTerm: string;
   searchResults: SearchResult[];
-  selectedMovieId: number | 0;
+  isLoading: boolean;
+  error: string | null;
+  selectedMovieId: number;
   movieData: MovieDetailsModel | null;
   updateSearchCategory: (category: string) => void;
   updateSearchTerm: (term: string) => void;
   updateSearchResults: (results: SearchResult[]) => void;
-  updateSelectedMovieId: (id: number | 0) => void;
+  updateIsLoading: (loading: boolean) => void;
+  updateError: (error: string | null) => void;
+  updateSelectedMovieId: (id: number) => void;
   updateMovieData: (data: MovieDetailsModel | null) => void;
 }
 
@@ -19,11 +23,15 @@ const SearchContext = createContext<SearchContextData>({
   searchCategory: '',
   searchTerm: '',
   searchResults: [],
+  isLoading: false,
+  error: null,
   selectedMovieId: 0,
   movieData: null,
   updateSearchCategory: () => {},
   updateSearchTerm: () => {},
   updateSearchResults: () => {},
+  updateIsLoading: () => {},
+  updateError: () => {},
   updateSelectedMovieId: () => {},
   updateMovieData: () => {}
 });
@@ -40,40 +48,26 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
   const [searchCategory, setSearchCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<number>(0);
   const [movieData, setMovieData] = useState<MovieDetailsModel | null>(null);
-
-  const updateSearchCategory = (category: string) => {
-    setSearchCategory(category);
-  };
-
-  const updateSearchTerm = (term: string) => {
-    setSearchTerm(term);
-  };
-
-  const updateSearchResults = (results: SearchResult[]) => {
-    setSearchResults(results);
-  };
-
-  const updateSelectedMovieId = (id: number | 0) => {
-    setSelectedMovieId(id);
-  };
-
-  const updateMovieData = (data: MovieDetailsModel | null) => {
-    setMovieData(data);
-  };
 
   const contextValue: SearchContextData = {
     searchCategory,
     searchTerm,
     searchResults,
+    isLoading,
+    error,
     selectedMovieId,
     movieData,
-    updateSearchCategory,
-    updateSearchTerm,
-    updateSearchResults,
-    updateSelectedMovieId,
-    updateMovieData
+    updateSearchCategory: setSearchCategory,
+    updateSearchTerm: setSearchTerm,
+    updateSearchResults: setSearchResults,
+    updateIsLoading: setIsLoading,
+    updateError: setError,
+    updateSelectedMovieId: setSelectedMovieId,
+    updateMovieData: setMovieData
   };
 
   return (

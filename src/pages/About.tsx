@@ -10,16 +10,18 @@ import {
   onAnimationComplete
 } from '../utils/pageAnimations';
 
-export default function Home() {
+export default function About() {
   const location = useLocation();
   const direction = location.state?.direction || 'right';
 
   const [markdownContent, setMarkdownContent] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
-  const publicPath = process.env.PUBLIC_URL;
-  const readmeFile = `${publicPath}/README.md`;
+  const publicPath = import.meta.env.BASE_URL;
+  const readmeFile = `${publicPath}README.md`;
 
-  document.getElementById('appBody')?.setAttribute('class', 'about');
+  useEffect(() => {
+    document.getElementById('appBody')?.setAttribute('class', 'about');
+  }, []);
 
   useEffect(() => {
     const fetchTextFile = async () => {

@@ -1,6 +1,5 @@
-import React, { useState, ReactElement } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { isMobile } from 'is-mobile';
 import { MovieDetails } from '../MovieDetails';
 import styles from './Modal.module.css';
 
@@ -8,11 +7,13 @@ interface ModalProps {
   isOpening: boolean;
   isOpen: boolean;
   closeModal: () => void;
-  children?: ReactElement;
+  children?: React.ReactElement;
 }
 
 export function Modal({ isOpening, isOpen, closeModal }: ModalProps) {
   const [isAnimating, setIsAnimating] = useState(isOpening);
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
   const closeModalWithAnimation = () => {
     setIsAnimating(true);
@@ -35,7 +36,7 @@ export function Modal({ isOpening, isOpen, closeModal }: ModalProps) {
     <div
       className={`${styles.modal} ${isOpen ? `${styles.open} is-open` : ''} ${
         isAnimating ? styles.animating : ''
-      } ${isMobile() ? styles.isMobile : styles.isNotMobile}`}>
+      } ${isMobile ? styles.isMobile : styles.isNotMobile}`}>
       <div className={styles.overlay} onClick={closeModalWithAnimation} />
       <div className={`${styles.content} ${isOpen ? styles.open : ''}`}>
         <MovieDetails />
