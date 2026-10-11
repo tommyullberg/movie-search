@@ -15,7 +15,9 @@ Movie Search is a modern web application built with React and TypeScript that co
 ### Movie & Discovery Features
 
 - Real-time movie search by title, keyword, or director.
-- Instant category exploration: Trending, Popular, Top Rated, and Upcoming.
+- Integrated search type selector dropdown within the search bar: toggle between Movies, Cast & Crew (actors and directors), and Keywords/Themes.
+- Persistent Advanced Discover & Filters panel (remembers open/collapsed state in localStorage): filter by official TMDB genres, release year, minimum user rating, and sort order (popularity, rating, newest, box office).
+- Instant category exploration: In Theaters, Trending, Popular, Top Rated, and Upcoming with subtle visual grouping separator.
 - Personal Watchlist with localStorage persistence, instant one-click bookmarking from movie cards or details modal, dedicated Watchlist filter with live counter badge, and custom empty state.
 - Shimmering skeleton loaders during data fetching for smooth perceived performance.
 - Interactive movie cards with posters, title, release date, and circular user rating gauges.
@@ -55,7 +57,6 @@ Movie Search is a modern web application built with React and TypeScript that co
 
 ## Planned next steps
 
-- Add filtering by release year and genres.
 - Add actor/director person profile modal with filmography.
 - Expand automated integration tests with Vitest.
 
