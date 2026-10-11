@@ -17,6 +17,15 @@ const formatMinutesToTime = (minutes: number): string => {
   return `${hoursStr} ${minutesStr}`.trim();
 };
 
+const formatCurrency = (amount: number): string => {
+  if (!amount || amount <= 0) return '';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
 export function MovieDetails() {
   const { movieData, updateSelectedMovieId, updateMovieData } = useSearchContext();
   const [showTrailer, setShowTrailer] = useState(false);
@@ -52,6 +61,11 @@ export function MovieDetails() {
 
   // Top 8 recommended movies
   const recommendations = movieData.recommendations?.results?.slice(0, 8) || [];
+
+  // Financial and Production details
+  const formattedBudget = formatCurrency(movieData.budget);
+  const formattedRevenue = formatCurrency(movieData.revenue);
+  const productionNames = movieData.production_companies?.slice(0, 3).map((c) => c.name).join(', ');
 
   // Extract streaming providers (prefer Sweden SE, fallback to US)
   const watchResults = movieData['watch/providers']?.results;
@@ -272,6 +286,38 @@ export function MovieDetails() {
                 </Button>
               )}
             </div>
+
+            {/* Key Facts & Financials Box */}
+            {(formattedBudget || formattedRevenue || movieData.status || productionNames) && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 rounded-xl border border-border bg-card/60 p-3 sm:p-3.5 text-xs">
+                {movieData.status && (
+                  <div>
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</p>
+                    <p className="font-bold text-foreground mt-0.5">{movieData.status}</p>
+                  </div>
+                )}
+                {formattedBudget && (
+                  <div>
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Budget</p>
+                    <p className="font-bold text-foreground mt-0.5">{formattedBudget}</p>
+                  </div>
+                )}
+                {formattedRevenue && (
+                  <div>
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Box Office</p>
+                    <p className="font-bold text-foreground mt-0.5">{formattedRevenue}</p>
+                  </div>
+                )}
+                {productionNames && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Production</p>
+                    <p className="line-clamp-1 font-bold text-foreground mt-0.5" title={productionNames}>
+                      {productionNames}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
