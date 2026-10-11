@@ -32,3 +32,5 @@ export {
 } from './movie-details';
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
 export { AdvancedFiltersPanel, type AdvancedFiltersPanelProps } from './search/AdvancedFiltersPanel';
+export { PersonFilmography, type PersonFilmographyProps } from './person/PersonFilmography';
+
