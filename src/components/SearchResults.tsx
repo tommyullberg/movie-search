@@ -1,18 +1,17 @@
-import React, { FormEvent, KeyboardEvent, useState, useRef } from 'react';
-import { getMovieById, fetchSearchResults } from '../utils/apiUtils';
-import { formatDate } from '../utils/helpers';
+import React, { FormEvent, KeyboardEvent } from 'react';
+import { fetchSearchResults } from '../utils/apiUtils';
 import { useSearchContext } from '../contexts/SearchContext';
-import { GaugeSVG } from './ui/gauge';
 import { imageConfig } from '../config/imageConfig';
 import { motion } from 'framer-motion';
-import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X, Star, MessageSquare, Dices } from 'lucide-react';
+import { Film, AlertCircle, Loader2, Bookmark, User, Eye } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
-import { useWatchlist, LibrarySortOption } from '../contexts/WatchlistContext';
+import { useWatchlist } from '../contexts/WatchlistContext';
 import { SearchResult } from '../types';
-import { ActionButton } from './buttons/ActionButton';
+import { MovieCard } from './MovieCard';
+import { LibraryToolbar } from './LibraryToolbar';
 
 export type { SearchResult };
 
@@ -29,60 +28,14 @@ export function SearchResults() {
     updatePage,
     updateIsFetchingMore,
     error,
-    selectedMovieId,
-    updateSelectedMovieId,
-    updateMovieData,
     searchType,
     advancedFilters,
-    selectedPersonId,
     openMovieDetailDirect,
     openPersonDetailDirect,
-    closeAllDetails,
-    updateSearchCategory,
     highlightedMovieId,
-    updateHighlightedMovieId,
   } = useSearchContext();
 
-  const {
-    watchlist,
-    watchedList,
-    isInWatchlist,
-    toggleWatchlist,
-    isWatched,
-    toggleWatched,
-    librarySort,
-    setLibrarySort,
-    exportLibrary,
-    importLibrary,
-    getReview,
-  } = useWatchlist();
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [importFeedback, setImportFeedback] = useState<string | null>(null);
-
-  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const content = event.target?.result as string;
-        const res = importLibrary(content);
-        const total = res.importedWatchlist + res.importedWatched;
-        if (total === 0 && res.importedReviews === 0) {
-          setImportFeedback('All movies in the backup file were already present in your library.');
-        } else {
-          setImportFeedback(`Imported ${res.importedWatchlist} to Watchlist, ${res.importedWatched} to Watched (${res.importedReviews} ratings/notes)!`);
-        }
-        setTimeout(() => setImportFeedback(null), 5000);
-      } catch (err: any) {
-        setImportFeedback('Failed to import: Please select a valid JSON backup file.');
-        setTimeout(() => setImportFeedback(null), 5000);
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  };
+  const { getReview } = useWatchlist();
 
   const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500, URL_IMAGE_PROFILE_h632 } = imageConfig;
 
@@ -91,7 +44,7 @@ export function SearchResults() {
     openMovieDetailDirect(movieId, title);
   };
 
-  const handleKeyDown = (movieId: number, title?: string, e?: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (movieId: number, title?: string, e?: KeyboardEvent<Element>) => {
     if (e && (e.key === 'Enter' || e.key === ' ')) {
       openModal(movieId, title, e);
     }
@@ -134,112 +87,7 @@ export function SearchResults() {
     <section aria-label="Search results" className="mt-4 pb-16">
       {/* Library Toolbar for Watchlist & Watched lists */}
       {(searchCategory === 'watchlist' || searchCategory === 'watched') && (
-        <div className="mb-6 rounded-2xl border border-border bg-card/80 backdrop-blur-md p-4 sm:p-5 shadow-sm">
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            {/* Left: Tab Switcher (Watchlist vs Watched) */}
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/70 border border-border/60 self-start md:self-auto">
-              <button
-                type="button"
-                onClick={() => updateSearchCategory('watchlist')}
-                className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
-                  searchCategory === 'watchlist'
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Bookmark className={`h-4 w-4 ${searchCategory === 'watchlist' ? 'text-amber-500 fill-current' : ''}`} />
-                <span>To Watch ({watchlist.length})</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => updateSearchCategory('watched')}
-                className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
-                  searchCategory === 'watched'
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Eye className={`h-4 w-4 ${searchCategory === 'watched' ? 'text-emerald-500' : ''}`} />
-                <span>Watched ({watchedList.length})</span>
-              </button>
-            </div>
-
-            {/* Right: Sorter & Export/Import Actions */}
-            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-              {/* Sort Dropdown */}
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
-                <ArrowUpDown className="h-3.5 w-3.5" />
-                <label htmlFor="library-sort-select" className="sr-only">Sort Library</label>
-                <select
-                  id="library-sort-select"
-                  value={librarySort}
-                  onChange={(e) => setLibrarySort(e.target.value as any)}
-                  className="h-8 px-2.5 rounded-lg border border-border bg-background text-foreground text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
-                >
-                  <option value="added.desc">Date Added (Newest)</option>
-                  <option value="added.asc">Date Added (Oldest)</option>
-                  <option value="myrating.desc">My Rating (Highest)</option>
-                  <option value="myrating.asc">My Rating (Lowest)</option>
-                  <option value="vote.desc">TMDB Rating (Highest)</option>
-                  <option value="vote.asc">TMDB Rating (Lowest)</option>
-                  <option value="year.desc">Release Year (Newest)</option>
-                  <option value="year.asc">Release Year (Oldest)</option>
-                  <option value="title.asc">Title (A-Z)</option>
-                </select>
-              </div>
-
-              {/* Export JSON */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={exportLibrary}
-                className="h-8 text-xs font-semibold rounded-lg border-border"
-                title="Export your entire library to a JSON file"
-              >
-                <Download className="h-3.5 w-3.5 mr-1.5" />
-                <span>Export</span>
-              </Button>
-
-              {/* Import JSON */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="h-8 text-xs font-semibold rounded-lg border-border"
-                title="Import movies from a JSON backup file"
-              >
-                <Upload className="h-3.5 w-3.5 mr-1.5" />
-                <span>Import</span>
-              </Button>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleFileImport}
-                className="hidden"
-                aria-label="Upload JSON file to import library"
-              />
-            </div>
-          </div>
-
-          {/* Import feedback banner */}
-          {importFeedback && (
-            <div className="mt-3 flex items-center justify-between rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-                <span>{importFeedback}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setImportFeedback(null)}
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-        </div>
+        <LibraryToolbar />
       )}
 
       {/* Cards Grid */}
@@ -309,91 +157,14 @@ export function SearchResults() {
               </Card>
             ) : (
               /* Movie Card */
-              <Card
-                id={`movie-card-${result.id}`}
-                role="button"
-                tabIndex={0}
-                aria-haspopup="dialog"
-                aria-label={`View details for ${result.title}, released ${formatDate(result.release_date || '') || 'unknown date'}`}
+              <MovieCard
+                movie={result}
+                isHighlighted={highlightedMovieId === result.id}
+                searchCategory={searchCategory}
+                review={getReview(result.id)}
                 onClick={(e) => openModal(result.id, result.title, e)}
                 onKeyDown={(e) => handleKeyDown(result.id, result.title, e)}
-                className={`cursor-pointer overflow-hidden border transition-all duration-300 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring ${
-                  highlightedMovieId === result.id
-                    ? 'ring-4 ring-primary border-primary shadow-2xl scale-[1.03] bg-primary/5 -translate-y-2'
-                    : 'border-border bg-card text-card-foreground hover:border-primary hover:shadow-xl hover:-translate-y-1.5'
-                }`}
-              >
-                {/* Poster Image Container */}
-                <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
-                  {result.poster_path ? (
-                    <img
-                      src={`${URL_IMAGE_POSTER_w342}${result.poster_path}`}
-                      srcSet={`${URL_IMAGE_POSTER_w342}${result.poster_path} 1x, ${URL_IMAGE_POSTER_w500}${result.poster_path} 2x`}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground" aria-hidden="true">
-                      <Film className="h-10 w-10 opacity-50" />
-                    </div>
-                  )}
-
-                  {/* Watchlist & Watched toggles positioned top-left */}
-                  <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
-                    <ActionButton type="watchlist" variant="icon" movie={result} />
-                    <ActionButton type="watched" variant="icon" movie={result} />
-                  </div>
-
-                  {/* Rating Gauge positioned top-right */}
-                  <div className="absolute top-2 right-2 w-11 h-11 drop-shadow-md">
-                    <GaugeSVG id={result.id} vote_average={result.vote_average || 0} />
-                  </div>
-
-                  {/* Highlighted Random Pick Badge */}
-                  {highlightedMovieId === result.id && (
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-primary text-primary-foreground shadow-xl ring-2 ring-primary-foreground/30 animate-pulse">
-                        <Dices className="h-3 w-3 shrink-0" aria-hidden="true" />
-                        <span>Random Pick</span>
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Card Body */}
-                <CardContent className="p-3.5 flex flex-col justify-between flex-1">
-                  <div>
-                    <h2 className="line-clamp-2 text-sm sm:text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
-                      {result.title}
-                    </h2>
-                    {/* Personal Rating & Note Indicator in Watched View */}
-                    {searchCategory === 'watched' && (() => {
-                      const review = getReview(result.id);
-                      if (!review?.rating && !review?.notes) return null;
-                      return (
-                        <div className="mt-2 pt-2 border-t border-border/60 flex flex-wrap items-center gap-1.5 text-xs">
-                          {review.rating && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/50">
-                              <Star className="h-3 w-3 fill-amber-600 dark:fill-amber-400 text-amber-600 dark:text-amber-400" />
-                              <span>{review.rating}/10</span>
-                            </span>
-                          )}
-                          {review.notes && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold text-foreground bg-muted/90 border border-border" title={review.notes}>
-                              <MessageSquare className="h-3 w-3 text-primary shrink-0" />
-                              <span className="line-clamp-1 max-w-[9.5rem]">{review.notes}</span>
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
-                  <p className="mt-2 text-xs sm:text-sm font-semibold text-muted-foreground">
-                    {formatDate(result.release_date || '') || 'Unknown date'}
-                  </p>
-                </CardContent>
-              </Card>
+              />
             )}
           </motion.div>
         ))}

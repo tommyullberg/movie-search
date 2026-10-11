@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft, Share2, Check, Eye, MessageSquare, Edit3, Trash2 } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, ArrowLeft } from 'lucide-react';
 import { useSearchContext } from '../contexts/SearchContext';
-import { useWatchlist } from '../contexts/WatchlistContext';
 import { imageConfig } from '../config/imageConfig';
 import { formatDate, formatYear } from '../utils/helpers';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { DialogTitle, DialogDescription } from './ui/dialog';
 import { ActionButton } from './buttons/ActionButton';
+import { KeyFactsSection } from './KeyFactsSection';
+import { RatingNotesSection } from './RatingNotesSection';
+import { WhereToWatchSection } from './WhereToWatchSection';
 
 const formatMinutesToTime = (minutes: number): string => {
   if (isNaN(minutes) || minutes <= 0) return '';
@@ -18,15 +20,6 @@ const formatMinutesToTime = (minutes: number): string => {
   return `${hoursStr} ${minutesStr}`.trim();
 };
 
-const formatCurrency = (amount: number): string => {
-  if (!amount || amount <= 0) return '';
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
-
 export function MovieDetails() {
   const {
     movieData,
@@ -35,15 +28,8 @@ export function MovieDetails() {
     navigateToPerson,
     goBackDetail,
   } = useSearchContext();
-  const { isInWatchlist, toggleWatchlist, isWatched, toggleWatched, getReview, saveReview, deleteReview } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
-  const [isEditingNotes, setIsEditingNotes] = useState(false);
-  const [tempNotes, setTempNotes] = useState('');
-
-  const isSaved = movieData ? isInWatchlist(movieData.id) : false;
-  const isWatchedMovie = movieData ? isWatched(movieData.id) : false;
-  const currentReview = movieData ? getReview(movieData.id) : undefined;
 
   const {
     URL_IMAGE_BACKDROP_w1280,
@@ -51,7 +37,6 @@ export function MovieDetails() {
     URL_IMAGE_POSTER_w500,
     URL_IMAGE_POSTER_w780,
     URL_IMAGE_PROFILE_w185,
-    URL_IMAGE_LOGO_w92
   } = imageConfig;
 
   if (!movieData) return null;
@@ -75,56 +60,6 @@ export function MovieDetails() {
 
   // Top 8 recommended movies
   const recommendations = movieData.recommendations?.results?.slice(0, 8) || [];
-
-  // Financial and Production details
-  const formattedBudget = formatCurrency(movieData.budget);
-  const formattedRevenue = formatCurrency(movieData.revenue);
-  const productionNames = movieData.production_companies?.slice(0, 3).map((c) => c.name).join(', ');
-
-  // Extract streaming providers (prefer Sweden SE, fallback to US)
-  const watchResults = movieData['watch/providers']?.results;
-  const seProviders = watchResults?.SE;
-  const usProviders = watchResults?.US;
-
-  const hasSeContent = !!(
-    seProviders?.flatrate?.length ||
-    seProviders?.free?.length ||
-    seProviders?.ads?.length ||
-    seProviders?.rent?.length ||
-    seProviders?.buy?.length
-  );
-
-  const activeCountry = hasSeContent ? 'Sweden' : 'US';
-  const activeData = hasSeContent ? seProviders : usProviders;
-
-  const freeStreamingServices = activeData?.free || [];
-  const subscriptionServices = activeData?.flatrate || [];
-  const adsServices = activeData?.ads || [];
-
-  const streamServices = Array.from(
-    new Map(
-      [...subscriptionServices, ...freeStreamingServices, ...adsServices].map((p) => [p.provider_id, p])
-    ).values()
-  );
-
-  const rentServices = activeData?.rent || [];
-  const buyServices = activeData?.buy || [];
-
-  const rentBuyServices = Array.from(
-    new Map([...rentServices, ...buyServices].map((p) => [p.provider_id, p])).values()
-  );
-
-  const hasStreaming = streamServices.length > 0;
-  const hasRentBuy = rentBuyServices.length > 0;
-
-  // Determine smart section heading
-  const whereToWatchHeading = hasStreaming && !hasRentBuy
-    ? (freeStreamingServices.length > 0 && subscriptionServices.length === 0
-        ? `Available for free streaming in ${activeCountry}`
-        : `Available to stream in ${activeCountry}`)
-    : !hasStreaming && hasRentBuy
-    ? `Available for rent & buy in ${activeCountry}`
-    : `Where to Watch in ${activeCountry}`;
 
   const hasPrevious = detailHistory.length > 1;
   const previousItem = hasPrevious ? detailHistory[detailHistory.length - 2] : null;
@@ -331,170 +266,10 @@ export function MovieDetails() {
             </div>
 
             {/* Key Facts & Financials Box */}
-            {(formattedBudget || formattedRevenue || movieData.status || productionNames) && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 rounded-xl border border-border bg-card/60 p-3 sm:p-3.5 text-xs">
-                {movieData.status && (
-                  <div>
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</p>
-                    <p className="font-bold text-foreground mt-0.5">{movieData.status}</p>
-                  </div>
-                )}
-                {formattedBudget && (
-                  <div>
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Budget</p>
-                    <p className="font-bold text-foreground mt-0.5">{formattedBudget}</p>
-                  </div>
-                )}
-                {formattedRevenue && (
-                  <div>
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Box Office</p>
-                    <p className="font-bold text-foreground mt-0.5">{formattedRevenue}</p>
-                  </div>
-                )}
-                {productionNames && (
-                  <div className="col-span-2 sm:col-span-1">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Production</p>
-                    <p className="line-clamp-1 font-bold text-foreground mt-0.5" title={productionNames}>
-                      {productionNames}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+            <KeyFactsSection movie={movieData} />
 
             {/* My Rating & Personal Notes (Only for Watched Movies) */}
-            {isWatchedMovie && (
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 sm:p-4 text-xs transition-all">
-                <div className="flex items-center justify-between pb-2 border-b border-border/60">
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                    <span className="font-bold text-sm text-foreground">My Rating & Notes</span>
-                  </div>
-                  {currentReview?.rating && (
-                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/60">
-                      {currentReview.rating} / 10
-                    </span>
-                  )}
-                </div>
-
-                {/* Rating 1-10 selector buttons */}
-                <div className="mt-3">
-                  <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">
-                    Your rating (1 to 10):
-                  </p>
-                  <div className="flex flex-wrap items-center gap-1 sm:gap-1.5" role="radiogroup" aria-label="Personal rating 1 to 10">
-                    {Array.from({ length: 10 }, (_, i) => i + 1).map((star) => {
-                      const isSelected = currentReview?.rating === star;
-                      return (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => {
-                            if (isSelected) {
-                              saveReview(movieData.id, { rating: undefined });
-                            } else {
-                              saveReview(movieData.id, { rating: star });
-                            }
-                          }}
-                          aria-label={`Rate ${star} out of 10`}
-                          aria-checked={isSelected}
-                          role="radio"
-                          className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg text-xs font-bold transition-all flex items-center justify-center cursor-pointer ${
-                            isSelected
-                              ? 'bg-amber-500 text-black font-extrabold shadow-sm scale-105'
-                              : 'bg-card border border-border text-foreground hover:border-amber-500 hover:text-amber-500'
-                          }`}
-                        >
-                          {star}
-                        </button>
-                      );
-                    })}
-                    {currentReview?.rating && (
-                      <button
-                        type="button"
-                        onClick={() => saveReview(movieData.id, { rating: undefined })}
-                        className="ml-1 text-[11px] text-muted-foreground hover:text-destructive transition-colors font-medium cursor-pointer"
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Personal Notes */}
-                <div className="mt-3 pt-2.5 border-t border-border/50">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
-                      <MessageSquare className="h-3 w-3" />
-                      Personal review or notes:
-                    </span>
-                    {!isEditingNotes && currentReview?.notes && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTempNotes(currentReview?.notes || '');
-                          setIsEditingNotes(true);
-                        }}
-                        className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer"
-                      >
-                        <Edit3 className="h-3 w-3" />
-                        Edit
-                      </button>
-                    )}
-                  </div>
-
-                  {isEditingNotes ? (
-                    <div className="space-y-2 mt-1.5">
-                      <textarea
-                        value={tempNotes}
-                        onChange={(e) => setTempNotes(e.target.value)}
-                        placeholder="Write your personal thoughts, memorable scenes, or review..."
-                        rows={3}
-                        className="w-full p-2.5 rounded-lg border border-border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary resize-y"
-                      />
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setIsEditingNotes(false);
-                            setTempNotes('');
-                          }}
-                          className="h-7 text-xs"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            saveReview(movieData.id, { notes: tempNotes.trim() });
-                            setIsEditingNotes(false);
-                          }}
-                          className="h-7 text-xs font-bold"
-                        >
-                          Save Notes
-                        </Button>
-                      </div>
-                    </div>
-                  ) : currentReview?.notes ? (
-                    <p className="text-xs text-foreground bg-background/60 p-2.5 rounded-lg border border-border/60 whitespace-pre-wrap leading-relaxed mt-1">
-                      {currentReview.notes}
-                    </p>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTempNotes('');
-                        setIsEditingNotes(true);
-                      }}
-                      className="text-xs text-muted-foreground hover:text-foreground underline cursor-pointer mt-0.5 inline-block"
-                    >
-                      + Add a personal note or review
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
+            <RatingNotesSection movie={movieData} />
           </div>
         </div>
 
@@ -529,89 +304,7 @@ export function MovieDetails() {
         )}
 
         {/* Where to Watch (Streaming & Buy/Rent Providers) */}
-        {(hasStreaming || hasRentBuy) && (
-          <section aria-labelledby="providers-heading" className="mt-8 pt-6 border-t border-border">
-            <div className="flex items-center justify-between mb-3">
-              <h3 id="providers-heading" className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-                <Tv className="h-4 w-4 text-primary" aria-hidden="true" />
-                <span>{whereToWatchHeading}</span>
-              </h3>
-              {activeData?.link && (
-                <a
-                  href={activeData.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs text-muted-foreground hover:text-foreground underline flex items-center gap-1"
-                >
-                  <span>JustWatch</span>
-                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                </a>
-              )}
-            </div>
-
-            {/* Streaming Services (Subscription / Free) */}
-            {hasStreaming && (
-              <div className="mb-4">
-                {hasRentBuy && (
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">
-                    {freeStreamingServices.length > 0 && subscriptionServices.length === 0
-                      ? `Free streaming in ${activeCountry}:`
-                      : `Stream in ${activeCountry}:`}
-                  </p>
-                )}
-                <div className="flex flex-wrap gap-2.5 sm:gap-3">
-                  {streamServices.map((provider) => (
-                    <div
-                      key={provider.provider_id}
-                      title={provider.provider_name}
-                      className="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-2.5 py-1.5 shadow-sm hover:border-foreground/30 transition-all"
-                    >
-                      <img
-                        src={`${URL_IMAGE_LOGO_w92}${provider.logo_path}`}
-                        alt=""
-                        aria-hidden="true"
-                        className="h-7 w-7 rounded-lg object-cover shadow-sm"
-                      />
-                      <span className="text-xs sm:text-sm font-semibold text-foreground">
-                        {provider.provider_name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Rent or Buy Option */}
-            {hasRentBuy && (
-              <div>
-                {hasStreaming && (
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">
-                    Available for rent & buy in {activeCountry}:
-                  </p>
-                )}
-                <div className="flex flex-wrap gap-2.5 sm:gap-3">
-                  {rentBuyServices.map((provider) => (
-                    <div
-                      key={provider.provider_id}
-                      title={provider.provider_name}
-                      className="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-2.5 py-1.5 shadow-sm hover:border-foreground/30 transition-all"
-                    >
-                      <img
-                        src={`${URL_IMAGE_LOGO_w92}${provider.logo_path}`}
-                        alt=""
-                        aria-hidden="true"
-                        className="h-7 w-7 rounded-lg object-cover shadow-sm"
-                      />
-                      <span className="text-xs sm:text-sm font-semibold text-foreground">
-                        {provider.provider_name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-        )}
+        <WhereToWatchSection movie={movieData} />
 
         {/* Top Cast Section */}
         {topCast.length > 0 && (

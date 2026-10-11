@@ -18,4 +18,9 @@ export {
   type ActionButtonVariant,
   type ActionButtonProps,
 } from './buttons/ActionButton';
+export { MovieCard, type MovieCardProps } from './MovieCard';
+export { LibraryToolbar, type LibraryToolbarProps } from './LibraryToolbar';
+export { KeyFactsSection, type KeyFactsSectionProps } from './KeyFactsSection';
+export { RatingNotesSection, type RatingNotesSectionProps } from './RatingNotesSection';
+export { WhereToWatchSection, type WhereToWatchSectionProps } from './WhereToWatchSection';
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
