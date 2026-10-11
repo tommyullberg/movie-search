@@ -10,17 +10,6 @@ Live demo:
 
 Movie Search is a modern web application built with React and TypeScript that connects to the [The Movie Database (TMDB) API](https://www.themoviedb.org/). The project was initially created in 2023 to practice React concepts and has since been continuously modernized with state-of-the-art tools, including React 19, Vite, Tailwind CSS v4, and shadcn/ui.
 
-## Features
-
-- Real-time movie search by title or keyword.
-- Fast category exploration: Trending, Popular, Top Rated, and Upcoming releases.
-- Pagination with infinite 'Load More' support and duplicate filtering.
-- Rich movie detail dialogs with high-resolution backdrops, trailers/metadata, and IMDb links.
-- Shimmering skeleton loaders during data fetching.
-- Full dark and light mode theming, plus a dedicated WCAG AAA High Contrast mode.
-- Complete keyboard accessibility with skip links and screen reader ARIA annotations.
-- Response caching via browser CacheStorage for instant loading and minimal API quota usage.
-
 ## Getting Started
 
 1. Clone the repository and install dependencies:
@@ -57,6 +46,34 @@ Visit [http://localhost:5173/movie-search/](http://localhost:5173/movie-search/)
 npm run build
 ```
 
+## Features
+
+### Movie & Discovery Features
+
+- Real-time movie search by title, keyword, or director.
+- Instant category exploration: Trending, Popular, Top Rated, and Upcoming.
+- Shimmering skeleton loaders during data fetching for smooth perceived performance.
+- Interactive movie cards with posters, title, release date, and circular user rating gauges.
+- Pagination with infinite 'Load More' button and automatic duplicate result filtering.
+- Rich movie detail dialogs featuring high-resolution backdrop art and official posters.
+- Embedded official YouTube trailers with responsive widescreen player and toggle control.
+- Key movie facts including production status, budget, box office revenue, and studio names.
+- Where to Watch streaming guide powered by JustWatch with official logos for subscription streaming, digital rental, and purchase in Sweden (with US fallback).
+- Top cast section showcasing actor profile photos, real names, and character roles, plus director credits.
+- 'More Like This' movie recommendations with seamless in-modal navigation between related titles.
+- Direct external links to official movie websites and IMDb pages.
+
+### Design, Theming & Accessibility Features
+
+- Modern UI built with Tailwind CSS v4 and shadcn/ui (Radix UI primitives).
+- Light mode and Dark mode with smooth transitions and deep, crisp contrast.
+- Dedicated WCAG AAA High Contrast mode with specialized contrast themes for both dark and light palettes.
+- Complete keyboard accessibility: fully operable without mouse, with prominent focus rings and skip-to-content link.
+- Screen reader optimizations: semantic landmark roles, descriptive ARIA labels, and live region announcements.
+- Adaptive responsive layout: edge-to-edge fullscreen dialog on mobile screens (<640px) down to 320px width, expanding to a floating centered window on larger displays.
+- Sleek custom internal scrollbars that preserve dialog rounded corner aesthetics.
+- Native browser CacheStorage for instant response caching and minimal network latency.
+
 ## Technologies
 
 - React 19 / TypeScript
@@ -73,7 +90,7 @@ npm run build
 
 ## Planned next steps
 
-- Explore additional TMDB data, such as trailers, video teasers, cast, and crew.
+- Add personal Watchlist and Favorites bookmarking with local storage persistence.
 - Add filtering by release year and genres.
 - Expand automated integration tests with Vitest.
 
