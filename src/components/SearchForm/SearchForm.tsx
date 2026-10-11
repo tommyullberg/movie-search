@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Search, Loader2, TrendingUp, Flame, Star, Calendar, Bookmark } from 'lucide-react';
+import { Search, Loader2, TrendingUp, Flame, Star, Calendar, Bookmark, Clapperboard } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
 import { fetchSearchResults } from '../../utils/apiUtils';
@@ -8,6 +8,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 
 const CATEGORIES = [
+  { key: 'nowplaying', label: 'In Theaters', icon: Clapperboard },
   { key: 'trending', label: 'Trending', icon: TrendingUp },
   { key: 'popular', label: 'Popular', icon: Flame },
   { key: 'toprated', label: 'Top Rated', icon: Star },
@@ -142,6 +143,9 @@ export function SearchForm() {
               </Button>
             );
           })}
+
+          {/* Visual Divider between Discovery categories and Personal Watchlist */}
+          <div className="hidden sm:block h-5 w-px bg-border/80 mx-1" aria-hidden="true" />
 
           {/* Watchlist Filter Button */}
           <Button

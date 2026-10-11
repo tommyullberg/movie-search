@@ -32,6 +32,9 @@ export async function fetchSearchResults(
         case 'trending':
           url = `https://api.themoviedb.org/3/trending/movie/week?language=en-US&page=${page}`;
           break;
+        case 'nowplaying':
+          url = `https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=${page}`;
+          break;
         case 'popular':
           url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;
           break;
