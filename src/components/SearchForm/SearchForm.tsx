@@ -7,6 +7,7 @@ import {
   Star,
   Calendar,
   Bookmark,
+  Eye,
   Clapperboard,
   SlidersHorizontal,
   ChevronDown,
@@ -48,14 +49,16 @@ export function SearchForm() {
     updateTotalPages,
   } = useSearchContext();
 
-  const { watchlist } = useWatchlist();
+  const { watchlist, watchedList, getSortedList, librarySort } = useWatchlist();
 
-  // Keep watchlist results live if user is currently viewing the watchlist category
+  // Keep watchlist or watched results live and sorted if user is viewing that category
   useEffect(() => {
     if (searchCategory === 'watchlist') {
-      updateSearchResults(watchlist);
+      updateSearchResults(getSortedList('watchlist'));
+    } else if (searchCategory === 'watched') {
+      updateSearchResults(getSortedList('watched'));
     }
-  }, [watchlist, searchCategory]);
+  }, [watchlist, watchedList, searchCategory, librarySort]);
 
   const runSearch = async (
     term: string,
@@ -94,7 +97,16 @@ export function SearchForm() {
     updateSearchCategory('watchlist');
     updateSearchTerm('');
     updateError(null);
-    updateSearchResults(watchlist);
+    updateSearchResults(getSortedList('watchlist'));
+    updateTotalPages(1);
+    updatePage(1);
+  };
+
+  const handleWatchedClick = () => {
+    updateSearchCategory('watched');
+    updateSearchTerm('');
+    updateError(null);
+    updateSearchResults(getSortedList('watched'));
     updateTotalPages(1);
     updatePage(1);
   };
@@ -347,7 +359,8 @@ export function SearchForm() {
           </AnimatePresence>
         </form>
 
-        <div role="group" aria-label="Quick movie categories" className="flex flex-wrap items-center justify-center gap-2">
+        {/* Discovery Categories Row */}
+        <div role="group" aria-label="Quick movie categories" className="mt-3 flex flex-wrap items-center justify-center gap-2">
           {CATEGORIES.map(({ key, label, icon: Icon }) => {
             const isActive = searchCategory === key;
             return (
@@ -371,10 +384,10 @@ export function SearchForm() {
               </Button>
             );
           })}
+        </div>
 
-          {/* Visual Divider between Discovery categories and Personal Watchlist */}
-          <div className="hidden sm:block h-5 w-px bg-border/80 mx-1" aria-hidden="true" />
-
+        {/* Dedicated Library Row: Watchlist and Watched */}
+        <div role="group" aria-label="Personal movie lists" className="mt-2.5 flex items-center justify-center gap-2.5">
           {/* Watchlist Filter Button */}
           <Button
             type="button"
@@ -386,22 +399,53 @@ export function SearchForm() {
             onClick={handleWatchlistClick}
             className={`rounded-full transition-all border ${
               searchCategory === 'watchlist'
-                ? 'font-bold ring-2 ring-primary/40 shadow-sm'
+                ? 'font-bold ring-2 ring-amber-500/40 bg-amber-500 text-black hover:bg-amber-600 shadow-sm'
                 : 'text-foreground border-border bg-card/60 hover:bg-card hover:border-foreground/40'
             }`}
           >
             <Bookmark
-              className={`h-3.5 w-3.5 mr-1.5 ${searchCategory === 'watchlist' ? 'fill-current text-primary-foreground' : 'text-amber-500'}`}
+              className={`h-3.5 w-3.5 mr-1.5 ${searchCategory === 'watchlist' ? 'fill-current text-black' : 'text-amber-500'}`}
               aria-hidden="true"
             />
             <span className="inline-block chrome-text-adjust">Watchlist</span>
             {watchlist.length > 0 && (
               <span
                 className={`ml-1.5 inline-block chrome-text-adjust rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
-                  searchCategory === 'watchlist' ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-secondary text-foreground'
+                  searchCategory === 'watchlist' ? 'bg-black/20 text-black' : 'bg-secondary text-foreground'
                 }`}
               >
                 {watchlist.length}
+              </span>
+            )}
+          </Button>
+
+          {/* Watched Filter Button */}
+          <Button
+            type="button"
+            variant={searchCategory === 'watched' ? 'default' : 'outline'}
+            size="sm"
+            disabled={isLoading}
+            aria-pressed={searchCategory === 'watched'}
+            aria-label={`Show Watched movies, ${watchedList.length} movies watched`}
+            onClick={handleWatchedClick}
+            className={`rounded-full transition-all border ${
+              searchCategory === 'watched'
+                ? 'font-bold ring-2 ring-emerald-500/40 bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
+                : 'text-foreground border-border bg-card/60 hover:bg-card hover:border-foreground/40'
+            }`}
+          >
+            <Eye
+              className={`h-3.5 w-3.5 mr-1.5 ${searchCategory === 'watched' ? 'text-white' : 'text-emerald-500'}`}
+              aria-hidden="true"
+            />
+            <span className="inline-block chrome-text-adjust">Watched</span>
+            {watchedList.length > 0 && (
+              <span
+                className={`ml-1.5 inline-block chrome-text-adjust rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
+                  searchCategory === 'watched' ? 'bg-white/20 text-white' : 'bg-secondary text-foreground'
+                }`}
+              >
+                {watchedList.length}
               </span>
             )}
           </Button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft, Share2, Check } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft, Share2, Check, Eye } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
 import { imageConfig } from '../../config/imageConfig';
@@ -34,12 +34,13 @@ export function MovieDetails() {
     navigateToPerson,
     goBackDetail,
   } = useSearchContext();
-  const { isInWatchlist, toggleWatchlist } = useWatchlist();
+  const { isInWatchlist, toggleWatchlist, isWatched, toggleWatched } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   const isSaved = movieData ? isInWatchlist(movieData.id) : false;
+  const isWatchedMovie = movieData ? isWatched(movieData.id) : false;
 
   const {
     URL_IMAGE_BACKDROP_w1280,
@@ -280,8 +281,43 @@ export function MovieDetails() {
               </DialogDescription>
             )}
 
-            {/* Action Buttons: Trailer, IMDb, Website */}
-            <div className="flex flex-wrap gap-2.5 pt-1">
+            {/* User Library Actions: Watchlist & Watched on their own dedicated row */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5">
+              <Button
+                variant={isSaved ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleWatchlist(movieData)}
+                aria-pressed={isSaved}
+                aria-label={isSaved ? `Remove ${movieData.title} from Watchlist` : `Add ${movieData.title} to Watchlist`}
+                className={`w-[9.75rem] justify-center rounded-lg font-semibold transition-all border-border ${
+                  isSaved
+                    ? 'bg-amber-500 hover:bg-amber-600 text-black font-bold'
+                    : 'text-foreground hover:bg-secondary'
+                }`}
+              >
+                <Bookmark className={`h-3.5 w-3.5 mr-1.5 shrink-0 ${isSaved ? 'fill-current' : ''}`} aria-hidden="true" />
+                <span>{isSaved ? 'In Watchlist' : 'Add to Watchlist'}</span>
+              </Button>
+
+              <Button
+                variant={isWatchedMovie ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleWatched(movieData)}
+                aria-pressed={isWatchedMovie}
+                aria-label={isWatchedMovie ? `Remove ${movieData.title} from Watched` : `Mark ${movieData.title} as Watched`}
+                className={`w-[9.75rem] justify-center rounded-lg font-semibold transition-all border-border ${
+                  isWatchedMovie
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold'
+                    : 'text-foreground hover:bg-secondary'
+                }`}
+              >
+                <Eye className="h-3.5 w-3.5 mr-1.5 shrink-0" aria-hidden="true" />
+                <span>{isWatchedMovie ? 'Watched' : 'Mark as Watched'}</span>
+              </Button>
+            </div>
+
+            {/* External Links & Media Actions: Trailer, IMDb, Website, Share */}
+            <div className="flex flex-wrap items-center gap-2.5">
               {trailer && (
                 <Button
                   onClick={() => setShowTrailer((prev) => !prev)}
@@ -303,22 +339,6 @@ export function MovieDetails() {
                   )}
                 </Button>
               )}
-
-              <Button
-                variant={isSaved ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => toggleWatchlist(movieData)}
-                aria-pressed={isSaved}
-                aria-label={isSaved ? `Remove ${movieData.title} from Watchlist` : `Add ${movieData.title} to Watchlist`}
-                className={`w-[9.75rem] justify-center rounded-lg font-semibold transition-all border-border ${
-                  isSaved
-                    ? 'bg-amber-500 hover:bg-amber-600 text-black font-bold'
-                    : 'text-foreground hover:bg-secondary'
-                }`}
-              >
-                <Bookmark className={`h-3.5 w-3.5 mr-1.5 shrink-0 ${isSaved ? 'fill-current' : ''}`} aria-hidden="true" />
-                <span>{isSaved ? 'In Watchlist' : 'Add to Watchlist'}</span>
-              </Button>
 
               {movieData.imdb_id && (
                 <Button variant="outline" size="sm" asChild className="rounded-lg font-semibold border-border">

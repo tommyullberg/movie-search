@@ -1,16 +1,16 @@
-import React, { FormEvent, KeyboardEvent } from 'react';
+import React, { FormEvent, KeyboardEvent, useState, useRef } from 'react';
 import { getMovieById, fetchSearchResults } from '../../utils/apiUtils';
 import { formatDate } from '../../utils/helpers';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
 import { motion } from 'framer-motion';
-import { Film, AlertCircle, Loader2, Bookmark, User } from 'lucide-react';
+import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
-import { useWatchlist } from '../../contexts/WatchlistContext';
+import { useWatchlist, LibrarySortOption } from '../../contexts/WatchlistContext';
 
 export interface SearchResult {
   adult?: boolean;
@@ -62,9 +62,43 @@ export function SearchResults() {
     openMovieDetailDirect,
     openPersonDetailDirect,
     closeAllDetails,
+    updateSearchCategory,
   } = useSearchContext();
 
-  const { isInWatchlist, toggleWatchlist } = useWatchlist();
+  const {
+    watchlist,
+    watchedList,
+    isInWatchlist,
+    toggleWatchlist,
+    isWatched,
+    toggleWatched,
+    librarySort,
+    setLibrarySort,
+    exportLibrary,
+    importLibrary,
+  } = useWatchlist();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importFeedback, setImportFeedback] = useState<string | null>(null);
+
+  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const res = importLibrary(content);
+        setImportFeedback(`Imported ${res.importedWatchlist} movies to Watchlist and ${res.importedWatched} to Watched!`);
+        setTimeout(() => setImportFeedback(null), 5000);
+      } catch (err: any) {
+        setImportFeedback('Failed to import: Please select a valid JSON backup file.');
+        setTimeout(() => setImportFeedback(null), 5000);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500, URL_IMAGE_PROFILE_h632 } = imageConfig;
 
@@ -113,7 +147,115 @@ export function SearchResults() {
   }
 
   return (
-    <section aria-label="Search results" className="pb-16">
+    <section aria-label="Search results" className="mt-4 pb-16">
+      {/* Library Toolbar for Watchlist & Watched lists */}
+      {(searchCategory === 'watchlist' || searchCategory === 'watched') && (
+        <div className="mb-6 rounded-2xl border border-border bg-card/80 backdrop-blur-md p-4 sm:p-5 shadow-sm">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            {/* Left: Tab Switcher (Watchlist vs Watched) */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/70 border border-border/60 self-start md:self-auto">
+              <button
+                type="button"
+                onClick={() => updateSearchCategory('watchlist')}
+                className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+                  searchCategory === 'watchlist'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Bookmark className={`h-4 w-4 ${searchCategory === 'watchlist' ? 'text-amber-500 fill-current' : ''}`} />
+                <span>To Watch ({watchlist.length})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => updateSearchCategory('watched')}
+                className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+                  searchCategory === 'watched'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Eye className={`h-4 w-4 ${searchCategory === 'watched' ? 'text-emerald-500' : ''}`} />
+                <span>Watched ({watchedList.length})</span>
+              </button>
+            </div>
+
+            {/* Right: Sorter & Export/Import Actions */}
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              {/* Sort Dropdown */}
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                <ArrowUpDown className="h-3.5 w-3.5" />
+                <label htmlFor="library-sort-select" className="sr-only">Sort Library</label>
+                <select
+                  id="library-sort-select"
+                  value={librarySort}
+                  onChange={(e) => setLibrarySort(e.target.value as any)}
+                  className="h-8 px-2.5 rounded-lg border border-border bg-background text-foreground text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+                >
+                  <option value="added.desc">Date Added (Newest)</option>
+                  <option value="added.asc">Date Added (Oldest)</option>
+                  <option value="vote.desc">Rating (Highest)</option>
+                  <option value="vote.asc">Rating (Lowest)</option>
+                  <option value="year.desc">Release Year (Newest)</option>
+                  <option value="year.asc">Release Year (Oldest)</option>
+                  <option value="title.asc">Title (A-Z)</option>
+                </select>
+              </div>
+
+              {/* Export JSON */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportLibrary}
+                className="h-8 text-xs font-semibold rounded-lg border-border"
+                title="Export your entire library to a JSON file"
+              >
+                <Download className="h-3.5 w-3.5 mr-1.5" />
+                <span>Export</span>
+              </Button>
+
+              {/* Import JSON */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="h-8 text-xs font-semibold rounded-lg border-border"
+                title="Import movies from a JSON backup file"
+              >
+                <Upload className="h-3.5 w-3.5 mr-1.5" />
+                <span>Import</span>
+              </Button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleFileImport}
+                className="hidden"
+                aria-label="Upload JSON file to import library"
+              />
+            </div>
+          </div>
+
+          {/* Import feedback banner */}
+          {importFeedback && (
+            <div className="mt-3 flex items-center justify-between rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>{importFeedback}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setImportFeedback(null)}
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Cards Grid */}
       <div
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
@@ -206,23 +348,44 @@ export function SearchResults() {
                     </div>
                   )}
 
-                  {/* Watchlist Bookmark toggle positioned top-left */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      toggleWatchlist(result as any);
-                    }}
-                    aria-label={isInWatchlist(result.id) ? `Remove ${result.title} from watchlist` : `Add ${result.title} to watchlist`}
-                    className={`absolute top-2 left-2 z-10 p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                      isInWatchlist(result.id)
-                        ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 dark:text-amber-950'
-                        : 'bg-background/80 text-foreground hover:bg-background hover:text-amber-500'
-                    }`}
-                  >
-                    <Bookmark className={`h-4 w-4 ${isInWatchlist(result.id) ? 'fill-current' : ''}`} />
-                  </button>
+                  {/* Watchlist & Watched toggles positioned top-left */}
+                  <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        toggleWatchlist(result as any);
+                      }}
+                      aria-label={isInWatchlist(result.id) ? `Remove ${result.title} from watchlist` : `Add ${result.title} to watchlist`}
+                      title={isInWatchlist(result.id) ? 'In Watchlist' : 'Add to Watchlist'}
+                      className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer ${
+                        isInWatchlist(result.id)
+                          ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 dark:text-amber-950'
+                          : 'bg-background/80 text-foreground hover:bg-background hover:text-amber-500'
+                      }`}
+                    >
+                      <Bookmark className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isInWatchlist(result.id) ? 'fill-current' : ''}`} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        toggleWatched(result as any);
+                      }}
+                      aria-label={isWatched(result.id) ? `Remove ${result.title} from watched` : `Mark ${result.title} as watched`}
+                      title={isWatched(result.id) ? 'Watched' : 'Mark as Watched'}
+                      className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer ${
+                        isWatched(result.id)
+                          ? 'bg-emerald-600 text-white hover:bg-emerald-500'
+                          : 'bg-background/80 text-foreground hover:bg-background hover:text-emerald-500'
+                      }`}
+                    >
+                      <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    </button>
+                  </div>
 
                   {/* Rating Gauge positioned top-right */}
                   <div className="absolute top-2 right-2 w-11 h-11 drop-shadow-md">
@@ -265,6 +428,8 @@ export function SearchResults() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground" aria-hidden="true">
             {searchCategory === 'watchlist' ? (
               <Bookmark className="h-8 w-8 text-amber-500" />
+            ) : searchCategory === 'watched' ? (
+              <Eye className="h-8 w-8 text-emerald-500" />
             ) : searchType === 'person' ? (
               <User className="h-8 w-8" />
             ) : (
@@ -274,6 +439,8 @@ export function SearchResults() {
           <h2 className="text-xl font-bold text-foreground">
             {searchCategory === 'watchlist'
               ? 'Your watchlist is empty'
+              : searchCategory === 'watched'
+              ? 'No watched movies yet'
               : searchType === 'person'
               ? 'No actors or directors found'
               : 'No movies found'}
@@ -281,6 +448,8 @@ export function SearchResults() {
           <p className="mt-1 text-sm font-medium text-muted-foreground max-w-sm">
             {searchCategory === 'watchlist'
               ? 'Click the bookmark icon on any movie card or in movie details to save it to your personal watchlist.'
+              : searchCategory === 'watched'
+              ? 'Click the checkmark icon on any movie card or in movie details to keep track of movies you have watched.'
               : searchType === 'person'
               ? 'Try searching with another actor or director name.'
               : 'Try adjusting your search query or pick a different category.'}
