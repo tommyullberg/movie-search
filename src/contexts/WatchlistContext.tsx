@@ -52,7 +52,7 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
         overview: movie.overview || '',
         popularity: movie.popularity || 0,
         adult: movie.adult || false,
-        genre_ids: 'genre_ids' in movie ? movie.genre_ids : (movie.genres?.map((g) => g.id) || []),
+        genre_ids: 'genre_ids' in movie ? movie.genre_ids : ('genres' in movie && Array.isArray(movie.genres) ? movie.genres.map((g: { id: number }) => g.id) : []),
         original_language: movie.original_language || 'en',
         original_title: movie.original_title || movie.title,
         video: movie.video || false,

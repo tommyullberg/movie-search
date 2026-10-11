@@ -3,30 +3,43 @@ import { getMovieById, fetchSearchResults } from '../../utils/apiUtils';
 import { formatDate } from '../../utils/helpers';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { Modal } from '../Modal';
+import { PersonModal } from '../PersonModal';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
 import { motion } from 'framer-motion';
-import { Film, AlertCircle, Loader2, Bookmark } from 'lucide-react';
+import { Film, AlertCircle, Loader2, Bookmark, User } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
+import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
 import { useWatchlist } from '../../contexts/WatchlistContext';
 
 export interface SearchResult {
-  adult: boolean;
-  backdrop_path: string;
-  genre_ids: number[];
+  adult?: boolean;
+  backdrop_path?: string;
+  genre_ids?: number[];
   id: number;
-  original_language: string;
-  original_title: string;
-  overview: string;
+  original_language?: string;
+  original_title?: string;
+  overview?: string;
   popularity: number;
-  poster_path: string;
-  release_date: string;
-  title: string;
-  video: boolean;
-  vote_average: number;
-  vote_count: number;
+  poster_path?: string;
+  release_date?: string;
+  title?: string;
+  name?: string;
+  profile_path?: string | null;
+  known_for_department?: string;
+  media_type?: string;
+  known_for?: Array<{
+    id: number;
+    title?: string;
+    name?: string;
+    release_date?: string;
+    poster_path?: string | null;
+  }>;
+  video?: boolean;
+  vote_average?: number;
+  vote_count?: number;
 }
 
 export function SearchResults() {
@@ -47,32 +60,36 @@ export function SearchResults() {
     updateMovieData,
     searchType,
     advancedFilters,
+    selectedPersonId,
+    openMovieDetailDirect,
+    openPersonDetailDirect,
+    closeAllDetails,
   } = useSearchContext();
 
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
 
-  const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500 } = imageConfig;
+  const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500, URL_IMAGE_PROFILE_h632 } = imageConfig;
 
-  const openModal = async (movieId: number, event?: FormEvent<Element> | KeyboardEvent<Element>) => {
+  const openModal = (movieId: number, title?: string, event?: FormEvent<Element> | KeyboardEvent<Element>) => {
     if (event) event.preventDefault();
-    try {
-      const data = await getMovieById(movieId);
-      updateSelectedMovieId(movieId);
-      updateMovieData(data);
-    } catch (err) {
-      console.error('Error fetching movie details in openModal():', err);
+    openMovieDetailDirect(movieId, title);
+  };
+
+  const handleKeyDown = (movieId: number, title?: string, e?: KeyboardEvent<HTMLDivElement>) => {
+    if (e && (e.key === 'Enter' || e.key === ' ')) {
+      openModal(movieId, title, e);
     }
   };
 
-  const handleKeyDown = (movieId: number, e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      openModal(movieId, e);
-    }
+  const openPersonModal = (personId: number, name?: string, event?: FormEvent<Element> | KeyboardEvent<Element>) => {
+    if (event) event.preventDefault();
+    openPersonDetailDirect(personId, name);
   };
 
-  const closeModal = () => {
-    updateSelectedMovieId(0);
-    updateMovieData(null);
+  const handlePersonKeyDown = (personId: number, name?: string, e?: KeyboardEvent<HTMLDivElement>) => {
+    if (e && (e.key === 'Enter' || e.key === ' ')) {
+      openPersonModal(personId, name, e);
+    }
   };
 
   const handleLoadMore = async () => {
@@ -98,87 +115,144 @@ export function SearchResults() {
   }
 
   return (
-    <section aria-label="Movie search results" className="pb-16">
+    <section aria-label="Search results" className="pb-16">
       {selectedMovieId > 0 && (
-        <Modal movieId={selectedMovieId} isOpen={!!selectedMovieId} closeModal={closeModal} />
+        <Modal movieId={selectedMovieId} isOpen={!!selectedMovieId} closeModal={closeAllDetails} />
       )}
 
-      {/* Movie Cards Grid */}
+      {selectedPersonId > 0 && (
+        <PersonModal personId={selectedPersonId} isOpen={selectedPersonId > 0} closeModal={closeAllDetails} />
+      )}
+
+      {/* Cards Grid */}
       <div
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
         role="region"
         aria-live="polite"
-        aria-label="List of movies"
+        aria-label="List of search results"
       >
         {searchResults.map((result) => (
           <motion.div
-            key={result.id}
+            key={`${result.id}-${result.media_type || 'movie'}`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
             className="group"
           >
-            <Card
-              role="button"
-              tabIndex={0}
-              aria-haspopup="dialog"
-              aria-label={`View details for ${result.title}, released ${formatDate(result.release_date) || 'unknown date'}`}
-              onClick={(e) => openModal(result.id, e)}
-              onKeyDown={(e) => handleKeyDown(result.id, e)}
-              className="cursor-pointer overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
-            >
-              {/* Poster Image Container */}
-              <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
-                {result.poster_path ? (
-                  <img
-                    src={`${URL_IMAGE_POSTER_w342}${result.poster_path}`}
-                    srcSet={`${URL_IMAGE_POSTER_w342}${result.poster_path} 1x, ${URL_IMAGE_POSTER_w500}${result.poster_path} 2x`}
-                    alt="" // Empty alt because card aria-label already conveys the full movie title and date
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground" aria-hidden="true">
-                    <Film className="h-10 w-10 opacity-50" />
+            {result.media_type === 'person' || (result.name && !result.title) ? (
+              /* Person Card */
+              <Card
+                role="button"
+                tabIndex={0}
+                aria-haspopup="dialog"
+                aria-label={`View profile for ${result.name}`}
+                onClick={(e) => openPersonModal(result.id, result.name, e)}
+                onKeyDown={(e) => handlePersonKeyDown(result.id, result.name, e)}
+                className="cursor-pointer overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
+              >
+                {/* Profile Image Container */}
+                <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
+                  {result.profile_path ? (
+                    <img
+                      src={`${URL_IMAGE_PROFILE_h632}${result.profile_path}`}
+                      alt=""
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground" aria-hidden="true">
+                      <User className="h-12 w-12 opacity-40" />
+                    </div>
+                  )}
+
+                  {result.known_for_department && (
+                    <div className="absolute top-2 left-2 z-10">
+                      <Badge variant="secondary" className="text-[10px] font-bold shadow-md bg-background/85 backdrop-blur-xs border border-border">
+                        {result.known_for_department}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+
+                {/* Person Card Body */}
+                <CardContent className="p-3.5 flex flex-col justify-between flex-1">
+                  <div>
+                    <h2 className="line-clamp-2 text-sm sm:text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
+                      {result.name}
+                    </h2>
                   </div>
-                )}
+                  {result.known_for && result.known_for.length > 0 && (
+                    <p className="mt-2 line-clamp-2 text-xs text-muted-foreground font-medium">
+                      <span className="font-semibold text-foreground/80">Known for: </span>
+                      {result.known_for.map((k) => k.title || k.name).filter(Boolean).slice(0, 3).join(', ')}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              /* Movie Card */
+              <Card
+                role="button"
+                tabIndex={0}
+                aria-haspopup="dialog"
+                aria-label={`View details for ${result.title}, released ${formatDate(result.release_date || '') || 'unknown date'}`}
+                onClick={(e) => openModal(result.id, result.title, e)}
+                onKeyDown={(e) => handleKeyDown(result.id, result.title, e)}
+                className="cursor-pointer overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
+              >
+                {/* Poster Image Container */}
+                <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
+                  {result.poster_path ? (
+                    <img
+                      src={`${URL_IMAGE_POSTER_w342}${result.poster_path}`}
+                      srcSet={`${URL_IMAGE_POSTER_w342}${result.poster_path} 1x, ${URL_IMAGE_POSTER_w500}${result.poster_path} 2x`}
+                      alt=""
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground" aria-hidden="true">
+                      <Film className="h-10 w-10 opacity-50" />
+                    </div>
+                  )}
 
-                {/* Watchlist Bookmark toggle positioned top-left */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    toggleWatchlist(result);
-                  }}
-                  aria-label={isInWatchlist(result.id) ? `Remove ${result.title} from watchlist` : `Add ${result.title} to watchlist`}
-                  className={`absolute top-2 left-2 z-10 p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    isInWatchlist(result.id)
-                      ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 dark:text-amber-950'
-                      : 'bg-background/80 text-foreground hover:bg-background hover:text-amber-500'
-                  }`}
-                >
-                  <Bookmark className={`h-4 w-4 ${isInWatchlist(result.id) ? 'fill-current' : ''}`} />
-                </button>
+                  {/* Watchlist Bookmark toggle positioned top-left */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      toggleWatchlist(result as any);
+                    }}
+                    aria-label={isInWatchlist(result.id) ? `Remove ${result.title} from watchlist` : `Add ${result.title} to watchlist`}
+                    className={`absolute top-2 left-2 z-10 p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                      isInWatchlist(result.id)
+                        ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 dark:text-amber-950'
+                        : 'bg-background/80 text-foreground hover:bg-background hover:text-amber-500'
+                    }`}
+                  >
+                    <Bookmark className={`h-4 w-4 ${isInWatchlist(result.id) ? 'fill-current' : ''}`} />
+                  </button>
 
-                {/* Rating Gauge positioned top-right */}
-                <div className="absolute top-2 right-2 w-11 h-11 drop-shadow-md">
-                  <GaugeSVG id={result.id} vote_average={result.vote_average} />
+                  {/* Rating Gauge positioned top-right */}
+                  <div className="absolute top-2 right-2 w-11 h-11 drop-shadow-md">
+                    <GaugeSVG id={result.id} vote_average={result.vote_average || 0} />
+                  </div>
                 </div>
-              </div>
 
-              {/* Card Body */}
-              <CardContent className="p-3.5 flex flex-col justify-between flex-1">
-                <div>
-                  <h2 className="line-clamp-2 text-sm sm:text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
-                    {result.title}
-                  </h2>
-                </div>
-                <p className="mt-2 text-xs sm:text-sm font-semibold text-muted-foreground">
-                  {formatDate(result.release_date) || 'Unknown date'}
-                </p>
-              </CardContent>
-            </Card>
+                {/* Card Body */}
+                <CardContent className="p-3.5 flex flex-col justify-between flex-1">
+                  <div>
+                    <h2 className="line-clamp-2 text-sm sm:text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
+                      {result.title}
+                    </h2>
+                  </div>
+                  <p className="mt-2 text-xs sm:text-sm font-semibold text-muted-foreground">
+                    {formatDate(result.release_date || '') || 'Unknown date'}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </motion.div>
         ))}
 
@@ -196,21 +270,29 @@ export function SearchResults() {
       </div>
 
       {/* Empty State */}
-      {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory) && (
+      {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory || advancedFilters.genre || advancedFilters.year) && (
         <div role="status" className="my-16 flex flex-col items-center justify-center text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground" aria-hidden="true">
             {searchCategory === 'watchlist' ? (
               <Bookmark className="h-8 w-8 text-amber-500" />
+            ) : searchType === 'person' ? (
+              <User className="h-8 w-8" />
             ) : (
               <Film className="h-8 w-8" />
             )}
           </div>
           <h2 className="text-xl font-bold text-foreground">
-            {searchCategory === 'watchlist' ? 'Your watchlist is empty' : 'No movies found'}
+            {searchCategory === 'watchlist'
+              ? 'Your watchlist is empty'
+              : searchType === 'person'
+              ? 'No actors or directors found'
+              : 'No movies found'}
           </h2>
           <p className="mt-1 text-sm font-medium text-muted-foreground max-w-sm">
             {searchCategory === 'watchlist'
               ? 'Click the bookmark icon on any movie card or in movie details to save it to your personal watchlist.'
+              : searchType === 'person'
+              ? 'Try searching with another actor or director name.'
               : 'Try adjusting your search query or pick a different category.'}
           </p>
         </div>

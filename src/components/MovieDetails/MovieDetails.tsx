@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
 import { imageConfig } from '../../config/imageConfig';
-import { getMovieById } from '../../utils/apiUtils';
 import { formatDate, formatYear } from '../../utils/helpers';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -28,7 +27,13 @@ const formatCurrency = (amount: number): string => {
 };
 
 export function MovieDetails() {
-  const { movieData, updateSelectedMovieId, updateMovieData } = useSearchContext();
+  const {
+    movieData,
+    detailHistory,
+    navigateToMovie,
+    navigateToPerson,
+    goBackDetail,
+  } = useSearchContext();
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
@@ -116,13 +121,17 @@ export function MovieDetails() {
     ? `Available for rent & buy in ${activeCountry}`
     : `Where to Watch in ${activeCountry}`;
 
-  const handleSelectMovie = async (newMovieId: number) => {
+  const hasPrevious = detailHistory.length > 1;
+  const previousItem = hasPrevious ? detailHistory[detailHistory.length - 2] : null;
+  const previousTitle = previousItem
+    ? previousItem.title || (previousItem.type === 'movie' ? 'Movie' : 'Person')
+    : '';
+
+  const handleSelectMovie = async (newMovieId: number, title?: string) => {
     try {
       setIsLoadingRelated(true);
       setShowTrailer(false);
-      const data = await getMovieById(newMovieId);
-      updateSelectedMovieId(newMovieId);
-      updateMovieData(data);
+      await navigateToMovie(newMovieId, title);
       setIsLoadingRelated(false);
 
       // Smoothly scroll back to the top of the dialog
@@ -138,6 +147,19 @@ export function MovieDetails() {
 
   return (
     <div className="relative flex flex-col overflow-x-hidden text-foreground">
+      {/* Back button when navigating between detail views */}
+      {hasPrevious && previousItem && (
+        <button
+          type="button"
+          onClick={() => goBackDetail()}
+          className="fixed sm:absolute left-3 top-3 z-50 inline-flex items-center gap-1.5 rounded-full bg-background/85 px-3 py-1.5 text-xs font-semibold text-foreground/90 backdrop-blur-md shadow-lg transition-all hover:bg-background hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring border border-border cursor-pointer"
+          aria-label={`Back to ${previousTitle}`}
+        >
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+          <span className="truncate max-w-[130px] sm:max-w-[240px]">Back to {previousTitle}</span>
+        </button>
+      )}
+
       {/* Backdrop Header with adaptive height */}
       {movieData.backdrop_path && (
         <div className="relative h-44 sm:h-64 lg:h-80 w-full overflow-hidden bg-background">
@@ -152,7 +174,7 @@ export function MovieDetails() {
       )}
 
       {/* Main Content Area */}
-      <div className={`p-4 sm:p-6 lg:p-8 ${movieData.backdrop_path ? '-mt-16 sm:-mt-24 lg:-mt-32 relative z-10' : ''}`}>
+      <div className={`p-4 sm:p-6 lg:p-8 ${movieData.backdrop_path ? '-mt-16 sm:-mt-24 lg:-mt-32 relative z-10' : hasPrevious ? 'pt-14 sm:pt-16' : ''}`}>
         <div className="flex flex-col sm:flex-row gap-5 lg:gap-8 items-start">
           {/* Movie Poster */}
           <div className="w-28 sm:w-44 lg:w-56 shrink-0 rounded-xl overflow-hidden shadow-2xl border-2 border-border bg-muted">
@@ -223,7 +245,14 @@ export function MovieDetails() {
               {director && (
                 <div className="flex items-center gap-1 text-foreground">
                   <span className="text-muted-foreground font-normal">Director:</span>
-                  <span>{director.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => navigateToPerson(director.id, director.name)}
+                    className="font-semibold text-foreground hover:text-primary hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded px-0.5 cursor-pointer"
+                    aria-label={`View profile for director ${director.name}`}
+                  >
+                    {director.name}
+                  </button>
                 </div>
               )}
             </div>
@@ -464,17 +493,20 @@ export function MovieDetails() {
             </h3>
             <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
               {topCast.map((actor) => (
-                <div
+                <button
                   key={actor.id}
-                  className="flex flex-col rounded-xl border border-border/70 bg-card/60 p-2 text-center transition-all hover:bg-card hover:border-border"
+                  type="button"
+                  onClick={() => navigateToPerson(actor.id, actor.name)}
+                  aria-label={`View profile for ${actor.name}, played ${actor.character}`}
+                  className="group flex flex-col rounded-xl border border-border/70 bg-card/60 p-2 text-center transition-all hover:bg-card hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
                 >
-                  <div className="mx-auto mb-2 aspect-square w-14 sm:w-16 rounded-full overflow-hidden bg-muted border border-border/80 shrink-0">
+                  <div className="mx-auto mb-2 aspect-square w-14 sm:w-16 rounded-full overflow-hidden bg-muted border border-border/80 shrink-0 group-hover:border-primary transition-colors">
                     {actor.profile_path ? (
                       <img
                         src={`${URL_IMAGE_PROFILE_w185}${actor.profile_path}`}
-                        alt={actor.name}
+                        alt=""
                         loading="lazy"
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover group-hover:scale-105 transition-transform"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-muted-foreground bg-muted">
@@ -482,13 +514,13 @@ export function MovieDetails() {
                       </div>
                     )}
                   </div>
-                  <p className="line-clamp-1 text-xs sm:text-sm font-bold text-foreground">
+                  <p className="line-clamp-1 text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
                     {actor.name}
                   </p>
                   <p className="line-clamp-1 text-xs text-muted-foreground font-medium">
                     {actor.character}
                   </p>
-                </div>
+                </button>
               ))}
             </div>
           </section>
@@ -506,7 +538,7 @@ export function MovieDetails() {
                 <button
                   key={rec.id}
                   type="button"
-                  onClick={() => handleSelectMovie(rec.id)}
+                  onClick={() => handleSelectMovie(rec.id, rec.title)}
                   disabled={isLoadingRelated}
                   aria-label={`View details for recommended movie ${rec.title}`}
                   className="group flex flex-col rounded-xl border border-border bg-card/60 overflow-hidden text-left transition-all hover:bg-card hover:border-primary hover:shadow-lg hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring outline-none"

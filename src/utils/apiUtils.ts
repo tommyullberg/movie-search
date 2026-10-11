@@ -1,4 +1,5 @@
 import { MovieDetailsModel } from '../model/MovieDetailsModel';
+import { PersonDetailsModel, PersonSearchResult } from '../model/PersonDetailsModel';
 
 const apiReadAccessToken = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
 
@@ -109,22 +110,14 @@ export async function fetchSearchResults(
       }
       const data = await response.json();
 
-      // If searching for person, extract known_for movie credits
+      // If searching for person, return matching actors/directors as person cards
       if (searchType === 'person' && searchTerm.trim() !== '') {
-        const people = (data.results as Array<{ known_for?: Array<{ id: number; title?: string }> }>) || [];
-        const movies: unknown[] = [];
-        const seenIds = new Set<number>();
-        for (const person of people) {
-          if (Array.isArray(person.known_for)) {
-            for (const item of person.known_for) {
-              if (item && item.id && item.title && !seenIds.has(item.id)) {
-                seenIds.add(item.id);
-                movies.push(item);
-              }
-            }
-          }
-        }
-        return { results: movies, totalPages: data.total_pages || 0 };
+        const people = (data.results as Array<PersonSearchResult>) || [];
+        const mappedPeople: PersonSearchResult[] = people.map((p) => ({
+          ...p,
+          media_type: 'person' as const,
+        }));
+        return { results: mappedPeople, totalPages: data.total_pages || 0 };
       }
 
       // If searching for keyword, discover movies with top matched keywords
@@ -167,6 +160,29 @@ export async function getMovieById(
     }
   } catch (error) {
     console.error('Error fetching movie details from API:', error);
+  }
+
+  return null;
+}
+
+export async function getPersonById(
+  personId: number
+): Promise<PersonDetailsModel | null> {
+  try {
+    if (personId > 0) {
+      const url = `https://api.themoviedb.org/3/person/${personId}?language=en-US&append_to_response=movie_credits,external_ids`;
+      const response = await fetch(url, requestOptions);
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      return {
+        ...data,
+        imdb_id: data.imdb_id || data.external_ids?.imdb_id || null,
+      } as PersonDetailsModel;
+    }
+  } catch (error) {
+    console.error('Error fetching person details from API:', error);
   }
 
   return null;
