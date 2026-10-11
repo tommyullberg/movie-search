@@ -31,4 +31,4 @@ export {
   MovieRecommendationsSection,
 } from './movie-details';
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
-
+export { AdvancedFiltersPanel, type AdvancedFiltersPanelProps } from './search/AdvancedFiltersPanel';
