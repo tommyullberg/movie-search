@@ -2,7 +2,7 @@ import React, { FormEvent, KeyboardEvent, useState, useRef } from 'react';
 import { getMovieById, fetchSearchResults } from '../utils/apiUtils';
 import { formatDate } from '../utils/helpers';
 import { useSearchContext } from '../contexts/SearchContext';
-import { GaugeSVG } from './GaugeSVG';
+import { GaugeSVG } from './ui/gauge';
 import { imageConfig } from '../config/imageConfig';
 import { motion } from 'framer-motion';
 import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X, Star, MessageSquare, Dices } from 'lucide-react';
@@ -12,6 +12,7 @@ import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
 import { useWatchlist, LibrarySortOption } from '../contexts/WatchlistContext';
 import { SearchResult } from '../types';
+import { ActionButton } from './buttons/ActionButton';
 
 export type { SearchResult };
 
@@ -340,41 +341,8 @@ export function SearchResults() {
 
                   {/* Watchlist & Watched toggles positioned top-left */}
                   <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        toggleWatchlist(result as any);
-                      }}
-                      aria-label={isInWatchlist(result.id) ? `Remove ${result.title} from watchlist` : `Add ${result.title} to watchlist`}
-                      title={isInWatchlist(result.id) ? 'In Watchlist' : 'Add to Watchlist'}
-                      className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer ${
-                        isInWatchlist(result.id)
-                          ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 dark:text-amber-950'
-                          : 'bg-background/80 text-foreground hover:bg-background hover:text-amber-500'
-                      }`}
-                    >
-                      <Bookmark className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isInWatchlist(result.id) ? 'fill-current' : ''}`} />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        toggleWatched(result as any);
-                      }}
-                      aria-label={isWatched(result.id) ? `Remove ${result.title} from watched` : `Mark ${result.title} as watched`}
-                      title={isWatched(result.id) ? 'Watched' : 'Mark as Watched'}
-                      className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer ${
-                        isWatched(result.id)
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-500'
-                          : 'bg-background/80 text-foreground hover:bg-background hover:text-emerald-500'
-                      }`}
-                    >
-                      <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    </button>
+                    <ActionButton type="watchlist" variant="icon" movie={result} />
+                    <ActionButton type="watched" variant="icon" movie={result} />
                   </div>
 
                   {/* Rating Gauge positioned top-right */}

@@ -19,11 +19,12 @@ import {
 import { useSearchContext } from '../contexts/SearchContext';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { fetchSearchResults, TMDB_GENRES, TMDB_STREAMING_PROVIDERS_SE, SearchType } from '../utils/apiUtils';
-import { SearchResult } from './SearchResults';
+import { SearchResult } from '../types';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SurprisePickerModal } from './SurprisePickerModal';
+import { CategoryPill } from './buttons/CategoryPill';
 
 const CATEGORIES = [
   { key: 'nowplaying', label: 'In Theaters', icon: Clapperboard },
@@ -412,115 +413,51 @@ export function SearchForm() {
 
         {/* Discovery Categories Row */}
         <div role="group" aria-label="Quick movie categories" className="mt-3 flex flex-wrap items-center justify-center gap-2">
-          {CATEGORIES.map(({ key, label, icon: Icon }) => {
-            const isActive = searchCategory === key;
-            return (
-              <Button
-                key={key}
-                type="button"
-                variant={isActive ? 'default' : 'outline'}
-                size="sm"
-                disabled={isLoading}
-                aria-pressed={isActive}
-                aria-label={`Show ${label} movies`}
-                onClick={() => handleCategoryClick(key)}
-                className={`rounded-full transition-all border ${
-                  isActive
-                    ? 'font-bold ring-2 ring-primary/40 shadow-sm'
-                    : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
-                }`}
-              >
-                <Icon className={`h-3.5 w-3.5 mr-1.5 ${isActive ? 'text-primary-foreground' : 'text-primary'}`} aria-hidden="true" />
-                <span className="inline-block chrome-text-adjust">{label}</span>
-              </Button>
-            );
-          })}
+          {CATEGORIES.map(({ key, label, icon: Icon }) => (
+            <CategoryPill
+              key={key}
+              label={label}
+              icon={Icon}
+              isActive={searchCategory === key}
+              disabled={isLoading}
+              aria-label={`Show ${label} movies`}
+              onClick={() => handleCategoryClick(key)}
+            />
+          ))}
         </div>
 
         {/* Dedicated Library Row: Watchlist and Watched */}
         <div role="group" aria-label="Personal movie lists" className="mt-2.5 flex items-center justify-center gap-2.5">
-          {/* Watchlist Filter Button */}
-          <Button
-            type="button"
-            variant={searchCategory === 'watchlist' ? 'default' : 'outline'}
-            size="sm"
+          <CategoryPill
+            label="Watchlist"
+            icon={Bookmark}
+            isActive={searchCategory === 'watchlist'}
+            activeVariant="amber"
+            count={watchlist.length}
             disabled={isLoading}
-            aria-pressed={searchCategory === 'watchlist'}
             aria-label={`Show Watchlist, ${watchlist.length} saved movies`}
             onClick={handleWatchlistClick}
-            className={`rounded-full transition-all border ${
-              searchCategory === 'watchlist'
-                ? 'font-bold ring-2 ring-amber-500/40 bg-amber-500 text-black hover:bg-amber-600 shadow-sm'
-                : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
-            }`}
-          >
-            <Bookmark
-              className={`h-3.5 w-3.5 mr-1.5 ${searchCategory === 'watchlist' ? 'fill-current text-black' : 'text-amber-500'}`}
-              aria-hidden="true"
-            />
-            <span className="inline-block chrome-text-adjust">Watchlist</span>
-            {watchlist.length > 0 && (
-              <span
-                className={`ml-1.5 inline-block chrome-text-adjust rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
-                  searchCategory === 'watchlist' ? 'bg-black/20 text-black' : 'bg-secondary text-foreground'
-                }`}
-              >
-                {watchlist.length}
-              </span>
-            )}
-          </Button>
+          />
 
-          {/* Watched Filter Button */}
-          <Button
-            type="button"
-            variant={searchCategory === 'watched' ? 'default' : 'outline'}
-            size="sm"
+          <CategoryPill
+            label="Watched"
+            icon={Eye}
+            isActive={searchCategory === 'watched'}
+            activeVariant="emerald"
+            count={watchedList.length}
             disabled={isLoading}
-            aria-pressed={searchCategory === 'watched'}
             aria-label={`Show Watched movies, ${watchedList.length} movies watched`}
             onClick={handleWatchedClick}
-            className={`rounded-full transition-all border ${
-              searchCategory === 'watched'
-                ? 'font-bold ring-2 ring-emerald-500/40 bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
-                : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
-            }`}
-          >
-            <Eye
-              className={`h-3.5 w-3.5 mr-1.5 ${searchCategory === 'watched' ? 'text-white' : 'text-emerald-500'}`}
-              aria-hidden="true"
-            />
-            <span className="inline-block chrome-text-adjust">Watched</span>
-            {watchedList.length > 0 && (
-              <span
-                className={`ml-1.5 inline-block chrome-text-adjust rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
-                  searchCategory === 'watched' ? 'bg-white/20 text-white' : 'bg-secondary text-foreground'
-                }`}
-              >
-                {watchedList.length}
-              </span>
-            )}
-          </Button>
+          />
 
-          {/* Random Movie Picker Toggle Button */}
-          <Button
-            type="button"
-            variant={isSurpriseModalOpen ? 'default' : 'outline'}
-            size="sm"
+          <CategoryPill
+            label="Surprise Me"
+            icon={Dices}
+            isActive={isSurpriseModalOpen}
             disabled={isLoading}
             aria-label="Pick a random movie from top 50 with animated card reel"
             onClick={() => setIsSurpriseModalOpen(true)}
-            className={`rounded-full transition-all border ${
-              isSurpriseModalOpen
-                ? 'font-bold ring-2 ring-primary/40 bg-primary text-primary-foreground shadow-sm'
-                : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
-            }`}
-          >
-            <Dices
-              className={`h-3.5 w-3.5 mr-1.5 ${isSurpriseModalOpen ? 'text-primary-foreground' : 'text-primary'}`}
-              aria-hidden="true"
-            />
-            <span className="inline-block chrome-text-adjust">Surprise Me</span>
-          </Button>
+          />
         </div>
 
         {/* Surprise Picker Slot Machine Reel Modal */}
@@ -528,6 +465,7 @@ export function SearchForm() {
           isOpen={isSurpriseModalOpen}
           onClose={() => setIsSurpriseModalOpen(false)}
           watchlist={watchlist}
+          watchedList={watchedList}
           initialSource={searchCategory || 'trending'}
           onSelectWinner={handleSelectWinner}
           onOpenDetails={(movieId, title) => openMovieDetailDirect(movieId, title)}

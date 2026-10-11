@@ -95,3 +95,5 @@ export function GaugeSVG({ id, vote_average }: GaugeSVGProps) {
     </svg>
   );
 }
+
+export { GaugeSVG as Gauge };

@@ -29,6 +29,7 @@ interface SurprisePickerModalProps {
   isOpen: boolean;
   onClose: () => void;
   watchlist: SearchResult[];
+  watchedList?: SearchResult[];
   initialSource?: string;
   onSelectWinner: (movie: SearchResult, pool: SearchResult[]) => void;
   onOpenDetails: (movieId: number, title?: string) => void;
@@ -161,11 +162,20 @@ export function SurprisePickerModal({
   isOpen,
   onClose,
   watchlist,
+  watchedList = [],
   initialSource = 'trending',
   onSelectWinner,
   onOpenDetails,
 }: SurprisePickerModalProps) {
-  const [source, setSource] = useState(initialSource);
+  const getNormalizedSource = (src: string) => {
+    const valid = ['watchlist', 'watched', 'trending', 'popular', 'toprated', 'nowplaying', 'upcoming'];
+    if (valid.includes(src) || src.startsWith('genre_')) {
+      return src;
+    }
+    return 'trending';
+  };
+
+  const [source, setSource] = useState(() => getNormalizedSource(initialSource));
   const [isLoadingPool, setIsLoadingPool] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [candidates, setCandidates] = useState<SearchResult[]>([]);
@@ -213,8 +223,9 @@ export function SurprisePickerModal({
   // Start initial shuffle when modal opens
   useEffect(() => {
     if (isOpen) {
-      setSource(initialSource);
-      startNewShuffle(initialSource);
+      const normalized = getNormalizedSource(initialSource);
+      setSource(normalized);
+      startNewShuffle(normalized);
     } else {
       if (animationControlsRef.current) {
         animationControlsRef.current.stop();
@@ -222,11 +233,12 @@ export function SurprisePickerModal({
     }
   }, [isOpen]);
 
-
-
   const fetchTop50 = async (chosenSource: string): Promise<SearchResult[]> => {
     if (chosenSource === 'watchlist') {
       return watchlist.slice(0, 50);
+    }
+    if (chosenSource === 'watched') {
+      return watchedList.slice(0, 50);
     }
 
     const isGenre = chosenSource.startsWith('genre_');
@@ -269,6 +281,8 @@ export function SurprisePickerModal({
       if (top50.length === 0) {
         if (chosenSource === 'watchlist') {
           setErrorMessage('Your watchlist is empty. Add movies first!');
+        } else if (chosenSource === 'watched') {
+          setErrorMessage('Your watched list is empty. Mark movies as watched first!');
         } else {
           setErrorMessage('Could not find any movies for the selected category.');
         }
@@ -403,6 +417,7 @@ export function SurprisePickerModal({
                 className="h-8 pl-3 pr-8 rounded-lg bg-background border border-border text-xs font-semibold text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary appearance-none disabled:opacity-50"
               >
                 <option value="watchlist">Watchlist ({watchlist.length})</option>
+                <option value="watched">Watched ({watchedList.length})</option>
                 <option value="trending">Trending</option>
                 <option value="popular">Popular</option>
                 <option value="toprated">Top Rated</option>

@@ -7,6 +7,7 @@ import { formatDate, formatYear } from '../utils/helpers';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { DialogTitle, DialogDescription } from './ui/dialog';
+import { ActionButton } from './buttons/ActionButton';
 
 const formatMinutesToTime = (minutes: number): string => {
   if (isNaN(minutes) || minutes <= 0) return '';
@@ -37,7 +38,6 @@ export function MovieDetails() {
   const { isInWatchlist, toggleWatchlist, isWatched, toggleWatched, getReview, saveReview, deleteReview } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [tempNotes, setTempNotes] = useState('');
 
@@ -150,34 +150,16 @@ export function MovieDetails() {
     }
   };
 
-  const handleShare = async () => {
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set('movie', String(movieData.id));
-      url.searchParams.delete('person');
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(url.toString());
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2500);
-      }
-    } catch (err) {
-      console.error('Error copying share link:', err);
-    }
-  };
-
   return (
     <div className="relative flex flex-col overflow-x-hidden text-foreground">
       {/* Back button when navigating between detail views */}
       {hasPrevious && previousItem && (
-        <button
-          type="button"
-          onClick={() => goBackDetail()}
-          className="fixed sm:absolute left-3 top-3 z-50 inline-flex items-center gap-1.5 rounded-full bg-background/85 px-3 py-1.5 text-xs font-semibold text-foreground/90 backdrop-blur-md shadow-lg transition-all hover:bg-background hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring border border-border cursor-pointer"
-          aria-label={`Back to ${previousTitle}`}
-        >
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-          <span className="truncate max-w-[130px] sm:max-w-[240px]">Back to {previousTitle}</span>
-        </button>
+        <ActionButton
+          type="back"
+          targetTitle={previousTitle}
+          onBack={goBackDetail}
+          className="fixed sm:absolute left-3 top-3 z-50"
+        />
       )}
 
       {/* Backdrop Header with adaptive height */}
@@ -286,37 +268,8 @@ export function MovieDetails() {
 
             {/* User Library Actions: Watchlist & Watched on their own dedicated row */}
             <div className="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5">
-              <Button
-                variant={isSaved ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => toggleWatchlist(movieData)}
-                aria-pressed={isSaved}
-                aria-label={isSaved ? `Remove ${movieData.title} from Watchlist` : `Add ${movieData.title} to Watchlist`}
-                className={`w-[9.75rem] justify-center rounded-lg font-semibold transition-all border-border ${
-                  isSaved
-                    ? 'bg-amber-500 hover:bg-amber-600 text-black font-bold'
-                    : 'text-foreground hover:bg-secondary'
-                }`}
-              >
-                <Bookmark className={`h-3.5 w-3.5 mr-1.5 shrink-0 ${isSaved ? 'fill-current' : ''}`} aria-hidden="true" />
-                <span>{isSaved ? 'In Watchlist' : 'Add to Watchlist'}</span>
-              </Button>
-
-              <Button
-                variant={isWatchedMovie ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => toggleWatched(movieData)}
-                aria-pressed={isWatchedMovie}
-                aria-label={isWatchedMovie ? `Remove ${movieData.title} from Watched` : `Mark ${movieData.title} as Watched`}
-                className={`w-[9.75rem] justify-center rounded-lg font-semibold transition-all border-border ${
-                  isWatchedMovie
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold'
-                    : 'text-foreground hover:bg-secondary'
-                }`}
-              >
-                <Eye className="h-3.5 w-3.5 mr-1.5 shrink-0" aria-hidden="true" />
-                <span>{isWatchedMovie ? 'Watched' : 'Mark as Watched'}</span>
-              </Button>
+              <ActionButton type="watchlist" movie={movieData} />
+              <ActionButton type="watched" movie={movieData} />
             </div>
 
             {/* External Links & Media Actions: Trailer, IMDb, Website, Share */}
@@ -374,25 +327,7 @@ export function MovieDetails() {
                 </Button>
               )}
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShare}
-                aria-label={`Share link for ${movieData.title}`}
-                className="rounded-lg font-semibold border-border transition-all"
-              >
-                {isCopied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" aria-hidden="true" />
-                    <span>Link Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-                    <span>Share</span>
-                  </>
-                )}
-              </Button>
+              <ActionButton type="share" movie={movieData} />
             </div>
 
             {/* Key Facts & Financials Box */}

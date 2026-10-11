@@ -10,6 +10,7 @@ import {
 } from './ui/dialog';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import { ActionButton } from './buttons/ActionButton';
 import {
   User,
   Calendar,
@@ -32,7 +33,6 @@ interface PersonDetailsProps {
 
 export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
   const { detailHistory, navigateToMovie, goBackDetail } = useSearchContext();
 
   const {
@@ -65,21 +65,6 @@ export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
       await navigateToMovie(movieId, title);
     } catch (err) {
       console.error('Error opening movie from filmography:', err);
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set('person', String(personData.id));
-      url.searchParams.delete('movie');
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(url.toString());
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2500);
-      }
-    } catch (err) {
-      console.error('Error copying person share link:', err);
     }
   };
 
@@ -141,17 +126,12 @@ export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
       {/* Back button when navigating between detail views */}
       {hasPrevious && previousItem && (
         <div className="mb-4 -mt-1 sm:-mt-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => goBackDetail()}
-            className="inline-flex items-center gap-1.5 h-8 text-xs font-semibold rounded-full border-border bg-card hover:bg-accent shadow-sm"
-            aria-label={`Back to ${previousTitle}`}
-          >
-            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="truncate max-w-[180px] sm:max-w-[320px]">Back to {previousTitle}</span>
-          </Button>
+          <ActionButton
+            type="back"
+            targetTitle={previousTitle}
+            onBack={goBackDetail}
+            className="h-8 border-border bg-card hover:bg-accent shadow-sm"
+          />
         </div>
       )}
 
@@ -233,25 +213,12 @@ export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
               </Button>
             )}
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleShare}
-              aria-label={`Share profile for ${personData.name}`}
-              className="rounded-lg font-semibold border-border text-xs transition-all"
-            >
-              {isCopied ? (
-                <>
-                  <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" aria-hidden="true" />
-                  <span>Link Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-                  <span>Share</span>
-                </>
-              )}
-            </Button>
+            <ActionButton
+              type="share"
+              shareParam={{ key: 'person', value: personData.id }}
+              shareTitle={personData.name}
+              className="text-xs"
+            />
           </div>
         </div>
       </div>
