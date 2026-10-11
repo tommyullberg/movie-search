@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { imageConfig } from '../../config/imageConfig';
 import { getMovieById } from '../../utils/apiUtils';
@@ -27,7 +27,8 @@ export function MovieDetails() {
     URL_IMAGE_POSTER_w342,
     URL_IMAGE_POSTER_w500,
     URL_IMAGE_POSTER_w780,
-    URL_IMAGE_PROFILE_w185
+    URL_IMAGE_PROFILE_w185,
+    URL_IMAGE_LOGO_w92
   } = imageConfig;
 
   if (!movieData) return null;
@@ -51,6 +52,51 @@ export function MovieDetails() {
 
   // Top 8 recommended movies
   const recommendations = movieData.recommendations?.results?.slice(0, 8) || [];
+
+  // Extract streaming providers (prefer Sweden SE, fallback to US)
+  const watchResults = movieData['watch/providers']?.results;
+  const seProviders = watchResults?.SE;
+  const usProviders = watchResults?.US;
+
+  const hasSeContent = !!(
+    seProviders?.flatrate?.length ||
+    seProviders?.free?.length ||
+    seProviders?.ads?.length ||
+    seProviders?.rent?.length ||
+    seProviders?.buy?.length
+  );
+
+  const activeCountry = hasSeContent ? 'Sweden' : 'US';
+  const activeData = hasSeContent ? seProviders : usProviders;
+
+  const freeStreamingServices = activeData?.free || [];
+  const subscriptionServices = activeData?.flatrate || [];
+  const adsServices = activeData?.ads || [];
+
+  const streamServices = Array.from(
+    new Map(
+      [...subscriptionServices, ...freeStreamingServices, ...adsServices].map((p) => [p.provider_id, p])
+    ).values()
+  );
+
+  const rentServices = activeData?.rent || [];
+  const buyServices = activeData?.buy || [];
+
+  const rentBuyServices = Array.from(
+    new Map([...rentServices, ...buyServices].map((p) => [p.provider_id, p])).values()
+  );
+
+  const hasStreaming = streamServices.length > 0;
+  const hasRentBuy = rentBuyServices.length > 0;
+
+  // Determine smart section heading
+  const whereToWatchHeading = hasStreaming && !hasRentBuy
+    ? (freeStreamingServices.length > 0 && subscriptionServices.length === 0
+        ? `Available for free streaming in ${activeCountry}`
+        : `Available to stream in ${activeCountry}`)
+    : !hasStreaming && hasRentBuy
+    ? `Available for rent & buy in ${activeCountry}`
+    : `Where to Watch in ${activeCountry}`;
 
   const handleSelectMovie = async (newMovieId: number) => {
     try {
@@ -256,6 +302,91 @@ export function MovieDetails() {
                 className="absolute inset-0 h-full w-full border-0"
               />
             </div>
+          </section>
+        )}
+
+        {/* Where to Watch (Streaming & Buy/Rent Providers) */}
+        {(hasStreaming || hasRentBuy) && (
+          <section aria-labelledby="providers-heading" className="mt-8 pt-6 border-t border-border">
+            <div className="flex items-center justify-between mb-3">
+              <h3 id="providers-heading" className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+                <Tv className="h-4 w-4 text-primary" aria-hidden="true" />
+                <span>{whereToWatchHeading}</span>
+              </h3>
+              {activeData?.link && (
+                <a
+                  href={activeData.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs text-muted-foreground hover:text-foreground underline flex items-center gap-1"
+                >
+                  <span>JustWatch</span>
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                </a>
+              )}
+            </div>
+
+            {/* Streaming Services (Subscription / Free) */}
+            {hasStreaming && (
+              <div className="mb-4">
+                {hasRentBuy && (
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">
+                    {freeStreamingServices.length > 0 && subscriptionServices.length === 0
+                      ? `Free streaming in ${activeCountry}:`
+                      : `Stream in ${activeCountry}:`}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-2.5 sm:gap-3">
+                  {streamServices.map((provider) => (
+                    <div
+                      key={provider.provider_id}
+                      title={provider.provider_name}
+                      className="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-2.5 py-1.5 shadow-sm hover:border-foreground/30 transition-all"
+                    >
+                      <img
+                        src={`${URL_IMAGE_LOGO_w92}${provider.logo_path}`}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-7 w-7 rounded-lg object-cover shadow-sm"
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-foreground">
+                        {provider.provider_name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Rent or Buy Option */}
+            {hasRentBuy && (
+              <div>
+                {hasStreaming && (
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">
+                    Available for rent & buy in {activeCountry}:
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-2.5 sm:gap-3">
+                  {rentBuyServices.map((provider) => (
+                    <div
+                      key={provider.provider_id}
+                      title={provider.provider_name}
+                      className="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-2.5 py-1.5 shadow-sm hover:border-foreground/30 transition-all"
+                    >
+                      <img
+                        src={`${URL_IMAGE_LOGO_w92}${provider.logo_path}`}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-7 w-7 rounded-lg object-cover shadow-sm"
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-foreground">
+                        {provider.provider_name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
         )}
 

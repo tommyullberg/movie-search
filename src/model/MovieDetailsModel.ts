@@ -32,6 +32,22 @@ export interface RecommendedMovie {
   vote_average: number;
 }
 
+export interface WatchProviderItem {
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+  display_priority: number;
+}
+
+export interface WatchProviderCountry {
+  link?: string;
+  flatrate?: WatchProviderItem[];
+  free?: WatchProviderItem[];
+  ads?: WatchProviderItem[];
+  rent?: WatchProviderItem[];
+  buy?: WatchProviderItem[];
+}
+
 export interface MovieDetailsModel {
   adult: boolean;
   backdrop_path: string;
@@ -87,5 +103,8 @@ export interface MovieDetailsModel {
   };
   recommendations?: {
     results: RecommendedMovie[];
+  };
+  'watch/providers'?: {
+    results: Record<string, WatchProviderCountry>;
   };
 }
