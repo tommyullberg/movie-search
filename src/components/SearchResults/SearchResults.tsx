@@ -1,13 +1,15 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, KeyboardEvent } from 'react';
 import { getMovieById, fetchSearchResults } from '../../utils/apiUtils';
 import { formatDate } from '../../utils/helpers';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { Modal } from '../Modal';
-import { MovieDetails } from '../MovieDetails';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
-import { AnimatePresence, motion } from 'framer-motion';
-import styles from './SearchResults.module.css';
+import { motion } from 'framer-motion';
+import { Film, AlertCircle, Loader2 } from 'lucide-react';
+import { Card, CardContent } from '../ui/card';
+import { Skeleton } from '../ui/skeleton';
+import { Button } from '../ui/button';
 
 export interface SearchResult {
   adult: boolean;
@@ -27,8 +29,8 @@ export interface SearchResult {
 }
 
 export function SearchResults() {
-  const { 
-    searchResults, 
+  const {
+    searchResults,
     isLoading,
     isFetchingMore,
     page,
@@ -38,22 +40,28 @@ export function SearchResults() {
     appendSearchResults,
     updatePage,
     updateIsFetchingMore,
-    error, 
-    selectedMovieId, 
-    updateSelectedMovieId, 
-    updateMovieData 
+    error,
+    selectedMovieId,
+    updateSelectedMovieId,
+    updateMovieData,
   } = useSearchContext();
 
   const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500 } = imageConfig;
 
-  const openModal = async (movieId: number, event: FormEvent<Element>) => {
-    event.preventDefault();
+  const openModal = async (movieId: number, event?: FormEvent<Element> | KeyboardEvent<Element>) => {
+    if (event) event.preventDefault();
     try {
       const data = await getMovieById(movieId);
       updateSelectedMovieId(movieId);
       updateMovieData(data);
     } catch (err) {
       console.error('Error fetching movie details in openModal():', err);
+    }
+  };
+
+  const handleKeyDown = (movieId: number, e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      openModal(movieId, e);
     }
   };
 
@@ -75,108 +83,128 @@ export function SearchResults() {
 
   if (error) {
     return (
-      <section>
-        <div className='alert alert-danger mt-3' role='alert'>
-          <i className='fas fa-exclamation-triangle me-2'></i>
-          Could not load movies: {error}
+      <section role="alert" className="my-6">
+        <div className="flex items-center gap-3 rounded-xl border border-destructive bg-destructive/10 p-4 text-destructive">
+          <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
+          <p className="text-sm font-semibold">Could not load movies: {error}</p>
         </div>
       </section>
     );
   }
 
   return (
-    <section>
-      <AnimatePresence>
-        {selectedMovieId > 0 && (
-          <Modal movieId={selectedMovieId} isOpen={!!selectedMovieId} closeModal={closeModal}>
-            <MovieDetails />
-          </Modal>
-        )}
-      </AnimatePresence>
-      <div className={`d-flex flex-wrap align-items-stretch ${styles['search-results']}`}>
+    <section aria-label="Movie search results" className="pb-16">
+      {selectedMovieId > 0 && (
+        <Modal movieId={selectedMovieId} isOpen={!!selectedMovieId} closeModal={closeModal} />
+      )}
+
+      {/* Movie Cards Grid */}
+      <div
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
+        role="region"
+        aria-live="polite"
+        aria-label="List of movies"
+      >
         {searchResults.map((result) => (
-          <motion.div 
-            layoutId={`movie-card-${result.id}`}
-            key={result.id} 
-            className={`card ${styles['res-item']}`}
+          <motion.div
+            key={result.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="group"
           >
-            <div
-              className='bg-image hover-overlay ripple'
-              data-mdb-ripple-color='light'>
-              <div className='image'>
-                <div className='wrapper'>
-                  <a
-                    className='image stretched-link'
-                    href='#!openMovieDetails'
-                    title={result.title}
-                    onClick={(event: FormEvent<Element>) => openModal(result.id, event)}>
-                    {!result.poster_path ? (
-                      <div className='image-missing'></div>
-                    ) : (
-                      <img
-                        className='poster'
-                        src={`${URL_IMAGE_POSTER_w342}${result.poster_path}`}
-                        srcSet={`${URL_IMAGE_POSTER_w342}${result.poster_path} 1x, ${URL_IMAGE_POSTER_w500}${result.poster_path} 2x`}
-                        alt={result.title}
-                        loading='lazy'
-                      />
-                    )}
-                  </a>
+            <Card
+              role="button"
+              tabIndex={0}
+              aria-haspopup="dialog"
+              aria-label={`View details for ${result.title}, released ${formatDate(result.release_date) || 'unknown date'}`}
+              onClick={(e) => openModal(result.id, e)}
+              onKeyDown={(e) => handleKeyDown(result.id, e)}
+              className="cursor-pointer overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
+            >
+              {/* Poster Image Container */}
+              <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
+                {result.poster_path ? (
+                  <img
+                    src={`${URL_IMAGE_POSTER_w342}${result.poster_path}`}
+                    srcSet={`${URL_IMAGE_POSTER_w342}${result.poster_path} 1x, ${URL_IMAGE_POSTER_w500}${result.poster_path} 2x`}
+                    alt="" // Empty alt because card aria-label already conveys the full movie title and date
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground" aria-hidden="true">
+                    <Film className="h-10 w-10 opacity-50" />
+                  </div>
+                )}
+
+                {/* Rating Gauge positioned top-right */}
+                <div className="absolute top-2 right-2 w-11 h-11 drop-shadow-md">
+                  <GaugeSVG id={result.id} vote_average={result.vote_average} />
                 </div>
               </div>
-              <div className={styles.mask}></div>
-            </div>
-            <div className={`card-body ${styles['card-body']}`}>
-              <div className='d-flex flex-column justify-content-between h-100'>
-                <h2 className='card-title res-item--title'>{result.title}</h2>
-                <p className='card-text res-item--date'>
-                  <span className='res-item--date-label'>Released:</span>
-                  {formatDate(result.release_date)}
-                </p>
-              </div>
 
-              <div className={`gauge ${styles['gauge']}`}>
-                <GaugeSVG
-                  id={result.id}
-                  vote_average={result.vote_average}
-                />
-              </div>
-            </div>
+              {/* Card Body */}
+              <CardContent className="p-3.5 flex flex-col justify-between flex-1">
+                <div>
+                  <h2 className="line-clamp-2 text-sm sm:text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
+                    {result.title}
+                  </h2>
+                </div>
+                <p className="mt-2 text-xs sm:text-sm font-semibold text-muted-foreground">
+                  {formatDate(result.release_date) || 'Unknown date'}
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
 
-        {isLoading && Array.from({ length: 10 }).map((_, i) => (
-          <div key={`skeleton-${i}`} className={`card ${styles['res-item']} ${styles['skeleton-card']}`}>
-            <div className={styles['skeleton-image']}></div>
-            <div className={`card-body ${styles['card-body']}`}>
-              <div className={styles['skeleton-text']}></div>
-              <div className={`${styles['skeleton-text']} ${styles['skeleton-text-short']}`}></div>
+        {/* Skeleton Loaders */}
+        {isLoading &&
+          Array.from({ length: 10 }).map((_, i) => (
+            <div key={`skeleton-${i}`} className="flex flex-col space-y-3" aria-hidden="true">
+              <Skeleton className="aspect-[2/3] w-full rounded-xl" />
+              <div className="space-y-2 p-1">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
+      {/* Empty State */}
       {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory) && (
-        <div className="text-center mt-5 mb-5">
-          <i className="fas fa-film fa-3x text-muted mb-3"></i>
-          <h3 className="text-muted">No movies found</h3>
-          <p className="text-muted">Try a different search term or category.</p>
+        <div role="status" className="my-16 flex flex-col items-center justify-center text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground" aria-hidden="true">
+            <Film className="h-8 w-8" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">No movies found</h2>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">
+            Try adjusting your search query or pick a different category.
+          </p>
         </div>
       )}
 
+      {/* Load More Button */}
       {page < totalPages && searchResults.length > 0 && !isLoading && (
-        <div className="text-center mt-4 mb-5">
-          <button 
-            className="btn btn-primary btn-lg" 
+        <div className="mt-12 flex justify-center">
+          <Button
+            size="lg"
             onClick={handleLoadMore}
             disabled={isFetchingMore}
+            aria-busy={isFetchingMore}
+            aria-label="Load more movies from the database"
+            className="rounded-full px-8 font-bold shadow-md"
           >
             {isFetchingMore ? (
-              <><i className="fas fa-spinner fa-spin me-2"></i> Loading...</>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                Loading movies...
+              </>
             ) : (
               'Load More Movies'
             )}
-          </button>
+          </Button>
         </div>
       )}
     </section>

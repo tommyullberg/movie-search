@@ -1,14 +1,16 @@
 import React from 'react';
+import { Search, Loader2, TrendingUp, Flame, Star, Calendar } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { fetchSearchResults } from '../../utils/apiUtils';
 import { SearchResult } from '../SearchResults';
-import styles from './SearchForm.module.css';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 
 const CATEGORIES = [
-  { key: 'trending', label: 'Trending' },
-  { key: 'popular', label: 'Popular' },
-  { key: 'toprated', label: 'Top rated' },
-  { key: 'upcoming', label: 'Upcoming' }
+  { key: 'trending', label: 'Trending', icon: TrendingUp },
+  { key: 'popular', label: 'Popular', icon: Flame },
+  { key: 'toprated', label: 'Top Rated', icon: Star },
+  { key: 'upcoming', label: 'Upcoming', icon: Calendar },
 ] as const;
 
 export function SearchForm() {
@@ -22,7 +24,7 @@ export function SearchForm() {
     updateIsLoading,
     updateError,
     updatePage,
-    updateTotalPages
+    updateTotalPages,
   } = useSearchContext();
 
   const runSearch = async (term: string, category: string) => {
@@ -50,60 +52,77 @@ export function SearchForm() {
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!searchTerm.trim()) return;
     await runSearch(searchTerm, searchCategory);
   };
 
   return (
-    <section>
-      <div className='card mb-3'>
-        <div className='card-header py-3'>
-          <h1 className='mb-0 text-center'>Find your favorite movies!</h1>
-        </div>
-        <div className='card-body'>
-          <form className='max-w-lg mx-auto' onSubmit={handleSearch}>
-            <div className='input-group mb-3'>
-              <div className='form-outline'>
-                <input
-                  type='text'
-                  className='form-control form-control-lg'
-                  id='formControlLg'
-                  autoComplete='off'
-                  value={searchTerm}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
-                <label className='form-label' htmlFor='formControlLg'>
-                  Search for a movie...
-                </label>
-                <div className='form-notch'>
-                  <div className='form-notch-leading'></div>
-                  <div className='form-notch-middle'></div>
-                  <div className='form-notch-trailing'></div>
-                </div>
-              </div>
-              <button
-                type='submit'
-                aria-label='Search movies'
+    <section aria-labelledby="search-section-title" className="mb-8 pt-4">
+      <div className="mx-auto max-w-3xl text-center">
+        <h1
+          id="search-section-title"
+          className="mb-2 text-3xl font-extrabold tracking-tight sm:text-4xl text-foreground"
+        >
+          Find your next favorite movie
+        </h1>
+        <p className="mb-6 text-sm text-muted-foreground sm:text-base font-medium">
+          Search millions of titles, explore trending releases, and check out top-rated movies.
+        </p>
+
+        <form onSubmit={handleSearch} role="search" aria-label="Movie search" className="mb-6">
+          <div className="relative flex items-center shadow-md rounded-xl">
+            <label htmlFor="movie-search-input" className="sr-only">
+              Search for a movie by title or keyword
+            </label>
+            <Search className="absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none" aria-hidden="true" />
+            <Input
+              id="movie-search-input"
+              type="search"
+              placeholder="Search by title, director, or keyword..."
+              value={searchTerm}
+              onChange={handleInputChange}
+              disabled={isLoading}
+              className="h-14 pl-12 pr-28 text-base rounded-xl border-border bg-card text-foreground placeholder:text-muted-foreground focus-visible:ring-primary shadow-sm"
+            />
+            <Button
+              type="submit"
+              disabled={isLoading || !searchTerm.trim()}
+              aria-label={isLoading ? 'Searching...' : 'Submit movie search'}
+              className="absolute right-2 h-10 px-5 rounded-lg font-bold"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                'Search'
+              )}
+            </Button>
+          </div>
+        </form>
+
+        <div role="group" aria-label="Quick movie categories" className="flex flex-wrap items-center justify-center gap-2">
+          {CATEGORIES.map(({ key, label, icon: Icon }) => {
+            const isActive = searchCategory === key;
+            return (
+              <Button
+                key={key}
+                type="button"
+                variant={isActive ? 'default' : 'outline'}
+                size="sm"
                 disabled={isLoading}
-                className={`btn ${searchTerm.length ? 'btn-success' : 'btn-primary'}`}>
-                {isLoading
-                  ? <i className='fas fa-spinner fa-spin'></i>
-                  : <i className='fas fa-search'></i>}
-              </button>
-            </div>
-            <div className={styles.buttons}>
-              {CATEGORIES.map(({ key, label }) => (
-                <button
-                  key={key}
-                  type='button'
-                  disabled={isLoading}
-                  className={`btn ${searchCategory === key ? 'btn-success' : 'btn-primary'} ${styles.btn}`}
-                  onClick={() => handleCategoryClick(key)}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </form>
+                aria-pressed={isActive}
+                aria-label={`Show ${label} movies`}
+                onClick={() => handleCategoryClick(key)}
+                className={`rounded-full transition-all border ${
+                  isActive
+                    ? 'font-bold ring-2 ring-primary/40 shadow-sm'
+                    : 'text-foreground border-border bg-card/60 hover:bg-card hover:border-foreground/40'
+                }`}
+              >
+                <Icon className={`h-3.5 w-3.5 mr-1.5 ${isActive ? 'text-primary-foreground' : 'text-primary'}`} aria-hidden="true" />
+                {label}
+              </Button>
+            );
+          })}
         </div>
       </div>
     </section>

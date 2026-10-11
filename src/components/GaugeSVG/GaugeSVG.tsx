@@ -6,17 +6,17 @@ export interface GaugeSVGProps {
 }
 
 const COLOR_MAP: Record<number, string> = {
-  0: '#db2400',
-  1: '#dc4300',
-  2: '#da5b00',
-  3: '#d57100',
-  4: '#cd8600',
-  5: '#c19900',
-  6: '#b2ac00',
-  7: '#9fbe00',
-  8: '#86ce00',
-  9: '#62df00',
-  10: '#00ee00'
+  0: '#ef4444',
+  1: '#f97316',
+  2: '#f97316',
+  3: '#f59e0b',
+  4: '#f59e0b',
+  5: '#eab308',
+  6: '#84cc16',
+  7: '#84cc16',
+  8: '#22c55e',
+  9: '#10b981',
+  10: '#10b981'
 };
 
 const roundToDecimalIfNeeded = (val: number) => {
@@ -33,56 +33,63 @@ export function GaugeSVG({ id, vote_average }: GaugeSVGProps) {
   // Calculate value and color
   const decimalPercent = (safeVote * 10.0) / 100.0;
   const strokeDashoffset = maxGaugeValue - (decimalPercent * maxGaugeValue);
-  const colorVal = COLOR_MAP[Math.floor(safeVote)] || '#00ee00';
+  const colorVal = COLOR_MAP[Math.floor(safeVote)] || '#22c55e';
   const textVal = roundToDecimalIfNeeded(safeVote);
 
   return (
     <svg
       id={`gauge${id}`}
-      className='gauges'
-      xmlns='http://www.w3.org/2000/svg'
-      viewBox='0 0 230 230'
-      shapeRendering='geometricPrecision'
-      textRendering='geometricPrecision'
-      style={{ backgroundColor: 'transparent' }}>
-      <g transform='translate(-30.329734 -227.351097)'>
+      className="gauges"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 230 230"
+      shapeRendering="geometricPrecision"
+      textRendering="geometricPrecision"
+      role="img"
+      aria-label={`Rating: ${textVal} out of 10`}
+      style={{ backgroundColor: 'transparent' }}
+    >
+      <title>{`User rating: ${textVal} out of 10`}</title>
+      <g transform="translate(-30.329734 -227.351097)">
         <circle
-          cx='145.329734'
-          cy='325.695406'
-          r='77.895406'
-          fill='#000000'
+          cx="145.329734"
+          cy="325.695406"
+          r="77.895406"
+          fill="#09090b"
+          stroke="#27272a"
+          strokeWidth="6"
         />
         <ellipse
-          rx='77.895406'
-          ry='77.895406'
-          transform='matrix(0 -1 -1 0 145.329734 325.695406)'
-          fill='none'
-          stroke='#333333'
-          strokeWidth='20'
-          strokeMiterlimit='1'
-          strokeDasharray='489.43'
+          rx="77.895406"
+          ry="77.895406"
+          transform="matrix(0 -1 -1 0 145.329734 325.695406)"
+          fill="none"
+          stroke="#3f3f46"
+          strokeWidth="22"
+          strokeMiterlimit="1"
+          strokeDasharray="489.43"
         />
         <ellipse
-          rx='77.895406'
-          ry='77.895406'
-          transform='matrix(0 -1 1 0 145.329734 325.695406)'
-          fill='none'
+          rx="77.895406"
+          ry="77.895406"
+          transform="matrix(0 -1 1 0 145.329734 325.695406)"
+          fill="none"
           stroke={colorVal}
-          strokeWidth='20'
-          strokeMiterlimit='1'
+          strokeWidth="22"
+          strokeMiterlimit="1"
           strokeDashoffset={strokeDashoffset}
-          strokeDasharray='489.43'
+          strokeDasharray="489.43"
         />
       </g>
       <text
-        x='50%'
-        y='47%'
-        textAnchor='middle'
-        alignmentBaseline='middle'
-        fontFamily="'Orbitron', Arial, sans-serif"
-        fontSize='50'
-        fontWeight='900'
-        fill={colorVal}>
+        x="50%"
+        y="48%"
+        textAnchor="middle"
+        alignmentBaseline="middle"
+        fontFamily="system-ui, sans-serif"
+        fontSize="56"
+        fontWeight="800"
+        fill="#ffffff"
+      >
         {textVal}
       </text>
     </svg>

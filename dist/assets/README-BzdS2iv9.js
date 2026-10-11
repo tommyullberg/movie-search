@@ -21,15 +21,16 @@ The app uses the [TMDB API](https://www.themoviedb.org/) to search for movies by
 \r
 ## Technologies\r
 \r
-- React 18 / TypeScript\r
+- React 19 / TypeScript\r
 - Vite (Bundler & Dev Server)\r
+- Tailwind CSS v4\r
+- shadcn/ui (Radix UI)\r
+- Lucide React Icons\r
 - Context API (Search & Theme/Dark Mode)\r
-- React Router\r
-- Framer Motion\r
+- React Router 7\r
+- Framer Motion 14\r
 - Native Fetch API with CacheStorage\r
-- Marked (Markdown parser)\r
-- CSS Modules & Custom Properties\r
-- MDBootstrap CSS\r
+- Marked 18 (Markdown parser)\r
 - Husky & Commitlint (Conventional Commits)\r
 \r
 --------------------------------\r
