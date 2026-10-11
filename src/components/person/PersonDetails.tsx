@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import type { PersonDetails as PersonDetailsData } from '../types';
-import { useSearchContext } from '../contexts/SearchContext';
-import { formatDate } from '../utils/helpers';
-import { imageConfig } from '../config/imageConfig';
+import type { PersonDetails as PersonDetailsData } from '../../types';
+import { useSearchContext } from '../../contexts/SearchContext';
+import { formatDate } from '../../utils/helpers';
+import { imageConfig } from '../../config/imageConfig';
 import {
   DialogTitle,
   DialogDescription,
-} from './ui/dialog';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { ActionButton } from './buttons/ActionButton';
+} from '../ui/dialog';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { ActionButton } from '../buttons/ActionButton';
 import {
   User,
   Calendar,
@@ -19,7 +19,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { PersonFilmography } from './person/PersonFilmography';
+import { PersonFilmography } from './PersonFilmography';
 
 interface PersonDetailsProps {
   personData: PersonDetailsData;

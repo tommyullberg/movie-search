@@ -10,7 +10,7 @@ import { EmptyState } from './ui/empty-state';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { SearchResult } from '../types';
 import { MovieCard } from './movie';
-import { PersonCard } from './PersonCard';
+import { PersonCard } from './person';
 import { LibraryToolbar } from './LibraryToolbar';
 
 export type { SearchResult };

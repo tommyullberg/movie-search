@@ -1,9 +1,9 @@
 import React from 'react';
 import { User } from 'lucide-react';
-import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
-import type { SearchResult } from '../types';
-import { imageConfig } from '../config/imageConfig';
+import { Card, CardContent } from '../ui/card';
+import { Badge } from '../ui/badge';
+import type { SearchResult } from '../../types';
+import { imageConfig } from '../../config/imageConfig';
 
 export interface PersonCardProps {
   person: SearchResult;

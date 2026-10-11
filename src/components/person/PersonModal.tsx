@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent } from './ui/dialog';
+import { Dialog, DialogContent } from '../ui/dialog';
 import { PersonDetails } from './PersonDetails';
-import { useSearchContext } from '../contexts/SearchContext';
-import { getPersonById } from '../utils/apiUtils';
+import { useSearchContext } from '../../contexts/SearchContext';
+import { getPersonById } from '../../utils/apiUtils';
 import { Loader2 } from 'lucide-react';
 
-interface PersonModalProps {
+export interface PersonModalProps {
   personId: number;
   isOpen: boolean;
   closeModal: () => void;

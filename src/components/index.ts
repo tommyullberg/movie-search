@@ -22,9 +22,15 @@ export {
   type MovieCastSectionProps,
   type MovieRecommendationsSectionProps,
 } from './movie';
-export { PersonCard, type PersonCardProps } from './PersonCard';
-export { PersonDetails } from './PersonDetails';
-export { PersonModal } from './PersonModal';
+export {
+  PersonCard,
+  PersonDetails,
+  PersonModal,
+  PersonFilmography,
+  type PersonCardProps,
+  type PersonModalProps,
+  type PersonFilmographyProps,
+} from './person';
 export { SearchForm } from './SearchForm';
 export { SearchResults, type SearchResult } from './SearchResults';
 export { SurprisePickerModal } from './SurprisePickerModal';
@@ -41,7 +47,6 @@ export {
 } from './buttons/ActionButton';
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
 export { AdvancedFiltersPanel, type AdvancedFiltersPanelProps } from './search/AdvancedFiltersPanel';
-export { PersonFilmography, type PersonFilmographyProps } from './person/PersonFilmography';
 export {
   ReelCard,
   SurpriseReel,
