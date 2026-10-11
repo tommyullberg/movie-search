@@ -423,7 +423,7 @@ export function SearchResults() {
       </div>
 
       {/* Empty State */}
-      {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory || advancedFilters.genre || advancedFilters.year) && (
+      {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory || advancedFilters.genre || advancedFilters.year || advancedFilters.watchProvider || (advancedFilters.minRating && advancedFilters.minRating > 0)) && (
         <div role="status" className="my-16 flex flex-col items-center justify-center text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground" aria-hidden="true">
             {searchCategory === 'watchlist' ? (
@@ -449,10 +449,10 @@ export function SearchResults() {
             {searchCategory === 'watchlist'
               ? 'Click the bookmark icon on any movie card or in movie details to save it to your personal watchlist.'
               : searchCategory === 'watched'
-              ? 'Click the checkmark icon on any movie card or in movie details to keep track of movies you have watched.'
+              ? 'Click the eye icon on any movie card or in movie details to keep track of movies you have watched.'
               : searchType === 'person'
               ? 'Try searching with another actor or director name.'
-              : 'Try adjusting your search query or pick a different category.'}
+              : 'Try adjusting your search query, filters, or streaming provider.'}
           </p>
         </div>
       )}

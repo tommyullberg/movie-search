@@ -12,10 +12,11 @@ import {
   SlidersHorizontal,
   ChevronDown,
   RotateCcw,
+  Tv,
 } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
-import { fetchSearchResults, TMDB_GENRES, SearchType } from '../../utils/apiUtils';
+import { fetchSearchResults, TMDB_GENRES, TMDB_STREAMING_PROVIDERS_SE, SearchType } from '../../utils/apiUtils';
 import { SearchResult } from '../SearchResults';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -118,7 +119,7 @@ export function SearchForm() {
   };
 
   const handleResetFilters = () => {
-    const emptyFilters = { genre: '', year: '', minRating: 0, sortBy: 'popularity.desc' };
+    const emptyFilters = { genre: '', year: '', minRating: 0, sortBy: 'popularity.desc', watchProvider: '' };
     updateAdvancedFilters(emptyFilters);
     if (!searchTerm.trim() && !searchCategory) {
       runSearch('', '', searchType);
@@ -237,7 +238,7 @@ export function SearchForm() {
                       Advanced Discover & Filters
                     </span>
                   </div>
-                  {(advancedFilters.genre || advancedFilters.year || (advancedFilters.minRating && advancedFilters.minRating > 0) || (advancedFilters.sortBy && advancedFilters.sortBy !== 'popularity.desc')) && (
+                  {(advancedFilters.genre || advancedFilters.year || (advancedFilters.minRating && advancedFilters.minRating > 0) || advancedFilters.watchProvider || (advancedFilters.sortBy && advancedFilters.sortBy !== 'popularity.desc')) && (
                     <button
                       type="button"
                       onClick={handleResetFilters}
@@ -249,7 +250,33 @@ export function SearchForm() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                  {/* Streaming in Sweden */}
+                  <div>
+                    <label htmlFor="filter-provider" className="block text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
+                      <Tv className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                      <span>Stream in Sweden</span>
+                    </label>
+                    <select
+                      id="filter-provider"
+                      value={advancedFilters.watchProvider || ''}
+                      onChange={(e) => {
+                        const newProvider = e.target.value;
+                        updateAdvancedFilters(prev => ({ ...prev, watchProvider: newProvider }));
+                        updateSearchCategory('');
+                      }}
+                      className="w-full h-9 px-3 rounded-lg border border-border bg-background text-foreground text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="">Any / All Providers</option>
+                      <option value="any">Any Swedish Stream</option>
+                      {TMDB_STREAMING_PROVIDERS_SE.map((p) => (
+                        <option key={p.id} value={p.id.toString()}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   {/* Genre */}
                   <div>
                     <label htmlFor="filter-genre" className="block text-xs font-semibold text-muted-foreground mb-1.5">

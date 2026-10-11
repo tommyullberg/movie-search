@@ -39,6 +39,18 @@ export const TMDB_GENRES = [
   { id: 37, name: 'Western' },
 ] as const;
 
+export const TMDB_STREAMING_PROVIDERS_SE = [
+  { id: 8, name: 'Netflix' },
+  { id: 1899, name: 'Max' },
+  { id: 337, name: 'Disney+' },
+  { id: 119, name: 'Prime Video' },
+  { id: 1773, name: 'SkyShowtime' },
+  { id: 76, name: 'Viaplay' },
+  { id: 350, name: 'Apple TV+' },
+  { id: 1944, name: 'TV4 Play' },
+  { id: 493, name: 'SVT Play' },
+] as const;
+
 export type SearchType = 'movie' | 'person' | 'keyword';
 
 export interface AdvancedFilterOptions {
@@ -46,6 +58,7 @@ export interface AdvancedFilterOptions {
   year?: string;
   minRating?: number;
   sortBy?: string;
+  watchProvider?: string;
 }
 
 export async function fetchSearchResults(
@@ -67,7 +80,14 @@ export async function fetchSearchResults(
       } else {
         url = `https://api.themoviedb.org/3/search/movie?query=${encodedSearchTerm}&include_adult=false&language=en-US&page=${page}`;
       }
-    } else if (advancedFilters && (advancedFilters.genre || advancedFilters.year || advancedFilters.minRating || advancedFilters.sortBy)) {
+    } else if (
+      advancedFilters &&
+      (advancedFilters.genre ||
+        advancedFilters.year ||
+        advancedFilters.minRating ||
+        advancedFilters.watchProvider ||
+        (advancedFilters.sortBy && advancedFilters.sortBy !== 'popularity.desc'))
+    ) {
       const params = new URLSearchParams({
         include_adult: 'false',
         language: 'en-US',
@@ -79,6 +99,16 @@ export async function fetchSearchResults(
       if (advancedFilters.minRating && advancedFilters.minRating > 0) {
         params.append('vote_average.gte', advancedFilters.minRating.toString());
         params.append('vote_count.gte', '50');
+      }
+      if (advancedFilters.watchProvider) {
+        params.append('watch_region', 'SE');
+        params.append('with_watch_monetization_types', 'flatrate|free|ads');
+        if (advancedFilters.watchProvider === 'any') {
+          const allProviderIds = TMDB_STREAMING_PROVIDERS_SE.map((p) => p.id).join('|');
+          params.append('with_watch_providers', allProviderIds);
+        } else {
+          params.append('with_watch_providers', advancedFilters.watchProvider);
+        }
       }
       url = `https://api.themoviedb.org/3/discover/movie?${params.toString()}`;
     } else {

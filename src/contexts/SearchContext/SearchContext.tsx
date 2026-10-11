@@ -113,6 +113,7 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     year: '',
     minRating: 0,
     sortBy: 'popularity.desc',
+    watchProvider: '',
   });
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
