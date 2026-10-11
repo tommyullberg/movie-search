@@ -29,6 +29,7 @@ Movie Search is a modern web application built with React and TypeScript that co
 - Top cast section showcasing actor profile photos, real names, and character roles, plus director credits.
 - Dedicated Person / Actor & Director profile views featuring high-resolution portrait photos, full biography, birthday with calculated age, birthplace, external IMDb links, and comprehensive chronological filmographies.
 - Bidirectional in-modal navigation between movies, actors, directors, and recommendations with a contextual Back button ('Back to [Previous]') that tracks modal browsing history and only displays after internal navigation.
+- URL deep linking (?movie=123, ?person=456) with native browser back/forward history support and one-click 'Share' buttons that copy direct links to the clipboard with instant visual confirmation.
 - 'More Like This' movie recommendations with seamless in-modal navigation between related titles.
 - Direct external links to official movie websites and IMDb pages.
 
