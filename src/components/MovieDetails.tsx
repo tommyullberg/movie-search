@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft, Share2, Check, Eye, MessageSquare, Edit3, Trash2 } from 'lucide-react';
-import { useSearchContext } from '../../contexts/SearchContext';
-import { useWatchlist } from '../../contexts/WatchlistContext';
-import { imageConfig } from '../../config/imageConfig';
-import { formatDate, formatYear } from '../../utils/helpers';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { DialogTitle, DialogDescription } from '../ui/dialog';
+import { useSearchContext } from '../contexts/SearchContext';
+import { useWatchlist } from '../contexts/WatchlistContext';
+import { imageConfig } from '../config/imageConfig';
+import { formatDate, formatYear } from '../utils/helpers';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { DialogTitle, DialogDescription } from './ui/dialog';
 
 const formatMinutesToTime = (minutes: number): string => {
   if (isNaN(minutes) || minutes <= 0) return '';

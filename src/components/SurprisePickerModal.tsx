@@ -18,12 +18,12 @@ import {
   ChevronDown,
   Target,
 } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogTitle } from '../ui/dialog';
-import { SearchResult } from '../SearchResults';
-import { formatDate } from '../../utils/helpers';
-import { TMDB_GENRES, fetchSearchResults } from '../../utils/apiUtils';
-import { imageConfig } from '../../config/imageConfig';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
+import { SearchResult } from './SearchResults';
+import { formatDate } from '../utils/helpers';
+import { TMDB_GENRES, fetchSearchResults } from '../utils/apiUtils';
+import { imageConfig } from '../config/imageConfig';
 
 interface SurprisePickerModalProps {
   isOpen: boolean;

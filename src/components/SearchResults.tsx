@@ -1,16 +1,16 @@
 import React, { FormEvent, KeyboardEvent, useState, useRef } from 'react';
-import { getMovieById, fetchSearchResults } from '../../utils/apiUtils';
-import { formatDate } from '../../utils/helpers';
-import { useSearchContext } from '../../contexts/SearchContext';
-import { GaugeSVG } from '../GaugeSVG';
-import { imageConfig } from '../../config/imageConfig';
+import { getMovieById, fetchSearchResults } from '../utils/apiUtils';
+import { formatDate } from '../utils/helpers';
+import { useSearchContext } from '../contexts/SearchContext';
+import { GaugeSVG } from './GaugeSVG';
+import { imageConfig } from '../config/imageConfig';
 import { motion } from 'framer-motion';
 import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X, Star, MessageSquare, Dices } from 'lucide-react';
-import { Card, CardContent } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Skeleton } from '../ui/skeleton';
-import { Button } from '../ui/button';
-import { useWatchlist, LibrarySortOption } from '../../contexts/WatchlistContext';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { Skeleton } from './ui/skeleton';
+import { Button } from './ui/button';
+import { useWatchlist, LibrarySortOption } from '../contexts/WatchlistContext';
 
 export interface SearchResult {
   adult?: boolean;

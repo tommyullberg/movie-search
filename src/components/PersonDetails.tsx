@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { PersonDetailsModel } from '../../model/PersonDetailsModel';
-import { useSearchContext } from '../../contexts/SearchContext';
-import { getMovieById } from '../../utils/apiUtils';
-import { formatDate } from '../../utils/helpers';
-import { imageConfig } from '../../config/imageConfig';
+import { PersonDetailsModel } from '../model/PersonDetailsModel';
+import { useSearchContext } from '../contexts/SearchContext';
+import { getMovieById } from '../utils/apiUtils';
+import { formatDate } from '../utils/helpers';
+import { imageConfig } from '../config/imageConfig';
 import {
   DialogTitle,
   DialogDescription,
-} from '../ui/dialog';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
+} from './ui/dialog';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import {
   User,
   Calendar,

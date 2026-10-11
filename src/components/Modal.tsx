@@ -1,5 +1,5 @@
-import { Dialog, DialogContent } from '../ui/dialog';
-import { MovieDetails } from '../MovieDetails';
+import { Dialog, DialogContent } from './ui/dialog';
+import { MovieDetails } from './MovieDetails';
 
 interface ModalProps {
   movieId: number;

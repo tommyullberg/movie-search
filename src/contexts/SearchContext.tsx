@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { SearchResult } from '../../components/SearchResults';
-import { MovieDetailsModel } from '../../model/MovieDetailsModel';
-import { PersonDetailsModel } from '../../model/PersonDetailsModel';
-import { SearchType, AdvancedFilterOptions, getMovieById } from '../../utils/apiUtils';
+import { SearchResult } from '../components';
+import { MovieDetailsModel } from '../model/MovieDetailsModel';
+import { PersonDetailsModel } from '../model/PersonDetailsModel';
+import { SearchType, AdvancedFilterOptions, getMovieById } from '../utils/apiUtils';
 
 export interface DetailHistoryItem {
   type: 'movie' | 'person';

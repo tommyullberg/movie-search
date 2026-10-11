@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { SearchResult } from '../components/SearchResults';
+import { SearchResult } from '../components';
 import { MovieDetailsModel } from '../model/MovieDetailsModel';
 
 export type LibrarySortOption =

@@ -1,5 +1,4 @@
-import { SearchForm } from '../components/SearchForm';
-import { SearchResults } from '../components/SearchResults';
+import { SearchForm, SearchResults } from '../components';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {

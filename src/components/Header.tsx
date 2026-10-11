@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Home, HelpCircle, Sun, Moon, Film, Contrast } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
-import { Button } from '../ui/button';
+import { useTheme } from '../contexts/ThemeContext';
+import { Button } from './ui/button';
 
 export function Header() {
   const { theme, highContrast, toggleTheme, toggleHighContrast } = useTheme();

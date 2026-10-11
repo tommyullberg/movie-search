@@ -1,12 +1,9 @@
 import { useEffect } from 'react';
-import { Header } from './components/Header';
+import { Header, AnimatedRoutes, Modal, PersonModal } from './components';
 import { SearchContextProvider, useSearchContext } from './contexts/SearchContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { WatchlistProvider } from './contexts/WatchlistContext';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { AnimatedRoutes } from './components/AnimatedRoutes';
-import { Modal } from './components/Modal';
-import { PersonModal } from './components/PersonModal';
 
 function DetailModals() {
   const { selectedMovieId, selectedPersonId, closeAllDetails } = useSearchContext();

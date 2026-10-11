@@ -16,14 +16,14 @@ import {
   Dices,
   Sparkles,
 } from 'lucide-react';
-import { useSearchContext } from '../../contexts/SearchContext';
-import { useWatchlist } from '../../contexts/WatchlistContext';
-import { fetchSearchResults, TMDB_GENRES, TMDB_STREAMING_PROVIDERS_SE, SearchType } from '../../utils/apiUtils';
-import { SearchResult } from '../SearchResults';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
+import { useSearchContext } from '../contexts/SearchContext';
+import { useWatchlist } from '../contexts/WatchlistContext';
+import { fetchSearchResults, TMDB_GENRES, TMDB_STREAMING_PROVIDERS_SE, SearchType } from '../utils/apiUtils';
+import { SearchResult } from './SearchResults';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SurprisePickerModal } from '../SurprisePicker/SurprisePickerModal';
+import { SurprisePickerModal } from './SurprisePickerModal';
 
 const CATEGORIES = [
   { key: 'nowplaying', label: 'In Theaters', icon: Clapperboard },

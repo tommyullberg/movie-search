@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Home from '../../pages/Home';
-import About from '../../pages/About';
-import NoPage404 from '../../pages/NoPage404';
+import Home from '../pages/Home';
+import About from '../pages/About';
+import NoPage404 from '../pages/NoPage404';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
