@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft, Share2, Check } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
 import { imageConfig } from '../../config/imageConfig';
@@ -37,6 +37,7 @@ export function MovieDetails() {
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const isSaved = movieData ? isInWatchlist(movieData.id) : false;
 
@@ -142,6 +143,21 @@ export function MovieDetails() {
     } catch (err) {
       setIsLoadingRelated(false);
       console.error('Error switching recommended movie:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('movie', String(movieData.id));
+      url.searchParams.delete('person');
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url.toString());
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2500);
+      }
+    } catch (err) {
+      console.error('Error copying share link:', err);
     }
   };
 
@@ -334,6 +350,26 @@ export function MovieDetails() {
                   </a>
                 </Button>
               )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShare}
+                aria-label={`Share link for ${movieData.title}`}
+                className="rounded-lg font-semibold border-border transition-all"
+              >
+                {isCopied ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" aria-hidden="true" />
+                    <span>Link Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+                    <span>Share</span>
+                  </>
+                )}
+              </Button>
             </div>
 
             {/* Key Facts & Financials Box */}

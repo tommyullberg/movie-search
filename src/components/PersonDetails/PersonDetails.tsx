@@ -21,6 +21,8 @@ import {
   ChevronUp,
   Film,
   ArrowLeft,
+  Share2,
+  Check,
 } from 'lucide-react';
 
 interface PersonDetailsProps {
@@ -30,6 +32,7 @@ interface PersonDetailsProps {
 
 export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const { detailHistory, navigateToMovie, goBackDetail } = useSearchContext();
 
   const {
@@ -62,6 +65,21 @@ export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
       await navigateToMovie(movieId, title);
     } catch (err) {
       console.error('Error opening movie from filmography:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('person', String(personData.id));
+      url.searchParams.delete('movie');
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url.toString());
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2500);
+      }
+    } catch (err) {
+      console.error('Error copying person share link:', err);
     }
   };
 
@@ -198,9 +216,9 @@ export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
             )}
           </div>
 
-          {/* External Links */}
-          {personData.imdb_id && (
-            <div className="pt-1">
+          {/* External Links & Share */}
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {personData.imdb_id && (
               <Button variant="outline" size="sm" asChild className="rounded-lg font-semibold border-border">
                 <a
                   href={`https://www.imdb.com/name/${personData.imdb_id}`}
@@ -213,8 +231,28 @@ export function PersonDetails({ personData, onClose }: PersonDetailsProps) {
                   <span>IMDb Profile</span>
                 </a>
               </Button>
-            </div>
-          )}
+            )}
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShare}
+              aria-label={`Share profile for ${personData.name}`}
+              className="rounded-lg font-semibold border-border text-xs transition-all"
+            >
+              {isCopied ? (
+                <>
+                  <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" aria-hidden="true" />
+                  <span>Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+                  <span>Share</span>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 

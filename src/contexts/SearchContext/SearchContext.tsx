@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SearchResult } from '../../components/SearchResults';
 import { MovieDetailsModel } from '../../model/MovieDetailsModel';
 import { PersonDetailsModel } from '../../model/PersonDetailsModel';
@@ -124,6 +125,67 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
   const [selectedPersonId, setSelectedPersonId] = useState<number>(0);
   const [personData, setPersonData] = useState<PersonDetailsModel | null>(null);
   const [detailHistory, setDetailHistory] = useState<DetailHistoryItem[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Synchronize URL query parameters with active detail view on initial load and browser history changes
+  useEffect(() => {
+    const movieParam = searchParams.get('movie');
+    const personParam = searchParams.get('person');
+
+    if (movieParam) {
+      const movieId = Number(movieParam);
+      if (!isNaN(movieId) && movieId > 0 && movieId !== selectedMovieId) {
+        setSelectedPersonId(0);
+        setPersonData(null);
+        setSelectedMovieId(movieId);
+        setDetailHistory((prev) => {
+          if (prev.length === 0 || prev[prev.length - 1].id !== movieId) {
+            return [{ type: 'movie', id: movieId, title: '' }];
+          }
+          return prev;
+        });
+        getMovieById(movieId)
+          .then((data) => {
+            setMovieData(data);
+            if (data?.title) {
+              setDetailHistory((prev) => {
+                if (prev.length === 0) return [{ type: 'movie', id: movieId, title: data.title }];
+                const last = prev[prev.length - 1];
+                if (last.type === 'movie' && last.id === movieId && !last.title) {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { ...last, title: data.title };
+                  return updated;
+                }
+                return prev;
+              });
+            }
+          })
+          .catch((err) => console.error('Error fetching deep-linked movie:', err));
+      }
+    } else if (personParam) {
+      const personId = Number(personParam);
+      if (!isNaN(personId) && personId > 0 && personId !== selectedPersonId) {
+        setSelectedMovieId(0);
+        setMovieData(null);
+        setSelectedPersonId(personId);
+        setDetailHistory((prev) => {
+          if (prev.length === 0 || prev[prev.length - 1].id !== personId) {
+            return [{ type: 'person', id: personId, title: '' }];
+          }
+          return prev;
+        });
+      }
+    } else {
+      // Neither movie nor person present in URL query: if details modal was open, close it
+      if (selectedMovieId > 0 || selectedPersonId > 0) {
+        setSelectedMovieId(0);
+        setMovieData(null);
+        setSelectedPersonId(0);
+        setPersonData(null);
+        setDetailHistory([]);
+      }
+    }
+  }, [searchParams]);
 
   const handleUpdateIsAdvancedOpen = (open: boolean) => {
     setIsAdvancedOpen(open);
@@ -148,6 +210,12 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     setMovieData(null);
     setSelectedPersonId(0);
     setPersonData(null);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete('movie');
+      next.delete('person');
+      return next;
+    });
   };
 
   const openMovieDetailDirect = async (movieId: number, title?: string) => {
@@ -155,6 +223,12 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     setPersonData(null);
     setSelectedMovieId(movieId);
     setDetailHistory([{ type: 'movie', id: movieId, title: title || '' }]);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('movie', String(movieId));
+      next.delete('person');
+      return next;
+    });
     try {
       const data = await getMovieById(movieId);
       setMovieData(data);
@@ -171,6 +245,12 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     setMovieData(null);
     setSelectedPersonId(personId);
     setDetailHistory([{ type: 'person', id: personId, title: name || '' }]);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('person', String(personId));
+      next.delete('movie');
+      return next;
+    });
   };
 
   const navigateToMovie = async (movieId: number, title?: string) => {
@@ -178,6 +258,12 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     setPersonData(null);
     setSelectedMovieId(movieId);
     setDetailHistory(prev => [...prev, { type: 'movie', id: movieId, title: title || '' }]);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('movie', String(movieId));
+      next.delete('person');
+      return next;
+    });
     try {
       const data = await getMovieById(movieId);
       setMovieData(data);
@@ -202,6 +288,12 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     setMovieData(null);
     setSelectedPersonId(personId);
     setDetailHistory(prev => [...prev, { type: 'person', id: personId, title: name || '' }]);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('person', String(personId));
+      next.delete('movie');
+      return next;
+    });
   };
 
   const goBackDetail = async () => {
@@ -214,6 +306,12 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
       setSelectedPersonId(0);
       setPersonData(null);
       setSelectedMovieId(target.id);
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('movie', String(target.id));
+        next.delete('person');
+        return next;
+      });
       try {
         const data = await getMovieById(target.id);
         setMovieData(data);
@@ -224,6 +322,12 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
       setSelectedMovieId(0);
       setMovieData(null);
       setSelectedPersonId(target.id);
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('person', String(target.id));
+        next.delete('movie');
+        return next;
+      });
     }
   };
 

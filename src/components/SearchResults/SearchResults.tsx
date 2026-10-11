@@ -2,8 +2,6 @@ import React, { FormEvent, KeyboardEvent } from 'react';
 import { getMovieById, fetchSearchResults } from '../../utils/apiUtils';
 import { formatDate } from '../../utils/helpers';
 import { useSearchContext } from '../../contexts/SearchContext';
-import { Modal } from '../Modal';
-import { PersonModal } from '../PersonModal';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
 import { motion } from 'framer-motion';
@@ -116,14 +114,6 @@ export function SearchResults() {
 
   return (
     <section aria-label="Search results" className="pb-16">
-      {selectedMovieId > 0 && (
-        <Modal movieId={selectedMovieId} isOpen={!!selectedMovieId} closeModal={closeAllDetails} />
-      )}
-
-      {selectedPersonId > 0 && (
-        <PersonModal personId={selectedPersonId} isOpen={selectedPersonId > 0} closeModal={closeAllDetails} />
-      )}
-
       {/* Cards Grid */}
       <div
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
