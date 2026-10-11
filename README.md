@@ -21,6 +21,7 @@ Movie Search is a modern web application built with React and TypeScript that co
 - Instant category exploration: In Theaters, Trending, Popular, Top Rated, and Upcoming with subtle visual grouping separator.
 - Personal Watchlist and Watched movie tracking with localStorage persistence, one-click quick actions directly from cards and detail modal, dedicated library row, and custom empty states.
 - Personal movie ratings (1 to 10 scale) and custom reviews/notes for watched movies, preserved in localStorage and displayed with badges in Watched view.
+- Animated Surprise Movie Picker ('Surprise Me' / 'Random movie from top 50'): pulls top 50 movies from your chosen category (Watchlist, Trending, Popular, Top Rated, In Theaters, Upcoming, or Genre), loads them into a 3D horizontal card reel with Mac Dock magnification and deceleration physics, crowning a winner with celebratory glow, re-roll action, direct 'Go to movie' access, and grid highlighting.
 - Dedicated Library Toolbar for personal lists with live tab switching between 'To Watch' and 'Watched'.
 - Multi-criteria library sorting: sort saved and watched movies by date added, personal rating (1-10), TMDB user rating, release year, or title.
 - JSON Backup and Restore: export your entire movie library (Watchlist, Watched, and personal ratings/notes) to a JSON file and import/merge libraries anytime with built-in validation.
@@ -41,7 +42,7 @@ Movie Search is a modern web application built with React and TypeScript that co
 ### Design, Theming & Accessibility Features
 
 - Modern UI built with Tailwind CSS v4 and shadcn/ui (Radix UI primitives).
-- Light mode and Dark mode with smooth transitions and deep, crisp contrast.
+- Light mode and Dark mode with smooth transitions, customized neutral background (#e8eaec), and deep, crisp contrast.
 - Dedicated WCAG AAA High Contrast mode with specialized contrast themes for both dark and light palettes.
 - Complete keyboard accessibility: fully operable without mouse, with prominent focus rings and skip-to-content link.
 - Screen reader optimizations: semantic landmark roles, descriptive ARIA labels, and live region announcements.
