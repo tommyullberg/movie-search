@@ -5,7 +5,7 @@ import { useSearchContext } from '../../contexts/SearchContext';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
 import { motion } from 'framer-motion';
-import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X, Star, MessageSquare } from 'lucide-react';
+import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X, Star, MessageSquare, Dices } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
@@ -63,6 +63,8 @@ export function SearchResults() {
     openPersonDetailDirect,
     closeAllDetails,
     updateSearchCategory,
+    highlightedMovieId,
+    updateHighlightedMovieId,
   } = useSearchContext();
 
   const {
@@ -332,13 +334,18 @@ export function SearchResults() {
             ) : (
               /* Movie Card */
               <Card
+                id={`movie-card-${result.id}`}
                 role="button"
                 tabIndex={0}
                 aria-haspopup="dialog"
                 aria-label={`View details for ${result.title}, released ${formatDate(result.release_date || '') || 'unknown date'}`}
                 onClick={(e) => openModal(result.id, result.title, e)}
                 onKeyDown={(e) => handleKeyDown(result.id, result.title, e)}
-                className="cursor-pointer overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
+                className={`cursor-pointer overflow-hidden border transition-all duration-300 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring ${
+                  highlightedMovieId === result.id
+                    ? 'ring-4 ring-primary border-primary shadow-2xl scale-[1.03] bg-primary/5 -translate-y-2'
+                    : 'border-border bg-card text-card-foreground hover:border-primary hover:shadow-xl hover:-translate-y-1.5'
+                }`}
               >
                 {/* Poster Image Container */}
                 <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
@@ -399,6 +406,16 @@ export function SearchResults() {
                   <div className="absolute top-2 right-2 w-11 h-11 drop-shadow-md">
                     <GaugeSVG id={result.id} vote_average={result.vote_average || 0} />
                   </div>
+
+                  {/* Highlighted Random Pick Badge */}
+                  {highlightedMovieId === result.id && (
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-primary text-primary-foreground shadow-xl ring-2 ring-primary-foreground/30 animate-pulse">
+                        <Dices className="h-3 w-3 shrink-0" aria-hidden="true" />
+                        <span>Random Pick</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Body */}
@@ -414,15 +431,15 @@ export function SearchResults() {
                       return (
                         <div className="mt-2 pt-2 border-t border-border/60 flex flex-wrap items-center gap-1.5 text-xs">
                           {review.rating && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">
-                              <Star className="h-3 w-3 fill-current" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold bg-amber-100 dark:bg-amber-950/50 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/50">
+                              <Star className="h-3 w-3 fill-amber-600 dark:fill-amber-400 text-amber-600 dark:text-amber-400" />
                               <span>{review.rating}/10</span>
                             </span>
                           )}
                           {review.notes && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-muted-foreground bg-muted" title={review.notes}>
-                              <MessageSquare className="h-2.5 w-2.5" />
-                              <span className="line-clamp-1 max-w-[9rem]">{review.notes}</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold text-foreground bg-muted/90 border border-border" title={review.notes}>
+                              <MessageSquare className="h-3 w-3 text-primary shrink-0" />
+                              <span className="line-clamp-1 max-w-[9.5rem]">{review.notes}</span>
                             </span>
                           )}
                         </div>

@@ -436,7 +436,7 @@ export function MovieDetails() {
                     <span className="font-bold text-sm text-foreground">My Rating & Notes</span>
                   </div>
                   {currentReview?.rating && (
-                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/60">
                       {currentReview.rating} / 10
                     </span>
                   )}

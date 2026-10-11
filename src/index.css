@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     /* Dark Mode Defaults - Rich, deep & WCAG AA compliant */
@@ -27,7 +29,7 @@
 
   [data-theme="light"], .light {
     /* Light Mode Defaults - High contrast WCAG AA compliant */
-    --background: #f8fafc; /* Crisp clean slate-50 */
+    --background: #e8eaec; /* Light gray background */
     --foreground: #090d16; /* Slate-950: 18:1 contrast against white/background */
     --card: #ffffff;
     --card-foreground: #090d16;

@@ -28,6 +28,8 @@ interface SearchContextData {
   selectedPersonId: number;
   personData: PersonDetailsModel | null;
   detailHistory: DetailHistoryItem[];
+  highlightedMovieId: number;
+  updateHighlightedMovieId: (id: number) => void;
   openMovieDetailDirect: (movieId: number, title?: string) => Promise<void>;
   openPersonDetailDirect: (personId: number, name?: string) => void;
   navigateToMovie: (movieId: number, title?: string) => Promise<void>;
@@ -69,6 +71,8 @@ const SearchContext = createContext<SearchContextData>({
   selectedPersonId: 0,
   personData: null,
   detailHistory: [],
+  highlightedMovieId: 0,
+  updateHighlightedMovieId: () => {},
   openMovieDetailDirect: async () => {},
   openPersonDetailDirect: () => {},
   navigateToMovie: async () => {},
@@ -126,6 +130,7 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
   const [selectedPersonId, setSelectedPersonId] = useState<number>(0);
   const [personData, setPersonData] = useState<PersonDetailsModel | null>(null);
   const [detailHistory, setDetailHistory] = useState<DetailHistoryItem[]>([]);
+  const [highlightedMovieId, setHighlightedMovieId] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Synchronize URL query parameters with active detail view on initial load and browser history changes
@@ -379,6 +384,8 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     selectedPersonId,
     personData,
     detailHistory,
+    highlightedMovieId,
+    updateHighlightedMovieId: setHighlightedMovieId,
     openMovieDetailDirect,
     openPersonDetailDirect,
     navigateToMovie,

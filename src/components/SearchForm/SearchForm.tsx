@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Search,
   Loader2,
@@ -13,6 +13,8 @@ import {
   ChevronDown,
   RotateCcw,
   Tv,
+  Dices,
+  Sparkles,
 } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
@@ -21,6 +23,7 @@ import { SearchResult } from '../SearchResults';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SurprisePickerModal } from '../SurprisePicker/SurprisePickerModal';
 
 const CATEGORIES = [
   { key: 'nowplaying', label: 'In Theaters', icon: Clapperboard },
@@ -38,6 +41,10 @@ export function SearchForm() {
     isAdvancedOpen,
     advancedFilters,
     isLoading,
+    searchResults,
+    highlightedMovieId,
+    updateHighlightedMovieId,
+    openMovieDetailDirect,
     updateSearchCategory,
     updateSearchTerm,
     updateSearchType,
@@ -52,6 +59,8 @@ export function SearchForm() {
 
   const { watchlist, watchedList, getSortedList, librarySort } = useWatchlist();
 
+  const [isSurpriseModalOpen, setIsSurpriseModalOpen] = useState(false);
+
   // Keep watchlist or watched results live and sorted if user is viewing that category
   useEffect(() => {
     if (searchCategory === 'watchlist') {
@@ -60,6 +69,21 @@ export function SearchForm() {
       updateSearchResults(getSortedList('watched'));
     }
   }, [watchlist, watchedList, searchCategory, librarySort]);
+
+  const handleSelectWinner = (movie: SearchResult, pool: SearchResult[]) => {
+    const uniquePool = Array.from(new Map(pool.map((m) => [m.id, m])).values());
+    if (searchResults.length === 0 || !searchResults.some((m) => m.id === movie.id)) {
+      updateSearchResults(uniquePool);
+    }
+    updateHighlightedMovieId(movie.id);
+
+    setTimeout(() => {
+      const cardElement = document.getElementById(`movie-card-${movie.id}`);
+      if (cardElement) {
+        cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
+  };
 
   const runSearch = async (
     term: string,
@@ -183,7 +207,7 @@ export function SearchForm() {
               value={searchTerm}
               onChange={handleInputChange}
               disabled={isLoading}
-              className="h-14 border-0 bg-transparent text-sm sm:text-base focus-visible:ring-0 shadow-none px-3 text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
+              className="h-14 border-0 bg-transparent backdrop-blur-none text-sm sm:text-base focus-visible:ring-0 shadow-none px-3 text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
             />
 
             {/* Advanced Filters Toggle Button */}
@@ -195,7 +219,7 @@ export function SearchForm() {
               aria-expanded={isAdvancedOpen}
               aria-controls="advanced-search-panel"
               aria-label={isAdvancedOpen ? 'Close advanced filters' : 'Open advanced filters'}
-              className={`h-10 px-2.5 mr-1.5 rounded-lg font-semibold transition-colors shrink-0 ${
+              className={`relative z-10 h-10 px-2.5 mx-1.5 rounded-lg font-semibold transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
                 isAdvancedOpen
                   ? 'bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -210,7 +234,7 @@ export function SearchForm() {
               type="submit"
               disabled={isLoading || (!searchTerm.trim() && !isAdvancedOpen)}
               aria-label={isLoading ? 'Searching...' : 'Submit movie search'}
-              className="mr-2 h-10 px-4 sm:px-5 rounded-lg font-bold shrink-0 shadow-sm"
+              className="relative z-10 mr-2 h-10 px-4 sm:px-5 rounded-lg font-bold shrink-0 shadow-sm focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-card"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -403,7 +427,7 @@ export function SearchForm() {
                 className={`rounded-full transition-all border ${
                   isActive
                     ? 'font-bold ring-2 ring-primary/40 shadow-sm'
-                    : 'text-foreground border-border bg-card/60 hover:bg-card hover:border-foreground/40'
+                    : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
                 }`}
               >
                 <Icon className={`h-3.5 w-3.5 mr-1.5 ${isActive ? 'text-primary-foreground' : 'text-primary'}`} aria-hidden="true" />
@@ -427,7 +451,7 @@ export function SearchForm() {
             className={`rounded-full transition-all border ${
               searchCategory === 'watchlist'
                 ? 'font-bold ring-2 ring-amber-500/40 bg-amber-500 text-black hover:bg-amber-600 shadow-sm'
-                : 'text-foreground border-border bg-card/60 hover:bg-card hover:border-foreground/40'
+                : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
             }`}
           >
             <Bookmark
@@ -458,7 +482,7 @@ export function SearchForm() {
             className={`rounded-full transition-all border ${
               searchCategory === 'watched'
                 ? 'font-bold ring-2 ring-emerald-500/40 bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
-                : 'text-foreground border-border bg-card/60 hover:bg-card hover:border-foreground/40'
+                : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
             }`}
           >
             <Eye
@@ -476,7 +500,38 @@ export function SearchForm() {
               </span>
             )}
           </Button>
+
+          {/* Random Movie Picker Toggle Button */}
+          <Button
+            type="button"
+            variant={isSurpriseModalOpen ? 'default' : 'outline'}
+            size="sm"
+            disabled={isLoading}
+            aria-label="Pick a random movie from top 50 with animated card reel"
+            onClick={() => setIsSurpriseModalOpen(true)}
+            className={`rounded-full transition-all border ${
+              isSurpriseModalOpen
+                ? 'font-bold ring-2 ring-primary/40 bg-primary text-primary-foreground shadow-sm'
+                : 'text-foreground border-border bg-card/60 hover:bg-primary/15 hover:border-primary/50 focus-visible:bg-primary/15 focus-visible:border-primary/50'
+            }`}
+          >
+            <Dices
+              className={`h-3.5 w-3.5 mr-1.5 ${isSurpriseModalOpen ? 'text-primary-foreground' : 'text-primary'}`}
+              aria-hidden="true"
+            />
+            <span className="inline-block chrome-text-adjust">Surprise Me</span>
+          </Button>
         </div>
+
+        {/* Surprise Picker Slot Machine Reel Modal */}
+        <SurprisePickerModal
+          isOpen={isSurpriseModalOpen}
+          onClose={() => setIsSurpriseModalOpen(false)}
+          watchlist={watchlist}
+          initialSource={searchCategory || 'trending'}
+          onSelectWinner={handleSelectWinner}
+          onOpenDetails={(movieId, title) => openMovieDetailDirect(movieId, title)}
+        />
       </div>
     </section>
   );
