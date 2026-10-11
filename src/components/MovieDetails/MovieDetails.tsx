@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft, Share2, Check, Eye } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark, ArrowLeft, Share2, Check, Eye, MessageSquare, Edit3, Trash2 } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
 import { imageConfig } from '../../config/imageConfig';
@@ -34,13 +34,16 @@ export function MovieDetails() {
     navigateToPerson,
     goBackDetail,
   } = useSearchContext();
-  const { isInWatchlist, toggleWatchlist, isWatched, toggleWatched } = useWatchlist();
+  const { isInWatchlist, toggleWatchlist, isWatched, toggleWatched, getReview, saveReview, deleteReview } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [tempNotes, setTempNotes] = useState('');
 
   const isSaved = movieData ? isInWatchlist(movieData.id) : false;
   const isWatchedMovie = movieData ? isWatched(movieData.id) : false;
+  const currentReview = movieData ? getReview(movieData.id) : undefined;
 
   const {
     URL_IMAGE_BACKDROP_w1280,
@@ -421,6 +424,140 @@ export function MovieDetails() {
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* My Rating & Personal Notes (Only for Watched Movies) */}
+            {isWatchedMovie && (
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 sm:p-4 text-xs transition-all">
+                <div className="flex items-center justify-between pb-2 border-b border-border/60">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <span className="font-bold text-sm text-foreground">My Rating & Notes</span>
+                  </div>
+                  {currentReview?.rating && (
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                      {currentReview.rating} / 10
+                    </span>
+                  )}
+                </div>
+
+                {/* Rating 1-10 selector buttons */}
+                <div className="mt-3">
+                  <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">
+                    Your rating (1 to 10):
+                  </p>
+                  <div className="flex flex-wrap items-center gap-1 sm:gap-1.5" role="radiogroup" aria-label="Personal rating 1 to 10">
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((star) => {
+                      const isSelected = currentReview?.rating === star;
+                      return (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              saveReview(movieData.id, { rating: undefined });
+                            } else {
+                              saveReview(movieData.id, { rating: star });
+                            }
+                          }}
+                          aria-label={`Rate ${star} out of 10`}
+                          aria-checked={isSelected}
+                          role="radio"
+                          className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg text-xs font-bold transition-all flex items-center justify-center cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-500 text-black font-extrabold shadow-sm scale-105'
+                              : 'bg-card border border-border text-foreground hover:border-amber-500 hover:text-amber-500'
+                          }`}
+                        >
+                          {star}
+                        </button>
+                      );
+                    })}
+                    {currentReview?.rating && (
+                      <button
+                        type="button"
+                        onClick={() => saveReview(movieData.id, { rating: undefined })}
+                        className="ml-1 text-[11px] text-muted-foreground hover:text-destructive transition-colors font-medium cursor-pointer"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Personal Notes */}
+                <div className="mt-3 pt-2.5 border-t border-border/50">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
+                      <MessageSquare className="h-3 w-3" />
+                      Personal review or notes:
+                    </span>
+                    {!isEditingNotes && currentReview?.notes && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTempNotes(currentReview?.notes || '');
+                          setIsEditingNotes(true);
+                        }}
+                        className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit3 className="h-3 w-3" />
+                        Edit
+                      </button>
+                    )}
+                  </div>
+
+                  {isEditingNotes ? (
+                    <div className="space-y-2 mt-1.5">
+                      <textarea
+                        value={tempNotes}
+                        onChange={(e) => setTempNotes(e.target.value)}
+                        placeholder="Write your personal thoughts, memorable scenes, or review..."
+                        rows={3}
+                        className="w-full p-2.5 rounded-lg border border-border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+                      />
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setIsEditingNotes(false);
+                            setTempNotes('');
+                          }}
+                          className="h-7 text-xs"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            saveReview(movieData.id, { notes: tempNotes.trim() });
+                            setIsEditingNotes(false);
+                          }}
+                          className="h-7 text-xs font-bold"
+                        >
+                          Save Notes
+                        </Button>
+                      </div>
+                    </div>
+                  ) : currentReview?.notes ? (
+                    <p className="text-xs text-foreground bg-background/60 p-2.5 rounded-lg border border-border/60 whitespace-pre-wrap leading-relaxed mt-1">
+                      {currentReview.notes}
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTempNotes('');
+                        setIsEditingNotes(true);
+                      }}
+                      className="text-xs text-muted-foreground hover:text-foreground underline cursor-pointer mt-0.5 inline-block"
+                    >
+                      + Add a personal note or review
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

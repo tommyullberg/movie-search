@@ -13,10 +13,10 @@ function DetailModals() {
 
   return (
     <>
-      {selectedMovieId > 0 && (
+      {Boolean(selectedMovieId > 0) && (
         <Modal movieId={selectedMovieId} isOpen={selectedMovieId > 0} closeModal={closeAllDetails} />
       )}
-      {selectedPersonId > 0 && (
+      {Boolean(selectedPersonId > 0) && (
         <PersonModal personId={selectedPersonId} isOpen={selectedPersonId > 0} closeModal={closeAllDetails} />
       )}
     </>

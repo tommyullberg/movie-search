@@ -5,7 +5,7 @@ import { useSearchContext } from '../../contexts/SearchContext';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
 import { motion } from 'framer-motion';
-import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X } from 'lucide-react';
+import { Film, AlertCircle, Loader2, Bookmark, User, Eye, CheckCircle2, Download, Upload, ArrowUpDown, X, Star, MessageSquare } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
@@ -76,6 +76,7 @@ export function SearchResults() {
     setLibrarySort,
     exportLibrary,
     importLibrary,
+    getReview,
   } = useWatchlist();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -89,7 +90,12 @@ export function SearchResults() {
       try {
         const content = event.target?.result as string;
         const res = importLibrary(content);
-        setImportFeedback(`Imported ${res.importedWatchlist} movies to Watchlist and ${res.importedWatched} to Watched!`);
+        const total = res.importedWatchlist + res.importedWatched;
+        if (total === 0 && res.importedReviews === 0) {
+          setImportFeedback('All movies in the backup file were already present in your library.');
+        } else {
+          setImportFeedback(`Imported ${res.importedWatchlist} to Watchlist, ${res.importedWatched} to Watched (${res.importedReviews} ratings/notes)!`);
+        }
         setTimeout(() => setImportFeedback(null), 5000);
       } catch (err: any) {
         setImportFeedback('Failed to import: Please select a valid JSON backup file.');
@@ -194,8 +200,10 @@ export function SearchResults() {
                 >
                   <option value="added.desc">Date Added (Newest)</option>
                   <option value="added.asc">Date Added (Oldest)</option>
-                  <option value="vote.desc">Rating (Highest)</option>
-                  <option value="vote.asc">Rating (Lowest)</option>
+                  <option value="myrating.desc">My Rating (Highest)</option>
+                  <option value="myrating.asc">My Rating (Lowest)</option>
+                  <option value="vote.desc">TMDB Rating (Highest)</option>
+                  <option value="vote.asc">TMDB Rating (Lowest)</option>
                   <option value="year.desc">Release Year (Newest)</option>
                   <option value="year.asc">Release Year (Oldest)</option>
                   <option value="title.asc">Title (A-Z)</option>
@@ -399,6 +407,27 @@ export function SearchResults() {
                     <h2 className="line-clamp-2 text-sm sm:text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
                       {result.title}
                     </h2>
+                    {/* Personal Rating & Note Indicator in Watched View */}
+                    {searchCategory === 'watched' && (() => {
+                      const review = getReview(result.id);
+                      if (!review?.rating && !review?.notes) return null;
+                      return (
+                        <div className="mt-2 pt-2 border-t border-border/60 flex flex-wrap items-center gap-1.5 text-xs">
+                          {review.rating && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                              <Star className="h-3 w-3 fill-current" />
+                              <span>{review.rating}/10</span>
+                            </span>
+                          )}
+                          {review.notes && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium text-muted-foreground bg-muted" title={review.notes}>
+                              <MessageSquare className="h-2.5 w-2.5" />
+                              <span className="line-clamp-1 max-w-[9rem]">{review.notes}</span>
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <p className="mt-2 text-xs sm:text-sm font-semibold text-muted-foreground">
                     {formatDate(result.release_date || '') || 'Unknown date'}
@@ -423,7 +452,7 @@ export function SearchResults() {
       </div>
 
       {/* Empty State */}
-      {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory || advancedFilters.genre || advancedFilters.year || advancedFilters.watchProvider || (advancedFilters.minRating && advancedFilters.minRating > 0)) && (
+      {!isLoading && searchResults.length === 0 && Boolean(searchTerm || searchCategory || advancedFilters.genre || advancedFilters.year || advancedFilters.watchProvider || (advancedFilters.minRating && advancedFilters.minRating > 0)) && (
         <div role="status" className="my-16 flex flex-col items-center justify-center text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground" aria-hidden="true">
             {searchCategory === 'watchlist' ? (
@@ -458,7 +487,7 @@ export function SearchResults() {
       )}
 
       {/* Load More Button */}
-      {page < totalPages && searchResults.length > 0 && !isLoading && (
+      {Boolean(page < totalPages && searchResults.length > 0 && !isLoading) && (
         <div className="mt-12 flex justify-center">
           <Button
             size="lg"
