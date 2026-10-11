@@ -1,16 +1,14 @@
 import React, { FormEvent, KeyboardEvent } from 'react';
 import { fetchSearchResults } from '../utils/apiUtils';
 import { useSearchContext } from '../contexts/SearchContext';
-import { imageConfig } from '../config/imageConfig';
 import { motion } from 'framer-motion';
 import { Film, AlertCircle, Loader2, Bookmark, User, Eye } from 'lucide-react';
-import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { SearchResult } from '../types';
 import { MovieCard } from './MovieCard';
+import { PersonCard } from './PersonCard';
 import { LibraryToolbar } from './LibraryToolbar';
 
 export type { SearchResult };
@@ -37,8 +35,6 @@ export function SearchResults() {
 
   const { getReview } = useWatchlist();
 
-  const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500, URL_IMAGE_PROFILE_h632 } = imageConfig;
-
   const openModal = (movieId: number, title?: string, event?: FormEvent<Element> | KeyboardEvent<Element>) => {
     if (event) event.preventDefault();
     openMovieDetailDirect(movieId, title);
@@ -55,7 +51,7 @@ export function SearchResults() {
     openPersonDetailDirect(personId, name);
   };
 
-  const handlePersonKeyDown = (personId: number, name?: string, e?: KeyboardEvent<HTMLDivElement>) => {
+  const handlePersonKeyDown = (personId: number, name?: string, e?: KeyboardEvent<Element>) => {
     if (e && (e.key === 'Enter' || e.key === ' ')) {
       openPersonModal(personId, name, e);
     }
@@ -107,54 +103,11 @@ export function SearchResults() {
           >
             {result.media_type === 'person' || (result.name && !result.title) ? (
               /* Person Card */
-              <Card
-                role="button"
-                tabIndex={0}
-                aria-haspopup="dialog"
-                aria-label={`View profile for ${result.name}`}
+              <PersonCard
+                person={result}
                 onClick={(e) => openPersonModal(result.id, result.name, e)}
                 onKeyDown={(e) => handlePersonKeyDown(result.id, result.name, e)}
-                className="cursor-pointer overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
-              >
-                {/* Profile Image Container */}
-                <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
-                  {result.profile_path ? (
-                    <img
-                      src={`${URL_IMAGE_PROFILE_h632}${result.profile_path}`}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground" aria-hidden="true">
-                      <User className="h-12 w-12 opacity-40" />
-                    </div>
-                  )}
-
-                  {result.known_for_department && (
-                    <div className="absolute top-2 left-2 z-10">
-                      <Badge variant="secondary" className="text-[10px] font-bold shadow-md bg-background/85 backdrop-blur-xs border border-border">
-                        {result.known_for_department}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-
-                {/* Person Card Body */}
-                <CardContent className="p-3.5 flex flex-col justify-between flex-1">
-                  <div>
-                    <h2 className="line-clamp-2 text-sm sm:text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
-                      {result.name}
-                    </h2>
-                  </div>
-                  {result.known_for && result.known_for.length > 0 && (
-                    <p className="mt-2 line-clamp-2 text-xs text-muted-foreground font-medium">
-                      <span className="font-semibold text-foreground/80">Known for: </span>
-                      {result.known_for.map((k) => k.title || k.name).filter(Boolean).slice(0, 3).join(', ')}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+              />
             ) : (
               /* Movie Card */
               <MovieCard

@@ -19,8 +19,16 @@ export {
   type ActionButtonProps,
 } from './buttons/ActionButton';
 export { MovieCard, type MovieCardProps } from './MovieCard';
+export { PersonCard, type PersonCardProps } from './PersonCard';
 export { LibraryToolbar, type LibraryToolbarProps } from './LibraryToolbar';
-export { KeyFactsSection, type KeyFactsSectionProps } from './KeyFactsSection';
-export { RatingNotesSection, type RatingNotesSectionProps } from './RatingNotesSection';
-export { WhereToWatchSection, type WhereToWatchSectionProps } from './WhereToWatchSection';
+export {
+  MovieHeroSection,
+  KeyFactsSection,
+  RatingNotesSection,
+  MovieTrailerSection,
+  WhereToWatchSection,
+  MovieCastSection,
+  MovieRecommendationsSection,
+} from './movie-details';
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
+

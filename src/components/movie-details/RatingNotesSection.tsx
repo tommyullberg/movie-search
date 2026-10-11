@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Star, MessageSquare, Edit3 } from 'lucide-react';
-import { useWatchlist } from '../contexts/WatchlistContext';
-import { MovieDetails } from '../types';
+import { useWatchlist } from '../../contexts/WatchlistContext';
+import type { MovieDetails } from '../../types';
 
 export interface RatingNotesSectionProps {
   movie: MovieDetails;

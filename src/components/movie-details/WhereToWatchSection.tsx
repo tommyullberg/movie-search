@@ -1,7 +1,7 @@
 import React from 'react';
 import { ExternalLink, Tv } from 'lucide-react';
-import { MovieDetails } from '../types';
-import { imageConfig } from '../config/imageConfig';
+import type { MovieDetails } from '../../types';
+import { imageConfig } from '../../config/imageConfig';
 
 export interface WhereToWatchSectionProps {
   movie: MovieDetails;
