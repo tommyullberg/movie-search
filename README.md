@@ -4,7 +4,7 @@ Source code:
 - [GitHub Repository](https://github.com/tommyullberg/movie-search)
 
 Live demo:
-- [GitHub Pages](https://tommyullberg.github.io/movie-search/)
+- [GitHub Pages (v1.0.0 live)](https://tommyullberg.github.io/movie-search/)
 
 ## About
 
