@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useMotionValue, animate } from 'framer-motion';
 import { Dices, X, ChevronDown, AlertCircle, RotateCcw } from 'lucide-react';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
-import { Alert, AlertTitle, AlertDescription } from './ui/alert';
-import { SearchResult } from '../types';
-import { TMDB_GENRES, fetchSearchResults } from '../utils/apiUtils';
-import { SurpriseReel, SurpriseWinnerSpotlight } from './surprise';
+import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogTitle } from '../ui/dialog';
+import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
+import { SearchResult } from '../../types';
+import { TMDB_GENRES, fetchSearchResults } from '../../utils/apiUtils';
+import { SurpriseReel } from './SurpriseReel';
+import { SurpriseWinnerSpotlight } from './SurpriseWinnerSpotlight';
 
 interface SurprisePickerModalProps {
   isOpen: boolean;

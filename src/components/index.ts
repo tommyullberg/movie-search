@@ -38,7 +38,6 @@ export {
   type SearchResult,
   type AdvancedFiltersPanelProps,
 } from './search';
-export { SurprisePickerModal } from './SurprisePickerModal';
 export { LibraryToolbar, type LibraryToolbarProps } from './LibraryToolbar';
 export {
   ActionButton,
@@ -52,6 +51,7 @@ export {
 } from './buttons/ActionButton';
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
 export {
+  SurprisePickerModal,
   ReelCard,
   SurpriseReel,
   SurpriseWinnerSpotlight,

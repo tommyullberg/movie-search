@@ -20,7 +20,7 @@ import { fetchSearchResults, SearchType } from '../../utils/apiUtils';
 import { SearchResult } from '../../types';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { SurprisePickerModal } from '../SurprisePickerModal';
+import { SurprisePickerModal } from '../surprise';
 import { CategoryPill } from '../buttons/CategoryPill';
 import { AdvancedFiltersPanel } from './AdvancedFiltersPanel';
 
