@@ -1,31 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  motion,
-  useMotionValue,
-  useTransform,
-  animate,
-  MotionValue,
-  AnimatePresence,
-} from 'framer-motion';
-import {
-  Dices,
-  Sparkles,
-  RotateCcw,
-  Film,
-  X,
-  Star,
-  ExternalLink,
-  ChevronDown,
-  Target,
-  AlertCircle,
-} from 'lucide-react';
+import { useMotionValue, animate } from 'framer-motion';
+import { Dices, X, ChevronDown, AlertCircle, RotateCcw } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { SearchResult } from './SearchResults';
-import { formatDate } from '../utils/helpers';
 import { TMDB_GENRES, fetchSearchResults } from '../utils/apiUtils';
-import { imageConfig } from '../config/imageConfig';
+import { SurpriseReel, SurpriseWinnerSpotlight } from './surprise';
 
 interface SurprisePickerModalProps {
   isOpen: boolean;
@@ -35,129 +16,6 @@ interface SurprisePickerModalProps {
   initialSource?: string;
   onSelectWinner: (movie: SearchResult, pool: SearchResult[]) => void;
   onOpenDetails: (movieId: number, title?: string) => void;
-}
-
-interface ReelCardProps {
-  movie: SearchResult;
-  index: number;
-  x: MotionValue<number>;
-  containerWidth: number;
-  isWinner: boolean;
-  isRolling: boolean;
-  cardWidth: number;
-  cardGap: number;
-}
-
-function ReelCard({
-  movie,
-  index,
-  x,
-  containerWidth,
-  isWinner,
-  isRolling,
-  cardWidth,
-  cardGap,
-}: ReelCardProps) {
-  const slotWidth = cardWidth + cardGap;
-  const halfContainer = containerWidth > 0 ? containerWidth / 2 : 300;
-
-  // Center of card relative to viewport
-  const cardCenter = useTransform(
-    x,
-    (currentX) => currentX + index * slotWidth + cardWidth / 2
-  );
-
-  // Distance from exact center of viewport
-  const distFromCenter = useTransform(cardCenter, (c) =>
-    Math.abs(c - halfContainer)
-  );
-
-  // 3D Mac Dock magnification: scale 1.18 at center, 1.0 adjacent, 0.8 further away
-  const scale = useTransform(
-    distFromCenter,
-    [0, slotWidth, slotWidth * 2.5, slotWidth * 4],
-    [1.18, 0.98, 0.86, 0.78]
-  );
-
-  // 3D rotation: cards tilt inward toward center in 3D space
-  const rotateY = useTransform(
-    cardCenter,
-    [halfContainer - slotWidth * 3, halfContainer, halfContainer + slotWidth * 3],
-    [18, 0, -18]
-  );
-
-  // Subtle depth opacity fade on edges
-  const opacity = useTransform(
-    distFromCenter,
-    [0, slotWidth * 1.5, slotWidth * 3.5],
-    [1, 0.92, 0.6]
-  );
-
-  // Elevated zIndex for center cards so magnified card stays on top
-  const zIndex = useTransform(distFromCenter, (dist) =>
-    Math.max(1, Math.round(50 - dist / 15))
-  );
-
-  return (
-    <motion.div
-      style={{
-        width: `${cardWidth}px`,
-        scale,
-        rotateY,
-        opacity,
-        zIndex,
-        transformStyle: 'preserve-3d',
-      }}
-      className={`shrink-0 rounded-2xl overflow-hidden bg-card transition-colors duration-300 flex flex-col shadow-lg select-none outline-none focus:outline-none focus-visible:outline-none ${
-        !isRolling && isWinner
-          ? 'border-2 border-primary ring-4 ring-primary/30 shadow-2xl shadow-primary/25'
-          : 'border border-border/70'
-      }`}
-    >
-      {/* Poster */}
-      <div className="relative aspect-[2/3] w-full bg-muted overflow-hidden">
-        {movie.poster_path ? (
-          <img
-            src={`${imageConfig.URL_IMAGE_POSTER_w342}${movie.poster_path}`}
-            alt=""
-            loading="eager"
-            className="w-full h-full object-cover pointer-events-none"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-            <Film className="h-8 w-8 opacity-40" />
-          </div>
-        )}
-
-        {/* Winner Tag */}
-        {!isRolling && isWinner && (
-          <div className="absolute top-2 right-2 z-10 pointer-events-none">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-primary text-primary-foreground shadow-md animate-pulse">
-              <Sparkles className="h-2.5 w-2.5" />
-              Winner!
-            </span>
-          </div>
-        )}
-
-        {Boolean(movie.vote_average && movie.vote_average > 0) && (
-          <div className="absolute bottom-1.5 left-1.5 z-10 px-1.5 py-0.5 rounded-md bg-background/85 backdrop-blur-xs text-[10px] font-bold text-foreground flex items-center gap-0.5 pointer-events-none">
-            <Star className="h-2.5 w-2.5 fill-amber-500 text-amber-500" />
-            <span>{movie.vote_average?.toFixed(1)}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Title */}
-      <div className="p-2 text-left bg-card pointer-events-none">
-        <p className="text-xs font-bold text-foreground line-clamp-1">
-          {movie.title}
-        </p>
-        <p className="text-[10px] text-muted-foreground font-medium">
-          {formatDate(movie.release_date || '')?.slice(-4) || 'Movie'}
-        </p>
-      </div>
-    </motion.div>
-  );
 }
 
 export function SurprisePickerModal({
@@ -471,124 +329,25 @@ export function SurprisePickerModal({
             </div>
           ) : (
             <div className="w-full flex flex-col items-center">
-              {/* Card Reel Stage with generous vertical padding to prevent focus/ring clipping */}
-              <div
-                ref={containerRef}
-                style={{ perspective: 1200 }}
-                className="relative w-full h-[330px] sm:h-[350px] overflow-hidden rounded-2xl bg-muted/25 border border-border flex items-center justify-center shadow-inner py-6 sm:py-8"
-              >
-                {/* Center Reticle Pointer Arrows */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center">
-                  <span className="text-primary text-sm font-black drop-shadow-md">
-                    ▼
-                  </span>
-                </div>
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center">
-                  <span className="text-primary text-sm font-black drop-shadow-md">
-                    ▲
-                  </span>
-                </div>
+              <SurpriseReel
+                containerRef={containerRef}
+                x={x}
+                candidates={candidates}
+                winner={winner}
+                targetIndex={targetIndex}
+                containerWidth={containerWidth}
+                isRolling={isRolling}
+                cardWidth={CARD_WIDTH}
+                cardGap={CARD_GAP}
+              />
 
-                {/* Left & Right Shadow Gradient Overlays */}
-                <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-card to-transparent z-20 pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-card to-transparent z-20 pointer-events-none" />
-
-                {/* Ambient Center Glow Aura (borderless to avoid double outline) */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[270px] rounded-3xl bg-primary/10 blur-2xl pointer-events-none z-0" />
-
-                {/* Sliding Strip */}
-                <motion.div
-                  className="flex items-center absolute left-0"
-                  style={{ x, gap: `${CARD_GAP}px` }}
-                >
-                  {candidates.map((movie, index) => {
-                    const isWinnerCard =
-                      !isRolling &&
-                      winner !== null &&
-                      winner.id === movie.id &&
-                      index === targetIndex;
-                    return (
-                      <ReelCard
-                        key={`${movie.id}-${index}`}
-                        movie={movie}
-                        index={index}
-                        x={x}
-                        containerWidth={containerWidth}
-                        isWinner={isWinnerCard}
-                        isRolling={isRolling}
-                        cardWidth={CARD_WIDTH}
-                        cardGap={CARD_GAP}
-                      />
-                    );
-                  })}
-                </motion.div>
-              </div>
-
-              {/* Winner Announcement Spotlight */}
-              <AnimatePresence>
-                {!isRolling && winner && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    transition={{ duration: 0.25 }}
-                    className="mt-4 p-4 w-full rounded-2xl border border-primary/40 bg-primary/5 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left"
-                  >
-                    <div className="flex-1 min-w-0 pr-2">
-                      <div className="flex items-center justify-center sm:justify-start gap-1.5 text-primary text-xs font-bold uppercase tracking-wider mb-1">
-                        <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                        <span>Winning Pick</span>
-                      </div>
-                      <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
-                        {winner.title}
-                      </h3>
-                      <p className="text-xs text-muted-foreground font-semibold flex items-center justify-center sm:justify-start gap-2 mt-0.5">
-                        <span>{formatDate(winner.release_date || '') || 'Unknown'}</span>
-                        {Boolean(winner.vote_average && winner.vote_average > 0) && (
-                          <>
-                            <span>•</span>
-                            <span className="flex items-center gap-1 text-foreground">
-                              <Star className="h-3 w-3 fill-amber-500 text-amber-500 shrink-0" />
-                              {winner.vote_average?.toFixed(1)} / 10
-                            </span>
-                          </>
-                        )}
-                      </p>
-                    </div>
-
-                    <div className="shrink-0 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => startNewShuffle(source)}
-                        className="rounded-xl font-bold h-9"
-                      >
-                        <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-                        Roll Again
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => onOpenDetails(winner.id, winner.title)}
-                        className="rounded-xl font-bold h-9 shadow-sm"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                        Go to movie
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={handleApplyToGrid}
-                        className="rounded-xl font-bold h-9 shadow-sm"
-                      >
-                        <Target className="h-3.5 w-3.5 mr-1.5" />
-                        Highlight in results
-                      </Button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <SurpriseWinnerSpotlight
+                winner={winner}
+                isRolling={isRolling}
+                onRollAgain={() => startNewShuffle(source)}
+                onOpenDetails={onOpenDetails}
+                onHighlightInResults={handleApplyToGrid}
+              />
             </div>
           )}
         </div>

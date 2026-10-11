@@ -33,4 +33,12 @@ export {
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
 export { AdvancedFiltersPanel, type AdvancedFiltersPanelProps } from './search/AdvancedFiltersPanel';
 export { PersonFilmography, type PersonFilmographyProps } from './person/PersonFilmography';
+export {
+  ReelCard,
+  SurpriseReel,
+  SurpriseWinnerSpotlight,
+  type ReelCardProps,
+  type SurpriseReelProps,
+  type SurpriseWinnerSpotlightProps,
+} from './surprise';
 
