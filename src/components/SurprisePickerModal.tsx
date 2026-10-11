@@ -17,9 +17,11 @@ import {
   ExternalLink,
   ChevronDown,
   Target,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
+import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { SearchResult } from './SearchResults';
 import { formatDate } from '../utils/helpers';
 import { TMDB_GENRES, fetchSearchResults } from '../utils/apiUtils';
@@ -452,10 +454,12 @@ export function SurprisePickerModal({
         {/* Body Content */}
         <div className="p-4 sm:p-6 flex-1 flex flex-col justify-center items-center overflow-y-auto">
           {errorMessage ? (
-            <div className="py-12 text-center">
-              <p className="text-sm font-semibold text-destructive mb-3">
-                {errorMessage}
-              </p>
+            <div className="py-8 max-w-md w-full text-center">
+              <Alert variant="destructive" className="text-left mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Cannot roll movie</AlertTitle>
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </Alert>
               <Button
                 type="button"
                 variant="outline"

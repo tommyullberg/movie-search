@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Film, AlertCircle, Loader2, Bookmark, User, Eye } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { EmptyState } from './ui/empty-state';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { SearchResult } from '../types';
 import { MovieCard } from './MovieCard';
@@ -70,12 +72,13 @@ export function SearchResults() {
 
   if (error) {
     return (
-      <section role="alert" className="my-6">
-        <div className="flex items-center gap-3 rounded-xl border border-destructive bg-destructive/10 p-4 text-destructive">
-          <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-          <p className="text-sm font-semibold">Could not load movies: {error}</p>
-        </div>
-      </section>
+      <div className="my-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Could not load movies</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
@@ -137,9 +140,9 @@ export function SearchResults() {
 
       {/* Empty State */}
       {!isLoading && searchResults.length === 0 && Boolean(searchTerm || searchCategory || advancedFilters.genre || advancedFilters.year || advancedFilters.watchProvider || (advancedFilters.minRating && advancedFilters.minRating > 0)) && (
-        <div role="status" className="my-16 flex flex-col items-center justify-center text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground" aria-hidden="true">
-            {searchCategory === 'watchlist' ? (
+        <EmptyState
+          icon={
+            searchCategory === 'watchlist' ? (
               <Bookmark className="h-8 w-8 text-amber-500" />
             ) : searchCategory === 'watched' ? (
               <Eye className="h-8 w-8 text-emerald-500" />
@@ -147,27 +150,27 @@ export function SearchResults() {
               <User className="h-8 w-8" />
             ) : (
               <Film className="h-8 w-8" />
-            )}
-          </div>
-          <h2 className="text-xl font-bold text-foreground">
-            {searchCategory === 'watchlist'
+            )
+          }
+          title={
+            searchCategory === 'watchlist'
               ? 'Your watchlist is empty'
               : searchCategory === 'watched'
               ? 'No watched movies yet'
               : searchType === 'person'
               ? 'No actors or directors found'
-              : 'No movies found'}
-          </h2>
-          <p className="mt-1 text-sm font-medium text-muted-foreground max-w-sm">
-            {searchCategory === 'watchlist'
+              : 'No movies found'
+          }
+          description={
+            searchCategory === 'watchlist'
               ? 'Click the bookmark icon on any movie card or in movie details to save it to your personal watchlist.'
               : searchCategory === 'watched'
               ? 'Click the eye icon on any movie card or in movie details to keep track of movies you have watched.'
               : searchType === 'person'
               ? 'Try searching with another actor or director name.'
-              : 'Try adjusting your search query, filters, or streaming provider.'}
-          </p>
-        </div>
+              : 'Try adjusting your search query, filters, or streaming provider.'
+          }
+        />
       )}
 
       {/* Load More Button */}
