@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { imageConfig } from '../../config/imageConfig';
+import { getMovieById } from '../../utils/apiUtils';
 import { formatDate, formatYear } from '../../utils/helpers';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -17,11 +18,13 @@ const formatMinutesToTime = (minutes: number): string => {
 };
 
 export function MovieDetails() {
-  const { movieData } = useSearchContext();
+  const { movieData, updateSelectedMovieId, updateMovieData } = useSearchContext();
   const [showTrailer, setShowTrailer] = useState(false);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
 
   const {
     URL_IMAGE_BACKDROP_w1280,
+    URL_IMAGE_POSTER_w342,
     URL_IMAGE_POSTER_w500,
     URL_IMAGE_POSTER_w780,
     URL_IMAGE_PROFILE_w185
@@ -45,6 +48,29 @@ export function MovieDetails() {
 
   // Top 10 prominent cast members
   const topCast = movieData.credits?.cast?.slice(0, 10) || [];
+
+  // Top 8 recommended movies
+  const recommendations = movieData.recommendations?.results?.slice(0, 8) || [];
+
+  const handleSelectMovie = async (newMovieId: number) => {
+    try {
+      setIsLoadingRelated(true);
+      setShowTrailer(false);
+      const data = await getMovieById(newMovieId);
+      updateSelectedMovieId(newMovieId);
+      updateMovieData(data);
+      setIsLoadingRelated(false);
+
+      // Smoothly scroll back to the top of the dialog
+      const scrollContainer = document.querySelector('[role="dialog"] .overflow-y-auto');
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } catch (err) {
+      setIsLoadingRelated(false);
+      console.error('Error switching recommended movie:', err);
+    }
+  };
 
   return (
     <div className="relative flex flex-col overflow-x-hidden text-foreground">
@@ -233,7 +259,7 @@ export function MovieDetails() {
           </section>
         )}
 
-        {/* Cast & Crew Section */}
+        {/* Top Cast Section */}
         {topCast.length > 0 && (
           <section aria-labelledby="cast-heading" className="mt-8 pt-6 border-t border-border">
             <h3 id="cast-heading" className="text-base sm:text-lg font-bold text-foreground mb-4">
@@ -266,6 +292,59 @@ export function MovieDetails() {
                     {actor.character}
                   </p>
                 </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* More Like This (Recommendations) Section */}
+        {recommendations.length > 0 && (
+          <section aria-labelledby="recommendations-heading" className="mt-8 pt-6 border-t border-border">
+            <h3 id="recommendations-heading" className="text-base sm:text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+              <span>More Like This</span>
+            </h3>
+            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-3 sm:gap-4">
+              {recommendations.map((rec) => (
+                <button
+                  key={rec.id}
+                  type="button"
+                  onClick={() => handleSelectMovie(rec.id)}
+                  disabled={isLoadingRelated}
+                  aria-label={`View details for recommended movie ${rec.title}`}
+                  className="group flex flex-col rounded-xl border border-border bg-card/60 overflow-hidden text-left transition-all hover:bg-card hover:border-primary hover:shadow-lg hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring outline-none"
+                >
+                  <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
+                    {rec.poster_path ? (
+                      <img
+                        src={`${URL_IMAGE_POSTER_w342}${rec.poster_path}`}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-muted-foreground bg-muted">
+                        <Film className="h-8 w-8 opacity-40" aria-hidden="true" />
+                      </div>
+                    )}
+                    {rec.vote_average > 0 && (
+                      <div className="absolute top-1.5 right-1.5 rounded-md bg-black/80 px-1.5 py-0.5 text-[11px] font-bold text-amber-400 flex items-center gap-1 backdrop-blur-sm border border-white/10">
+                        <Star className="h-3 w-3 fill-amber-400" aria-hidden="true" />
+                        <span>{rec.vote_average.toFixed(1)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-2.5 flex flex-col justify-between flex-1">
+                    <p className="line-clamp-1 text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                      {rec.title}
+                    </p>
+                    {rec.release_date && (
+                      <p className="text-[11px] font-semibold text-muted-foreground mt-0.5">
+                        {formatYear(rec.release_date)}
+                      </p>
+                    )}
+                  </div>
+                </button>
               ))}
             </div>
           </section>
