@@ -1,12 +1,19 @@
 import React, { useRef, useState } from 'react';
 import { Bookmark, Eye, ArrowUpDown, Download, Upload, CheckCircle2, X } from 'lucide-react';
-import { Button } from './ui/button';
-import { useWatchlist, LibrarySortOption } from '../contexts/WatchlistContext';
-import { useSearchContext } from '../contexts/SearchContext';
+import { Button } from '../ui/button';
+import { useWatchlist, LibrarySortOption } from '../../contexts/WatchlistContext';
+import { useSearchContext } from '../../contexts/SearchContext';
 
-export interface LibraryToolbarProps {}
+/**
+ * WatchlistToolbar
+ *
+ * A dedicated toolbar component for managing the user's personal movie collection,
+ * including both the "Watchlist" (movies to watch) and "Watched" movies lists.
+ * Provides controls for switching views, sorting items, and exporting/importing JSON backups.
+ */
+export interface WatchlistToolbarProps {}
 
-export function LibraryToolbar(_props: LibraryToolbarProps = {}) {
+export function WatchlistToolbar(_props: WatchlistToolbarProps = {}) {
   const {
     watchlist,
     watchedList,
@@ -152,3 +159,7 @@ export function LibraryToolbar(_props: LibraryToolbarProps = {}) {
     </div>
   );
 }
+
+// Backward-compatible alias
+export { WatchlistToolbar as LibraryToolbar };
+export type { WatchlistToolbarProps as LibraryToolbarProps };

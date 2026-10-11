@@ -38,7 +38,12 @@ export {
   type SearchResult,
   type AdvancedFiltersPanelProps,
 } from './search';
-export { LibraryToolbar, type LibraryToolbarProps } from './LibraryToolbar';
+export {
+  WatchlistToolbar,
+  LibraryToolbar,
+  type WatchlistToolbarProps,
+  type LibraryToolbarProps,
+} from './watchlist';
 export {
   ActionButton,
   WatchlistButton,

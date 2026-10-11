@@ -11,7 +11,7 @@ import { useWatchlist } from '../../contexts/WatchlistContext';
 import { SearchResult } from '../../types';
 import { MovieCard } from '../movie';
 import { PersonCard } from '../person';
-import { LibraryToolbar } from '../LibraryToolbar';
+import { WatchlistToolbar } from '../watchlist';
 
 export type { SearchResult };
 
@@ -84,9 +84,9 @@ export function SearchResults() {
 
   return (
     <section aria-label="Search results" className="mt-4 pb-16">
-      {/* Library Toolbar for Watchlist & Watched lists */}
+      {/* Toolbar for Watchlist & Watched lists */}
       {(searchCategory === 'watchlist' || searchCategory === 'watched') && (
-        <LibraryToolbar />
+        <WatchlistToolbar />
       )}
 
       {/* Cards Grid */}
