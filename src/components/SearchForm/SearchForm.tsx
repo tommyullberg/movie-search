@@ -138,7 +138,7 @@ export function SearchForm() {
                 }`}
               >
                 <Icon className={`h-3.5 w-3.5 mr-1.5 ${isActive ? 'text-primary-foreground' : 'text-primary'}`} aria-hidden="true" />
-                {label}
+                <span className="inline-block chrome-text-adjust">{label}</span>
               </Button>
             );
           })}
@@ -162,10 +162,10 @@ export function SearchForm() {
               className={`h-3.5 w-3.5 mr-1.5 ${searchCategory === 'watchlist' ? 'fill-current text-primary-foreground' : 'text-amber-500'}`}
               aria-hidden="true"
             />
-            <span>Watchlist</span>
+            <span className="inline-block chrome-text-adjust">Watchlist</span>
             {watchlist.length > 0 && (
               <span
-                className={`ml-1.5 rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
+                className={`ml-1.5 inline-block chrome-text-adjust rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
                   searchCategory === 'watchlist' ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-secondary text-foreground'
                 }`}
               >

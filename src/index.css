@@ -160,3 +160,8 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
+
+/* Optical vertical alignment adjustment for Inter font specifically in Chromium/Chrome */
+.is-chromium .chrome-text-adjust {
+  transform: translateY(1px);
+}

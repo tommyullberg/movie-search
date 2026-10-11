@@ -10,6 +10,10 @@ export default function App() {
   useEffect(() => {
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
     document.documentElement.classList.add(isMobile ? 'is-mobile' : 'is-not-mobile');
+    const isChromium = /Chrome|Chromium|Edg/i.test(navigator.userAgent) && !/Firefox/i.test(navigator.userAgent);
+    if (isChromium) {
+      document.documentElement.classList.add('is-chromium');
+    }
   }, []);
 
   return (

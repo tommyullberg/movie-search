@@ -13,6 +13,11 @@
   <link rel="apple-touch-icon" href="/logo192.png">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <script>
+    if (/Chrome|Chromium|Edg/i.test(navigator.userAgent) && !/Firefox/i.test(navigator.userAgent)) {
+      document.documentElement.classList.add('is-chromium');
+    }
+  </script>
 </head>
 <body id="appBody" class="min-h-screen bg-background text-foreground antialiased">
   <noscript>You need to enable JavaScript to run this app.</noscript>
