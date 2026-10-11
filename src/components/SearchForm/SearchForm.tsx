@@ -1,6 +1,7 @@
-import React from 'react';
-import { Search, Loader2, TrendingUp, Flame, Star, Calendar } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Search, Loader2, TrendingUp, Flame, Star, Calendar, Bookmark } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
+import { useWatchlist } from '../../contexts/WatchlistContext';
 import { fetchSearchResults } from '../../utils/apiUtils';
 import { SearchResult } from '../SearchResults';
 import { Input } from '../ui/input';
@@ -27,6 +28,15 @@ export function SearchForm() {
     updateTotalPages,
   } = useSearchContext();
 
+  const { watchlist } = useWatchlist();
+
+  // Keep watchlist results live if user is currently viewing the watchlist category
+  useEffect(() => {
+    if (searchCategory === 'watchlist') {
+      updateSearchResults(watchlist);
+    }
+  }, [watchlist, searchCategory]);
+
   const runSearch = async (term: string, category: string) => {
     updateIsLoading(true);
     updateError(null);
@@ -48,6 +58,15 @@ export function SearchForm() {
     updateSearchCategory(category);
     updateSearchTerm('');
     await runSearch('', category);
+  };
+
+  const handleWatchlistClick = () => {
+    updateSearchCategory('watchlist');
+    updateSearchTerm('');
+    updateError(null);
+    updateSearchResults(watchlist);
+    updateTotalPages(1);
+    updatePage(1);
   };
 
   const handleSearch = async (event: React.FormEvent) => {
@@ -123,6 +142,37 @@ export function SearchForm() {
               </Button>
             );
           })}
+
+          {/* Watchlist Filter Button */}
+          <Button
+            type="button"
+            variant={searchCategory === 'watchlist' ? 'default' : 'outline'}
+            size="sm"
+            disabled={isLoading}
+            aria-pressed={searchCategory === 'watchlist'}
+            aria-label={`Show Watchlist, ${watchlist.length} saved movies`}
+            onClick={handleWatchlistClick}
+            className={`rounded-full transition-all border ${
+              searchCategory === 'watchlist'
+                ? 'font-bold ring-2 ring-primary/40 shadow-sm'
+                : 'text-foreground border-border bg-card/60 hover:bg-card hover:border-foreground/40'
+            }`}
+          >
+            <Bookmark
+              className={`h-3.5 w-3.5 mr-1.5 ${searchCategory === 'watchlist' ? 'fill-current text-primary-foreground' : 'text-amber-500'}`}
+              aria-hidden="true"
+            />
+            <span>Watchlist</span>
+            {watchlist.length > 0 && (
+              <span
+                className={`ml-1.5 rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
+                  searchCategory === 'watchlist' ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-secondary text-foreground'
+                }`}
+              >
+                {watchlist.length}
+              </span>
+            )}
+          </Button>
         </div>
       </div>
     </section>

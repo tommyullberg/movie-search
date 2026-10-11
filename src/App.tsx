@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Header } from './components/Header';
 import { SearchContextProvider } from './contexts/SearchContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { WatchlistProvider } from './contexts/WatchlistContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AnimatedRoutes } from './components/AnimatedRoutes';
 
@@ -13,8 +14,9 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <SearchContextProvider>
-        <Router basename={import.meta.env.BASE_URL}>
+      <WatchlistProvider>
+        <SearchContextProvider>
+          <Router basename={import.meta.env.BASE_URL}>
           <div className="min-h-screen bg-background text-foreground flex flex-col">
             {/* Skip to Main Content Link for WCAG Keyboard Accessibility */}
             <a
@@ -35,6 +37,7 @@ export default function App() {
           </div>
         </Router>
       </SearchContextProvider>
-    </ThemeProvider>
+    </WatchlistProvider>
+  </ThemeProvider>
   );
 }

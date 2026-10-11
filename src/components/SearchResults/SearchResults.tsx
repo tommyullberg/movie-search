@@ -6,10 +6,11 @@ import { Modal } from '../Modal';
 import { GaugeSVG } from '../GaugeSVG';
 import { imageConfig } from '../../config/imageConfig';
 import { motion } from 'framer-motion';
-import { Film, AlertCircle, Loader2 } from 'lucide-react';
+import { Film, AlertCircle, Loader2, Bookmark } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
+import { useWatchlist } from '../../contexts/WatchlistContext';
 
 export interface SearchResult {
   adult: boolean;
@@ -45,6 +46,8 @@ export function SearchResults() {
     updateSelectedMovieId,
     updateMovieData,
   } = useSearchContext();
+
+  const { isInWatchlist, toggleWatchlist } = useWatchlist();
 
   const { URL_IMAGE_POSTER_w342, URL_IMAGE_POSTER_w500 } = imageConfig;
 
@@ -138,6 +141,24 @@ export function SearchResults() {
                   </div>
                 )}
 
+                {/* Watchlist Bookmark toggle positioned top-left */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    toggleWatchlist(result);
+                  }}
+                  aria-label={isInWatchlist(result.id) ? `Remove ${result.title} from watchlist` : `Add ${result.title} to watchlist`}
+                  className={`absolute top-2 left-2 z-10 p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    isInWatchlist(result.id)
+                      ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 dark:text-amber-950'
+                      : 'bg-background/80 text-foreground hover:bg-background hover:text-amber-500'
+                  }`}
+                >
+                  <Bookmark className={`h-4 w-4 ${isInWatchlist(result.id) ? 'fill-current' : ''}`} />
+                </button>
+
                 {/* Rating Gauge positioned top-right */}
                 <div className="absolute top-2 right-2 w-11 h-11 drop-shadow-md">
                   <GaugeSVG id={result.id} vote_average={result.vote_average} />
@@ -176,11 +197,19 @@ export function SearchResults() {
       {!isLoading && searchResults.length === 0 && (searchTerm || searchCategory) && (
         <div role="status" className="my-16 flex flex-col items-center justify-center text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground" aria-hidden="true">
-            <Film className="h-8 w-8" />
+            {searchCategory === 'watchlist' ? (
+              <Bookmark className="h-8 w-8 text-amber-500" />
+            ) : (
+              <Film className="h-8 w-8" />
+            )}
           </div>
-          <h2 className="text-xl font-bold text-foreground">No movies found</h2>
-          <p className="mt-1 text-sm font-medium text-muted-foreground">
-            Try adjusting your search query or pick a different category.
+          <h2 className="text-xl font-bold text-foreground">
+            {searchCategory === 'watchlist' ? 'Your watchlist is empty' : 'No movies found'}
+          </h2>
+          <p className="mt-1 text-sm font-medium text-muted-foreground max-w-sm">
+            {searchCategory === 'watchlist'
+              ? 'Click the bookmark icon on any movie card or in movie details to save it to your personal watchlist.'
+              : 'Try adjusting your search query or pick a different category.'}
           </p>
         </div>
       )}

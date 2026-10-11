@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, User, Film, Sparkles, Tv, Bookmark } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
+import { useWatchlist } from '../../contexts/WatchlistContext';
 import { imageConfig } from '../../config/imageConfig';
 import { getMovieById } from '../../utils/apiUtils';
 import { formatDate, formatYear } from '../../utils/helpers';
@@ -28,8 +29,11 @@ const formatCurrency = (amount: number): string => {
 
 export function MovieDetails() {
   const { movieData, updateSelectedMovieId, updateMovieData } = useSearchContext();
+  const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+
+  const isSaved = movieData ? isInWatchlist(movieData.id) : false;
 
   const {
     URL_IMAGE_BACKDROP_w1280,
@@ -254,6 +258,22 @@ export function MovieDetails() {
                   )}
                 </Button>
               )}
+
+              <Button
+                variant={isSaved ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleWatchlist(movieData)}
+                aria-pressed={isSaved}
+                aria-label={isSaved ? `Remove ${movieData.title} from Watchlist` : `Add ${movieData.title} to Watchlist`}
+                className={`w-[9.75rem] justify-center rounded-lg font-semibold transition-all border-border ${
+                  isSaved
+                    ? 'bg-amber-500 hover:bg-amber-600 text-black font-bold'
+                    : 'text-foreground hover:bg-secondary'
+                }`}
+              >
+                <Bookmark className={`h-3.5 w-3.5 mr-1.5 shrink-0 ${isSaved ? 'fill-current' : ''}`} aria-hidden="true" />
+                <span>{isSaved ? 'In Watchlist' : 'Add to Watchlist'}</span>
+              </Button>
 
               {movieData.imdb_id && (
                 <Button variant="outline" size="sm" asChild className="rounded-lg font-semibold border-border">
