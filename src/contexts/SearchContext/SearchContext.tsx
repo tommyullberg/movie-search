@@ -1,10 +1,14 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { SearchResult } from '../../components/SearchResults';
 import { MovieDetailsModel } from '../../model/MovieDetailsModel';
+import { SearchType, AdvancedFilterOptions } from '../../utils/apiUtils';
 
 interface SearchContextData {
   searchCategory: string;
   searchTerm: string;
+  searchType: SearchType;
+  isAdvancedOpen: boolean;
+  advancedFilters: AdvancedFilterOptions;
   searchResults: SearchResult[];
   isLoading: boolean;
   isFetchingMore: boolean;
@@ -15,6 +19,9 @@ interface SearchContextData {
   movieData: MovieDetailsModel | null;
   updateSearchCategory: (category: string) => void;
   updateSearchTerm: (term: string) => void;
+  updateSearchType: (type: SearchType) => void;
+  updateIsAdvancedOpen: (open: boolean) => void;
+  updateAdvancedFilters: (filters: AdvancedFilterOptions | ((prev: AdvancedFilterOptions) => AdvancedFilterOptions)) => void;
   updateSearchResults: (results: SearchResult[]) => void;
   appendSearchResults: (results: SearchResult[]) => void;
   updateIsLoading: (loading: boolean) => void;
@@ -29,6 +36,9 @@ interface SearchContextData {
 const SearchContext = createContext<SearchContextData>({
   searchCategory: '',
   searchTerm: '',
+  searchType: 'movie',
+  isAdvancedOpen: false,
+  advancedFilters: {},
   searchResults: [],
   isLoading: false,
   isFetchingMore: false,
@@ -39,6 +49,9 @@ const SearchContext = createContext<SearchContextData>({
   movieData: null,
   updateSearchCategory: () => {},
   updateSearchTerm: () => {},
+  updateSearchType: () => {},
+  updateIsAdvancedOpen: () => {},
+  updateAdvancedFilters: () => {},
   updateSearchResults: () => {},
   appendSearchResults: () => {},
   updateIsLoading: () => {},
@@ -61,6 +74,16 @@ interface SearchProviderProps {
 export function SearchContextProvider({ children }: SearchProviderProps) {
   const [searchCategory, setSearchCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState<SearchType>('movie');
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState<boolean>(() => {
+    return localStorage.getItem('movie-search-advanced-open') === 'true';
+  });
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilterOptions>({
+    genre: '',
+    year: '',
+    minRating: 0,
+    sortBy: 'popularity.desc',
+  });
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -69,6 +92,15 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
   const [error, setError] = useState<string | null>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<number>(0);
   const [movieData, setMovieData] = useState<MovieDetailsModel | null>(null);
+
+  const handleUpdateIsAdvancedOpen = (open: boolean) => {
+    setIsAdvancedOpen(open);
+    try {
+      localStorage.setItem('movie-search-advanced-open', String(open));
+    } catch (e) {
+      console.warn('Could not save advanced search state to localStorage', e);
+    }
+  };
 
   const appendSearchResults = (results: SearchResult[] = []) => {
     setSearchResults(prev => {
@@ -81,6 +113,9 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
   const contextValue: SearchContextData = {
     searchCategory,
     searchTerm,
+    searchType,
+    isAdvancedOpen,
+    advancedFilters,
     searchResults,
     isLoading,
     isFetchingMore,
@@ -91,6 +126,9 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     movieData,
     updateSearchCategory: setSearchCategory,
     updateSearchTerm: setSearchTerm,
+    updateSearchType: setSearchType,
+    updateIsAdvancedOpen: handleUpdateIsAdvancedOpen,
+    updateAdvancedFilters: setAdvancedFilters,
     updateSearchResults: setSearchResults,
     appendSearchResults,
     updateIsLoading: setIsLoading,

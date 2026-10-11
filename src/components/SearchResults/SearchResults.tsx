@@ -45,6 +45,8 @@ export function SearchResults() {
     selectedMovieId,
     updateSelectedMovieId,
     updateMovieData,
+    searchType,
+    advancedFilters,
   } = useSearchContext();
 
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
@@ -78,7 +80,7 @@ export function SearchResults() {
       updateIsFetchingMore(true);
       const nextPage = page + 1;
       updatePage(nextPage);
-      const { results } = await fetchSearchResults(searchTerm, searchCategory, nextPage);
+      const { results } = await fetchSearchResults(searchTerm, searchCategory, nextPage, searchType, advancedFilters);
       appendSearchResults(results as SearchResult[]);
       updateIsFetchingMore(false);
     }

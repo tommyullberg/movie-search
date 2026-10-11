@@ -1,11 +1,24 @@
 import React, { useEffect } from 'react';
-import { Search, Loader2, TrendingUp, Flame, Star, Calendar, Bookmark, Clapperboard } from 'lucide-react';
+import {
+  Search,
+  Loader2,
+  TrendingUp,
+  Flame,
+  Star,
+  Calendar,
+  Bookmark,
+  Clapperboard,
+  SlidersHorizontal,
+  ChevronDown,
+  RotateCcw,
+} from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
-import { fetchSearchResults } from '../../utils/apiUtils';
+import { fetchSearchResults, TMDB_GENRES, SearchType } from '../../utils/apiUtils';
 import { SearchResult } from '../SearchResults';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CATEGORIES = [
   { key: 'nowplaying', label: 'In Theaters', icon: Clapperboard },
@@ -19,9 +32,15 @@ export function SearchForm() {
   const {
     searchCategory,
     searchTerm,
+    searchType,
+    isAdvancedOpen,
+    advancedFilters,
     isLoading,
     updateSearchCategory,
     updateSearchTerm,
+    updateSearchType,
+    updateIsAdvancedOpen,
+    updateAdvancedFilters,
     updateSearchResults,
     updateIsLoading,
     updateError,
@@ -38,12 +57,22 @@ export function SearchForm() {
     }
   }, [watchlist, searchCategory]);
 
-  const runSearch = async (term: string, category: string) => {
+  const runSearch = async (
+    term: string,
+    category: string,
+    sType: SearchType = searchType
+  ) => {
     updateIsLoading(true);
     updateError(null);
     updateSearchResults([]); // Clear old results to show skeleton
     updatePage(1); // Reset page on new search
-    const { results, totalPages, error } = await fetchSearchResults(term, category, 1);
+    const { results, totalPages, error } = await fetchSearchResults(
+      term,
+      category,
+      1,
+      sType,
+      isAdvancedOpen ? advancedFilters : undefined
+    );
     updateSearchResults(results as SearchResult[]);
     updateTotalPages(totalPages || 0);
     if (error) updateError(error);
@@ -72,8 +101,16 @@ export function SearchForm() {
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!searchTerm.trim()) return;
+    if (!searchTerm.trim() && !isAdvancedOpen) return;
     await runSearch(searchTerm, searchCategory);
+  };
+
+  const handleResetFilters = () => {
+    const emptyFilters = { genre: '', year: '', minRating: 0, sortBy: 'popularity.desc' };
+    updateAdvancedFilters(emptyFilters);
+    if (!searchTerm.trim() && !searchCategory) {
+      runSearch('', '', searchType);
+    }
   };
 
   return (
@@ -90,25 +127,77 @@ export function SearchForm() {
         </p>
 
         <form onSubmit={handleSearch} role="search" aria-label="Movie search" className="mb-6">
-          <div className="relative flex items-center shadow-md rounded-xl">
-            <label htmlFor="movie-search-input" className="sr-only">
-              Search for a movie by title or keyword
-            </label>
-            <Search className="absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <div className="relative flex items-center shadow-md rounded-xl bg-card border border-border focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
+            {/* Integrated Search Type Dropdown */}
+            <div className="relative shrink-0 flex items-center">
+              <label htmlFor="search-type-select" className="sr-only">
+                Select search type
+              </label>
+              <select
+                id="search-type-select"
+                aria-label="Search type"
+                value={searchType}
+                onChange={(e) => updateSearchType(e.target.value as SearchType)}
+                className="h-14 pl-3.5 pr-7 bg-transparent text-xs sm:text-sm font-bold text-foreground cursor-pointer focus:outline-none appearance-none rounded-l-xl border-r border-border hover:bg-muted/50 transition-colors"
+              >
+                <option value="movie" className="bg-popover text-popover-foreground">
+                  Movies
+                </option>
+                <option value="person" className="bg-popover text-popover-foreground">
+                  Cast & Crew
+                </option>
+                <option value="keyword" className="bg-popover text-popover-foreground">
+                  Keywords
+                </option>
+              </select>
+              <ChevronDown className="absolute right-2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" aria-hidden="true" />
+            </div>
+
+            {/* Magnifying glass icon */}
+            <Search className="ml-3 h-5 w-5 text-muted-foreground pointer-events-none shrink-0 hidden sm:block" aria-hidden="true" />
+
+            {/* Main Input field */}
             <Input
               id="movie-search-input"
               type="search"
-              placeholder="Search by title, director, or keyword..."
+              placeholder={
+                searchType === 'person'
+                  ? 'Search actors or directors (e.g. Nolan, DiCaprio)...'
+                  : searchType === 'keyword'
+                  ? 'Search by theme (e.g. space, zombie, superhero)...'
+                  : 'Search by title, director, or keyword...'
+              }
               value={searchTerm}
               onChange={handleInputChange}
               disabled={isLoading}
-              className="h-14 pl-12 pr-28 text-base rounded-xl border-border bg-card text-foreground placeholder:text-muted-foreground focus-visible:ring-primary shadow-sm"
+              className="h-14 border-0 bg-transparent text-sm sm:text-base focus-visible:ring-0 shadow-none px-3 text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
             />
+
+            {/* Advanced Filters Toggle Button */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => updateIsAdvancedOpen(!isAdvancedOpen)}
+              aria-expanded={isAdvancedOpen}
+              aria-controls="advanced-search-panel"
+              aria-label={isAdvancedOpen ? 'Close advanced filters' : 'Open advanced filters'}
+              className={`h-10 px-2.5 mr-1.5 rounded-lg font-semibold transition-colors shrink-0 ${
+                isAdvancedOpen
+                  ? 'bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              <SlidersHorizontal className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
+              <span className="hidden sm:inline text-xs font-bold">Filters</span>
+            </Button>
+
+            {/* Search Submit Button */}
             <Button
               type="submit"
-              disabled={isLoading || !searchTerm.trim()}
+              disabled={isLoading || (!searchTerm.trim() && !isAdvancedOpen)}
               aria-label={isLoading ? 'Searching...' : 'Submit movie search'}
-              className="absolute right-2 h-10 px-5 rounded-lg font-bold"
+              className="mr-2 h-10 px-4 sm:px-5 rounded-lg font-bold shrink-0 shadow-sm"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -117,6 +206,145 @@ export function SearchForm() {
               )}
             </Button>
           </div>
+
+          {/* Persistent Expandable Advanced Discover & Filters Panel */}
+          <AnimatePresence>
+            {isAdvancedOpen && (
+              <motion.div
+                id="advanced-search-panel"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="mt-3 p-4 rounded-xl border border-border bg-card shadow-lg text-left"
+              >
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden="true" />
+                    <span className="font-bold text-xs sm:text-sm text-foreground">
+                      Advanced Discover & Filters
+                    </span>
+                  </div>
+                  {(advancedFilters.genre || advancedFilters.year || (advancedFilters.minRating && advancedFilters.minRating > 0) || (advancedFilters.sortBy && advancedFilters.sortBy !== 'popularity.desc')) && (
+                    <button
+                      type="button"
+                      onClick={handleResetFilters}
+                      className="text-xs text-muted-foreground hover:text-primary transition-colors font-medium flex items-center gap-1"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                      Reset filters
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* Genre */}
+                  <div>
+                    <label htmlFor="filter-genre" className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                      Genre
+                    </label>
+                    <select
+                      id="filter-genre"
+                      value={advancedFilters.genre || ''}
+                      onChange={(e) => {
+                        const newGenre = e.target.value;
+                        updateAdvancedFilters(prev => ({ ...prev, genre: newGenre }));
+                        updateSearchCategory('');
+                      }}
+                      className="w-full h-9 px-3 rounded-lg border border-border bg-background text-foreground text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="">All Genres</option>
+                      {TMDB_GENRES.map((g) => (
+                        <option key={g.id} value={g.id.toString()}>
+                          {g.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Release Year */}
+                  <div>
+                    <label htmlFor="filter-year" className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                      Release Year
+                    </label>
+                    <select
+                      id="filter-year"
+                      value={advancedFilters.year || ''}
+                      onChange={(e) => {
+                        const newYear = e.target.value;
+                        updateAdvancedFilters(prev => ({ ...prev, year: newYear }));
+                        updateSearchCategory('');
+                      }}
+                      className="w-full h-9 px-3 rounded-lg border border-border bg-background text-foreground text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="">Any Year</option>
+                      {Array.from({ length: 45 }, (_, i) => new Date().getFullYear() + 1 - i).map((yr) => (
+                        <option key={yr} value={yr.toString()}>
+                          {yr}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Minimum Rating */}
+                  <div>
+                    <label htmlFor="filter-rating" className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                      Minimum Rating
+                    </label>
+                    <select
+                      id="filter-rating"
+                      value={advancedFilters.minRating || 0}
+                      onChange={(e) => {
+                        const newRating = Number(e.target.value);
+                        updateAdvancedFilters(prev => ({ ...prev, minRating: newRating }));
+                        updateSearchCategory('');
+                      }}
+                      className="w-full h-9 px-3 rounded-lg border border-border bg-background text-foreground text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="0">Any Rating</option>
+                      <option value="8">8+ (Top Rated)</option>
+                      <option value="7">7+ (Good)</option>
+                      <option value="6">6+ (Above Average)</option>
+                      <option value="5">5+ (Average)</option>
+                    </select>
+                  </div>
+
+                  {/* Sort By */}
+                  <div>
+                    <label htmlFor="filter-sort" className="block text-xs font-semibold text-muted-foreground mb-1.5">
+                      Sort By
+                    </label>
+                    <select
+                      id="filter-sort"
+                      value={advancedFilters.sortBy || 'popularity.desc'}
+                      onChange={(e) => {
+                        const newSort = e.target.value;
+                        updateAdvancedFilters(prev => ({ ...prev, sortBy: newSort }));
+                        updateSearchCategory('');
+                      }}
+                      className="w-full h-9 px-3 rounded-lg border border-border bg-background text-foreground text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="popularity.desc">Most Popular</option>
+                      <option value="vote_average.desc">Highest Rated</option>
+                      <option value="primary_release_date.desc">Release Date (Newest)</option>
+                      <option value="revenue.desc">Top Box Office</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-border flex justify-end">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => runSearch(searchTerm, '')}
+                    className="font-bold rounded-lg px-4"
+                  >
+                    Apply Filters
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </form>
 
         <div role="group" aria-label="Quick movie categories" className="flex flex-wrap items-center justify-center gap-2">
