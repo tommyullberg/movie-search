@@ -11,34 +11,9 @@ import { Badge } from './ui/badge';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
 import { useWatchlist, LibrarySortOption } from '../contexts/WatchlistContext';
+import { SearchResult } from '../types';
 
-export interface SearchResult {
-  adult?: boolean;
-  backdrop_path?: string;
-  genre_ids?: number[];
-  id: number;
-  original_language?: string;
-  original_title?: string;
-  overview?: string;
-  popularity: number;
-  poster_path?: string;
-  release_date?: string;
-  title?: string;
-  name?: string;
-  profile_path?: string | null;
-  known_for_department?: string;
-  media_type?: string;
-  known_for?: Array<{
-    id: number;
-    title?: string;
-    name?: string;
-    release_date?: string;
-    poster_path?: string | null;
-  }>;
-  video?: boolean;
-  vote_average?: number;
-  vote_count?: number;
-}
+export type { SearchResult };
 
 export function SearchResults() {
   const {

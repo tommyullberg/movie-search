@@ -48,7 +48,35 @@ export interface WatchProviderCountry {
   buy?: WatchProviderItem[];
 }
 
-export interface MovieDetailsModel {
+export interface SearchResult {
+  adult?: boolean;
+  backdrop_path?: string;
+  genre_ids?: number[];
+  id: number;
+  original_language?: string;
+  original_title?: string;
+  overview?: string;
+  popularity: number;
+  poster_path?: string;
+  release_date?: string;
+  title?: string;
+  name?: string;
+  profile_path?: string | null;
+  known_for_department?: string;
+  media_type?: string;
+  known_for?: Array<{
+    id: number;
+    title?: string;
+    name?: string;
+    release_date?: string;
+    poster_path?: string | null;
+  }>;
+  video?: boolean;
+  vote_average?: number;
+  vote_count?: number;
+}
+
+export interface MovieDetails {
   adult: boolean;
   backdrop_path: string;
   belongs_to_collection: {
@@ -108,3 +136,5 @@ export interface MovieDetailsModel {
     results: Record<string, WatchProviderCountry>;
   };
 }
+
+export type MovieDetailsModel = MovieDetails;

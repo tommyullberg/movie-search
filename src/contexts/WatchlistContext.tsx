@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { SearchResult } from '../components';
-import { MovieDetailsModel } from '../model/MovieDetailsModel';
+import { SearchResult, MovieDetails } from '../types';
 
 export type LibrarySortOption =
   | 'added.desc'
@@ -29,17 +28,17 @@ interface WatchlistContextType {
   reviews: Record<number, MovieReview>;
   librarySort: LibrarySortOption;
   setLibrarySort: (sort: LibrarySortOption) => void;
-  addToWatchlist: (movie: SearchResult | MovieDetailsModel) => void;
+  addToWatchlist: (movie: SearchResult | MovieDetails) => void;
   removeFromWatchlist: (movieId: number) => void;
-  toggleWatchlist: (movie: SearchResult | MovieDetailsModel) => void;
+  toggleWatchlist: (movie: SearchResult | MovieDetails) => void;
   isInWatchlist: (movieId: number) => boolean;
   clearWatchlist: () => void;
-  addToWatched: (movie: SearchResult | MovieDetailsModel) => void;
+  addToWatched: (movie: SearchResult | MovieDetails) => void;
   removeFromWatched: (movieId: number) => void;
-  toggleWatched: (movie: SearchResult | MovieDetailsModel) => void;
+  toggleWatched: (movie: SearchResult | MovieDetails) => void;
   isWatched: (movieId: number) => boolean;
-  moveToWatched: (movie: SearchResult | MovieDetailsModel) => void;
-  moveToWatchlist: (movie: SearchResult | MovieDetailsModel) => void;
+  moveToWatched: (movie: SearchResult | MovieDetails) => void;
+  moveToWatchlist: (movie: SearchResult | MovieDetails) => void;
   clearWatched: () => void;
   getReview: (movieId: number) => MovieReview | undefined;
   saveReview: (movieId: number, review: { rating?: number; notes?: string }) => void;
@@ -56,7 +55,7 @@ const WATCHED_STORAGE_KEY = 'movie-search-watched';
 const REVIEWS_STORAGE_KEY = 'movie-search-reviews';
 const SORT_STORAGE_KEY = 'movie-search-library-sort';
 
-const normalizeMovie = (movie: SearchResult | MovieDetailsModel): SavedMovie => {
+const normalizeMovie = (movie: SearchResult | MovieDetails): SavedMovie => {
   return {
     id: movie.id,
     title: movie.title,
@@ -158,7 +157,7 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
     return watchedList.some((movie) => movie.id === movieId);
   };
 
-  const addToWatchlist = (movie: SearchResult | MovieDetailsModel) => {
+  const addToWatchlist = (movie: SearchResult | MovieDetails) => {
     setWatchlist((prev) => {
       if (prev.some((m) => m.id === movie.id)) return prev;
       return [normalizeMovie(movie), ...prev];
@@ -169,7 +168,7 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
     setWatchlist((prev) => prev.filter((movie) => movie.id !== movieId));
   };
 
-  const toggleWatchlist = (movie: SearchResult | MovieDetailsModel) => {
+  const toggleWatchlist = (movie: SearchResult | MovieDetails) => {
     if (isInWatchlist(movie.id)) {
       removeFromWatchlist(movie.id);
     } else {
@@ -181,7 +180,7 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
     setWatchlist([]);
   };
 
-  const addToWatched = (movie: SearchResult | MovieDetailsModel) => {
+  const addToWatched = (movie: SearchResult | MovieDetails) => {
     setWatchedList((prev) => {
       if (prev.some((m) => m.id === movie.id)) return prev;
       return [normalizeMovie(movie), ...prev];
@@ -192,7 +191,7 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
     setWatchedList((prev) => prev.filter((movie) => movie.id !== movieId));
   };
 
-  const toggleWatched = (movie: SearchResult | MovieDetailsModel) => {
+  const toggleWatched = (movie: SearchResult | MovieDetails) => {
     if (isWatched(movie.id)) {
       removeFromWatched(movie.id);
     } else {
@@ -205,12 +204,12 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const moveToWatched = (movie: SearchResult | MovieDetailsModel) => {
+  const moveToWatched = (movie: SearchResult | MovieDetails) => {
     removeFromWatchlist(movie.id);
     addToWatched(movie);
   };
 
-  const moveToWatchlist = (movie: SearchResult | MovieDetailsModel) => {
+  const moveToWatchlist = (movie: SearchResult | MovieDetails) => {
     removeFromWatched(movie.id);
     addToWatchlist(movie);
   };

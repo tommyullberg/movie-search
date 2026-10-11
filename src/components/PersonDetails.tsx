@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PersonDetailsModel } from '../model/PersonDetailsModel';
+import type { PersonDetails as PersonDetailsData } from '../types';
 import { useSearchContext } from '../contexts/SearchContext';
 import { getMovieById } from '../utils/apiUtils';
 import { formatDate } from '../utils/helpers';
@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 interface PersonDetailsProps {
-  personData: PersonDetailsModel;
+  personData: PersonDetailsData;
   onClose: () => void;
 }
 

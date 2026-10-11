@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { SearchResult } from '../components';
-import { MovieDetailsModel } from '../model/MovieDetailsModel';
-import { PersonDetailsModel } from '../model/PersonDetailsModel';
+import { SearchResult, MovieDetails, PersonDetails } from '../types';
 import { SearchType, AdvancedFilterOptions, getMovieById } from '../utils/apiUtils';
 
 export interface DetailHistoryItem {
@@ -24,9 +22,9 @@ interface SearchContextData {
   totalPages: number;
   error: string | null;
   selectedMovieId: number;
-  movieData: MovieDetailsModel | null;
+  movieData: MovieDetails | null;
   selectedPersonId: number;
-  personData: PersonDetailsModel | null;
+  personData: PersonDetails | null;
   detailHistory: DetailHistoryItem[];
   highlightedMovieId: number;
   updateHighlightedMovieId: (id: number) => void;
@@ -49,9 +47,9 @@ interface SearchContextData {
   updateTotalPages: (total: number) => void;
   updateError: (error: string | null) => void;
   updateSelectedMovieId: (id: number) => void;
-  updateMovieData: (data: MovieDetailsModel | null) => void;
+  updateMovieData: (data: MovieDetails | null) => void;
   updateSelectedPersonId: (id: number) => void;
-  updatePersonData: (data: PersonDetailsModel | null) => void;
+  updatePersonData: (data: PersonDetails | null) => void;
 }
 
 const SearchContext = createContext<SearchContextData>({
@@ -126,9 +124,9 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
   const [totalPages, setTotalPages] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<number>(0);
-  const [movieData, setMovieData] = useState<MovieDetailsModel | null>(null);
+  const [movieData, setMovieData] = useState<MovieDetails | null>(null);
   const [selectedPersonId, setSelectedPersonId] = useState<number>(0);
-  const [personData, setPersonData] = useState<PersonDetailsModel | null>(null);
+  const [personData, setPersonData] = useState<PersonDetails | null>(null);
   const [detailHistory, setDetailHistory] = useState<DetailHistoryItem[]>([]);
   const [highlightedMovieId, setHighlightedMovieId] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -337,7 +335,7 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     }
   };
 
-  const handleUpdateMovieData = (data: MovieDetailsModel | null) => {
+  const handleUpdateMovieData = (data: MovieDetails | null) => {
     setMovieData(data);
     if (data?.title) {
       setDetailHistory(prev => {
@@ -352,7 +350,7 @@ export function SearchContextProvider({ children }: SearchProviderProps) {
     }
   };
 
-  const handleUpdatePersonData = (data: PersonDetailsModel | null) => {
+  const handleUpdatePersonData = (data: PersonDetails | null) => {
     setPersonData(data);
     if (data?.name) {
       setDetailHistory(prev => {

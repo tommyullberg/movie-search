@@ -28,7 +28,7 @@ export interface PersonMovieCredits {
   crew: PersonCrewCredit[];
 }
 
-export interface PersonDetailsModel {
+export interface PersonDetails {
   id: number;
   name: string;
   biography: string;
@@ -58,3 +58,5 @@ export interface PersonSearchResult {
     poster_path?: string | null;
   }>;
 }
+
+export type PersonDetailsModel = PersonDetails;

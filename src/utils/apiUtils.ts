@@ -1,5 +1,4 @@
-import { MovieDetailsModel } from '../model/MovieDetailsModel';
-import { PersonDetailsModel, PersonSearchResult } from '../model/PersonDetailsModel';
+import { MovieDetails, PersonDetails, PersonSearchResult } from '../types';
 
 const apiReadAccessToken = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
 
@@ -178,7 +177,7 @@ export async function fetchSearchResults(
 
 export async function getMovieById(
   movieId: number
-): Promise<MovieDetailsModel | null> {
+): Promise<MovieDetails | null> {
   try {
     if (movieId > 0) {
       const url = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US&append_to_response=videos,credits,recommendations,watch/providers`;
@@ -186,7 +185,7 @@ export async function getMovieById(
       if (!response.ok) {
         throw new Error(`API returned ${response.status} ${response.statusText}`);
       }
-      return await response.json() as MovieDetailsModel;
+      return await response.json() as MovieDetails;
     }
   } catch (error) {
     console.error('Error fetching movie details from API:', error);
@@ -197,7 +196,7 @@ export async function getMovieById(
 
 export async function getPersonById(
   personId: number
-): Promise<PersonDetailsModel | null> {
+): Promise<PersonDetails | null> {
   try {
     if (personId > 0) {
       const url = `https://api.themoviedb.org/3/person/${personId}?language=en-US&append_to_response=movie_credits,external_ids`;
@@ -209,7 +208,7 @@ export async function getPersonById(
       return {
         ...data,
         imdb_id: data.imdb_id || data.external_ids?.imdb_id || null,
-      } as PersonDetailsModel;
+      } as PersonDetails;
     }
   } catch (error) {
     console.error('Error fetching person details from API:', error);
