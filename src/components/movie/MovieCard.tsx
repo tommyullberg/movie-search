@@ -1,13 +1,13 @@
 import React from 'react';
 import { Film, Star, MessageSquare, Dices } from 'lucide-react';
-import { Card, CardContent } from './ui/card';
-import { GaugeSVG } from './ui/gauge';
-import { ActionButton } from './buttons/ActionButton';
-import { imageConfig } from '../config/imageConfig';
-import { formatDate } from '../utils/helpers';
-import { SearchResult } from '../types';
-import { MovieReview } from '../contexts/WatchlistContext';
-import { cn } from '../lib/utils';
+import { Card, CardContent } from '../ui/card';
+import { GaugeSVG } from '../ui/gauge';
+import { ActionButton } from '../buttons/ActionButton';
+import { imageConfig } from '../../config/imageConfig';
+import { formatDate } from '../../utils/helpers';
+import { SearchResult } from '../../types';
+import { MovieReview } from '../../contexts/WatchlistContext';
+import { cn } from '../../lib/utils';
 
 export interface MovieCardProps {
   movie: SearchResult;

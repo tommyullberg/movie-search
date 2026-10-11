@@ -1,7 +1,7 @@
 import React from 'react';
 import { User } from 'lucide-react';
-import type { CastMember } from '../../types';
-import { imageConfig } from '../../config/imageConfig';
+import type { CastMember } from '../../../types';
+import { imageConfig } from '../../../config/imageConfig';
 
 export interface MovieCastSectionProps {
   cast: CastMember[];

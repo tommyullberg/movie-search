@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { Play as PlayIcon } from 'lucide-react';
-import type { VideoItem } from '../../types';
+import type { VideoItem } from '../../../types';
 
 export interface MovieTrailerSectionProps {
   movieTitle: string;

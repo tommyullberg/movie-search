@@ -1,8 +1,8 @@
 import React from 'react';
 import { Film, Sparkles, Star } from 'lucide-react';
-import type { RecommendedMovie } from '../../types';
-import { imageConfig } from '../../config/imageConfig';
-import { formatYear } from '../../utils/helpers';
+import type { RecommendedMovie } from '../../../types';
+import { imageConfig } from '../../../config/imageConfig';
+import { formatYear } from '../../../utils/helpers';
 
 export interface MovieRecommendationsSectionProps {
   recommendations: RecommendedMovie[];

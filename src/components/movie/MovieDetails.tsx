@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { useSearchContext } from '../contexts/SearchContext';
-import { imageConfig } from '../config/imageConfig';
-import { Button } from './ui/button';
+import { useSearchContext } from '../../contexts/SearchContext';
+import { imageConfig } from '../../config/imageConfig';
+import { Button } from '../ui/button';
 import {
   MovieHeroSection,
   KeyFactsSection,
@@ -11,7 +11,7 @@ import {
   WhereToWatchSection,
   MovieCastSection,
   MovieRecommendationsSection,
-} from './movie-details';
+} from './details';
 
 export function MovieDetails() {
   const {

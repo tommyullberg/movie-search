@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { EmptyState } from './ui/empty-state';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { SearchResult } from '../types';
-import { MovieCard } from './MovieCard';
+import { MovieCard } from './movie';
 import { PersonCard } from './PersonCard';
 import { LibraryToolbar } from './LibraryToolbar';
 

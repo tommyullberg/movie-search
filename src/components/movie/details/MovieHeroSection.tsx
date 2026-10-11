@@ -1,12 +1,12 @@
 import React from 'react';
 import { ExternalLink, Calendar, Clock, Globe, Star, Play, X } from 'lucide-react';
-import type { MovieDetails, CrewMember, VideoItem } from '../../types';
-import { imageConfig } from '../../config/imageConfig';
-import { formatDate, formatYear } from '../../utils/helpers';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { DialogTitle, DialogDescription } from '../ui/dialog';
-import { ActionButton } from '../buttons/ActionButton';
+import type { MovieDetails, CrewMember, VideoItem } from '../../../types';
+import { imageConfig } from '../../../config/imageConfig';
+import { formatDate, formatYear } from '../../../utils/helpers';
+import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { DialogTitle, DialogDescription } from '../../ui/dialog';
+import { ActionButton } from '../../buttons/ActionButton';
 
 export interface MovieHeroSectionProps {
   movie: MovieDetails;
