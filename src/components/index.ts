@@ -31,8 +31,13 @@ export {
   type PersonModalProps,
   type PersonFilmographyProps,
 } from './person';
-export { SearchForm } from './SearchForm';
-export { SearchResults, type SearchResult } from './SearchResults';
+export {
+  SearchForm,
+  SearchResults,
+  AdvancedFiltersPanel,
+  type SearchResult,
+  type AdvancedFiltersPanelProps,
+} from './search';
 export { SurprisePickerModal } from './SurprisePickerModal';
 export { LibraryToolbar, type LibraryToolbarProps } from './LibraryToolbar';
 export {
@@ -46,7 +51,6 @@ export {
   type ActionButtonProps,
 } from './buttons/ActionButton';
 export { CategoryPill, type CategoryPillProps } from './buttons/CategoryPill';
-export { AdvancedFiltersPanel, type AdvancedFiltersPanelProps } from './search/AdvancedFiltersPanel';
 export {
   ReelCard,
   SurpriseReel,

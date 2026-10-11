@@ -4,7 +4,7 @@ import { Dices, X, ChevronDown, AlertCircle, RotateCcw } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
-import { SearchResult } from './SearchResults';
+import { SearchResult } from '../types';
 import { TMDB_GENRES, fetchSearchResults } from '../utils/apiUtils';
 import { SurpriseReel, SurpriseWinnerSpotlight } from './surprise';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, useTransform, MotionValue } from 'framer-motion';
 import { Film, Sparkles, Star } from 'lucide-react';
-import { SearchResult } from '../SearchResults';
+import { SearchResult } from '../../types';
 import { formatDate } from '../../utils/helpers';
 import { imageConfig } from '../../config/imageConfig';
 

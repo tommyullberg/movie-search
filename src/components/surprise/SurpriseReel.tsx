@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, MotionValue } from 'framer-motion';
-import { SearchResult } from '../SearchResults';
+import { SearchResult } from '../../types';
 import { ReelCard } from './ReelCard';
 
 export interface SurpriseReelProps {

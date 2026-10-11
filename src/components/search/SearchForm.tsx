@@ -14,15 +14,15 @@ import {
   Dices,
   Sparkles,
 } from 'lucide-react';
-import { useSearchContext } from '../contexts/SearchContext';
-import { useWatchlist } from '../contexts/WatchlistContext';
-import { fetchSearchResults, SearchType } from '../utils/apiUtils';
-import { SearchResult } from '../types';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { SurprisePickerModal } from './SurprisePickerModal';
-import { CategoryPill } from './buttons/CategoryPill';
-import { AdvancedFiltersPanel } from './search/AdvancedFiltersPanel';
+import { useSearchContext } from '../../contexts/SearchContext';
+import { useWatchlist } from '../../contexts/WatchlistContext';
+import { fetchSearchResults, SearchType } from '../../utils/apiUtils';
+import { SearchResult } from '../../types';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { SurprisePickerModal } from '../SurprisePickerModal';
+import { CategoryPill } from '../buttons/CategoryPill';
+import { AdvancedFiltersPanel } from './AdvancedFiltersPanel';
 
 const CATEGORIES = [
   { key: 'nowplaying', label: 'In Theaters', icon: Clapperboard },

@@ -1,17 +1,17 @@
 import React, { FormEvent, KeyboardEvent } from 'react';
-import { fetchSearchResults } from '../utils/apiUtils';
-import { useSearchContext } from '../contexts/SearchContext';
+import { fetchSearchResults } from '../../utils/apiUtils';
+import { useSearchContext } from '../../contexts/SearchContext';
 import { motion } from 'framer-motion';
 import { Film, AlertCircle, Loader2, Bookmark, User, Eye } from 'lucide-react';
-import { Skeleton } from './ui/skeleton';
-import { Button } from './ui/button';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { EmptyState } from './ui/empty-state';
-import { useWatchlist } from '../contexts/WatchlistContext';
-import { SearchResult } from '../types';
-import { MovieCard } from './movie';
-import { PersonCard } from './person';
-import { LibraryToolbar } from './LibraryToolbar';
+import { Skeleton } from '../ui/skeleton';
+import { Button } from '../ui/button';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { EmptyState } from '../ui/empty-state';
+import { useWatchlist } from '../../contexts/WatchlistContext';
+import { SearchResult } from '../../types';
+import { MovieCard } from '../movie';
+import { PersonCard } from '../person';
+import { LibraryToolbar } from '../LibraryToolbar';
 
 export type { SearchResult };
 
