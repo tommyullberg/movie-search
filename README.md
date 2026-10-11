@@ -27,6 +27,8 @@ Movie Search is a modern web application built with React and TypeScript that co
 - Key movie facts including production status, budget, box office revenue, and studio names.
 - Where to Watch streaming guide powered by JustWatch with official logos for subscription streaming, digital rental, and purchase in Sweden (with US fallback).
 - Top cast section showcasing actor profile photos, real names, and character roles, plus director credits.
+- Dedicated Person / Actor & Director profile views featuring high-resolution portrait photos, full biography, birthday with calculated age, birthplace, external IMDb links, and comprehensive chronological filmographies.
+- Bidirectional in-modal navigation between movies, actors, directors, and recommendations with a contextual Back button ('Back to [Previous]') that tracks modal browsing history and only displays after internal navigation.
 - 'More Like This' movie recommendations with seamless in-modal navigation between related titles.
 - Direct external links to official movie websites and IMDb pages.
 
@@ -57,8 +59,8 @@ Movie Search is a modern web application built with React and TypeScript that co
 
 ## Planned next steps
 
-- Add actor/director person profile modal with filmography.
 - Expand automated integration tests with Vitest.
+- Enhanced filtering by streaming provider.
 
 ## Getting Started
 
