@@ -1,7 +1,7 @@
 export { AnimatedRoutes } from './AnimatedRoutes';
 export { GaugeSVG, Gauge } from './ui/gauge';
 export { Header } from './Header';
-export { Modal } from './Modal';
+export { MovieModal, type MovieModalProps } from './MovieModal';
 export { MovieDetails } from './MovieDetails';
 export { PersonDetails } from './PersonDetails';
 export { PersonModal } from './PersonModal';

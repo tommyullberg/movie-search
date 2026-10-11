@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Header, AnimatedRoutes, Modal, PersonModal } from './components';
+import { Header, AnimatedRoutes, MovieModal, PersonModal } from './components';
 import { SearchContextProvider, useSearchContext } from './contexts/SearchContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { WatchlistProvider } from './contexts/WatchlistContext';
@@ -11,7 +11,7 @@ function DetailModals() {
   return (
     <>
       {Boolean(selectedMovieId > 0) && (
-        <Modal movieId={selectedMovieId} isOpen={selectedMovieId > 0} closeModal={closeAllDetails} />
+        <MovieModal movieId={selectedMovieId} isOpen={selectedMovieId > 0} closeModal={closeAllDetails} />
       )}
       {Boolean(selectedPersonId > 0) && (
         <PersonModal personId={selectedPersonId} isOpen={selectedPersonId > 0} closeModal={closeAllDetails} />
