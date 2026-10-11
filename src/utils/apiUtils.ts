@@ -68,7 +68,7 @@ export async function getMovieById(
 ): Promise<MovieDetailsModel | null> {
   try {
     if (movieId > 0) {
-      const url = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
+      const url = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US&append_to_response=videos,credits`;
       const response = await fetch(url, requestOptions);
       if (!response.ok) {
         throw new Error(`API returned ${response.status} ${response.statusText}`);

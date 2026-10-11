@@ -32,14 +32,23 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-card p-6 shadow-2xl duration-200 sm:rounded-2xl max-h-[90vh] overflow-y-auto',
+        'fixed z-50 flex flex-col w-full bg-card shadow-2xl duration-200 overflow-hidden',
+        // Mobile: true fullscreen without border, rounded corners or margins
+        'inset-0 h-[100dvh] max-h-[100dvh] max-w-full rounded-none border-0 p-0',
+        // Tablet / Desktop: centered modal card
+        'sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:h-auto sm:max-h-[92vh] sm:rounded-2xl sm:border sm:border-border sm:p-0',
         className
       )}
       {...props}
     >
-      {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-full bg-background/50 p-2 text-foreground/80 backdrop-blur transition-all hover:bg-background hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-        <X className="h-5 w-5" />
+      <div className="flex-1 min-h-0 overflow-y-auto w-full [scrollbar-width:thin] [scrollbar-color:var(--border)_transparent]">
+        {children}
+      </div>
+      <DialogPrimitive.Close
+        className="fixed sm:absolute right-3 top-3 z-50 rounded-full bg-background/85 p-2 text-foreground/90 backdrop-blur-md shadow-lg transition-all hover:bg-background hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring border border-border"
+        aria-label="Close dialog"
+      >
+        <X className="h-5 w-5" aria-hidden="true" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>

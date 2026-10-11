@@ -1,3 +1,28 @@
+export interface CastMember {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  order: number;
+}
+
+export interface CrewMember {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+}
+
+export interface VideoItem {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+  official: boolean;
+  published_at?: string;
+}
+
 export interface MovieDetailsModel {
   adult: boolean;
   backdrop_path: string;
@@ -6,7 +31,7 @@ export interface MovieDetailsModel {
     name: string;
     poster_path: string;
     backdrop_path: string;
-  };
+  } | null;
   budget: number;
   genres: {
     id: number;
@@ -44,4 +69,11 @@ export interface MovieDetailsModel {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  credits?: {
+    cast: CastMember[];
+    crew: CrewMember[];
+  };
+  videos?: {
+    results: VideoItem[];
+  };
 }

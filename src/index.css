@@ -144,3 +144,19 @@ body {
 [data-high-contrast="true"] .group:hover {
   outline: 3px solid var(--primary);
 }
+
+/* Sleek custom scrollbars for dialog and inner containers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}

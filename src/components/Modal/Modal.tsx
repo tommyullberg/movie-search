@@ -11,7 +11,7 @@ interface ModalProps {
 export function Modal({ isOpen, closeModal }: ModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden border border-border bg-card">
+      <DialogContent className="sm:w-[94vw] sm:max-w-4xl lg:max-w-5xl">
         <MovieDetails />
       </DialogContent>
     </Dialog>
