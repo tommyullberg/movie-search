@@ -1,0 +1,94 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    tags:
+      - 'v[2-9].*'
+      - 'v[1-9][0-9].*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    name: Build & Deploy v2 to GitHub Pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate SemVer Tag (Major >= 2)
+        id: check-tag
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          echo "Triggered by ref: ${TAG_NAME}"
+
+          # If manually triggered via workflow_dispatch without a tag, skip tag validation
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "Workflow manually dispatched. Proceeding with deployment."
+            exit 0
+          fi
+
+          # Extract SemVer components (e.g. v2.0.0 -> MAJOR=2, MINOR=0, PATCH=0)
+          if [[ "${TAG_NAME}" =~ ^v?([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+            MAJOR="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+            PATCH="${BASH_REMATCH[3]}"
+            echo "Parsed SemVer: Major=${MAJOR}, Minor=${MINOR}, Patch=${PATCH}"
+
+            if [ "${MAJOR}" -ge 2 ]; then
+              echo "Valid release tag: Major version ${MAJOR} is >= 2. Proceeding with deployment."
+            else
+              echo "Error: Major version ${MAJOR} is less than 2. Deployment aborted."
+              exit 1
+            fi
+          else
+            echo "Error: Tag ${TAG_NAME} does not match expected SemVer pattern (e.g. v2.0.0)."
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck and Build (Vite)
+        env:
+          VITE_TMDB_READ_ACCESS_TOKEN: ${{ secrets.VITE_TMDB_READ_ACCESS_TOKEN }}
+        run: npm run build
+
+      - name: Preserve /v1/ from gh-pages branch
+        run: |
+          echo "Fetching gh-pages branch to preserve v1 legacy application..."
+          git fetch origin gh-pages:gh-pages || true
+
+          # Extract v1 directory from gh-pages into dist/v1
+          if git ls-tree -d gh-pages:v1 >/dev/null 2>&1; then
+            echo "Found v1/ directory on gh-pages branch. Extracting into dist/v1/..."
+            mkdir -p dist/v1
+            git archive gh-pages v1 | tar -x -C dist/
+            echo "v1/ directory successfully preserved in build artifact."
+          else
+            echo "Warning: No v1/ directory found on gh-pages branch."
+          fi
+
+      - name: Deploy to GitHub Pages (clean root, preserving /v1/)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./dist
+          keep_files: false
+          commit_message: "deploy: release ${{ github.ref_name }} to GitHub Pages"
