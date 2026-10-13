@@ -58,7 +58,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -82,6 +82,15 @@ jobs:
             echo "v1/ directory successfully preserved in build artifact."
           else
             echo "Warning: No v1/ directory found on gh-pages branch."
+          fi
+
+          # Ensure v1 About page dependencies (README.md and SPA 404 fallback) are present
+          if [ -d dist/v1 ]; then
+            echo "Ensuring v1 About markdown and SPA fallback..."
+            git show v1.0.0:README.md > dist/v1/README.md 2>/dev/null || true
+            if [ -f dist/v1/index.html ] && [ ! -f dist/v1/404.html ]; then
+              cp dist/v1/index.html dist/v1/404.html
+            fi
           fi
 
       - name: Deploy to GitHub Pages (clean root, preserving /v1/)

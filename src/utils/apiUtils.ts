@@ -3,7 +3,7 @@ import { MovieDetails, PersonDetails, PersonSearchResult } from '../types';
 const apiReadAccessToken = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
 
 if (!apiReadAccessToken) {
-  throw new Error(
+  console.error(
     'TMDB API read access token is not configured. Set VITE_TMDB_READ_ACCESS_TOKEN in .env.local.'
   );
 }
