@@ -155,9 +155,7 @@ Comprehensive detail modal featuring backdrop, trailer toggle, budget overview, 
 
 Live screen recording showing the 3D card reel in action, rolling and decelerating to a winner.
 
-<video src="docs/images/v2-surprise-me.mp4" controls="controls" width="100%" style="max-width: 100%; border-radius: 12px; border: 1px solid #3f3f46;">
-  Your browser does not support the video tag. You can view or download the video directly at <a href="docs/images/v2-surprise-me.mp4">docs/images/v2-surprise-me.mp4</a>.
-</video>
+https://github.com/user-attachments/assets/d7bdd08d-93c0-466f-b555-479ba84308cf
 
 <br />
 

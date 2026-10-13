@@ -11,6 +11,7 @@ import {
 } from '../utils/pageAnimations';
 import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { BookOpen } from 'lucide-react';
+import surpriseVideo from '../../docs/images/v2-surprise-me.mp4';
 
 export default function About() {
   const location = useLocation();
@@ -23,8 +24,13 @@ export default function About() {
       try {
         const readmeModule = await import('../../README.md?raw');
         const text = readmeModule.default;
-        const rawHtml = marked(text);
-        const transformedHtmlContent = shiftHeadingsDown(rawHtml as string);
+        const rawHtml = marked(text) as string;
+        // Transform GitHub user-attachment mp4 video link into native video player using the local imported video asset
+        const withVideos = rawHtml.replace(
+          /<p><a href="https:\/\/github\.com\/user-attachments\/assets\/[^"]+".*?<\/a><\/p>/g,
+          `<div class="my-4"><video src="${surpriseVideo}" controls class="w-full max-w-full rounded-xl border border-border shadow-lg" preload="metadata"></video></div>`
+        );
+        const transformedHtmlContent = shiftHeadingsDown(withVideos);
         setHtmlContent(transformedHtmlContent);
       } catch (err) {
         console.error('Could not load README.md', err);
