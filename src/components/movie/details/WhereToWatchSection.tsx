@@ -1,13 +1,19 @@
 import React from 'react';
-import { ExternalLink, Tv } from 'lucide-react';
+import { ExternalLink, Tv, X } from 'lucide-react';
 import type { MovieDetails } from '../../../types';
 import { imageConfig } from '../../../config/imageConfig';
 
 export interface WhereToWatchSectionProps {
   movie: MovieDetails;
+  isVisible?: boolean;
+  onToggleVisibility?: () => void;
 }
 
-export function WhereToWatchSection({ movie }: WhereToWatchSectionProps) {
+export function WhereToWatchSection({
+  movie,
+  isVisible = true,
+  onToggleVisibility,
+}: WhereToWatchSectionProps) {
   const watchResults = movie['watch/providers']?.results;
   const seProviders = watchResults?.SE;
   const usProviders = watchResults?.US;
@@ -47,6 +53,10 @@ export function WhereToWatchSection({ movie }: WhereToWatchSectionProps) {
     return null;
   }
 
+  if (!isVisible) {
+    return null;
+  }
+
   const whereToWatchHeading = hasStreaming && !hasRentBuy
     ? (freeStreamingServices.length > 0 && subscriptionServices.length === 0
         ? `Available for free streaming in ${activeCountry}`
@@ -57,22 +67,37 @@ export function WhereToWatchSection({ movie }: WhereToWatchSectionProps) {
 
   return (
     <section aria-labelledby="providers-heading" className="mt-8 pt-6 border-t border-border">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-4">
         <h3 id="providers-heading" className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
           <Tv className="h-4 w-4 text-primary" aria-hidden="true" />
           <span>{whereToWatchHeading}</span>
         </h3>
-        {activeData?.link && (
-          <a
-            href={activeData.link}
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs text-muted-foreground hover:text-foreground underline flex items-center gap-1"
-          >
-            <span>JustWatch</span>
-            <ExternalLink className="h-3 w-3" aria-hidden="true" />
-          </a>
-        )}
+        <div className="flex items-center gap-2">
+          {activeData?.link && (
+            <a
+              href={activeData.link}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs text-muted-foreground hover:text-foreground underline flex items-center gap-1"
+              title="Open JustWatch in new tab"
+              aria-label="Open JustWatch in new tab"
+            >
+              <span>JustWatch</span>
+              <ExternalLink className="h-3 w-3" aria-hidden="true" />
+            </a>
+          )}
+          {onToggleVisibility && (
+            <button
+              type="button"
+              onClick={onToggleVisibility}
+              className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              title="Hide streaming & providers"
+              aria-label="Hide streaming & providers"
+            >
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Streaming Services (Subscription / Free) */}

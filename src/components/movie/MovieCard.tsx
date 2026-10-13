@@ -44,7 +44,7 @@ export function MovieCard({
       onClick={onClick}
       onKeyDown={onKeyDown}
       className={cn(
-        'cursor-pointer overflow-hidden border transition-all duration-300 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring group',
+        'overflow-hidden border transition-all duration-300 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring group',
         isHighlighted
           ? 'ring-4 ring-primary border-primary shadow-2xl scale-[1.03] bg-primary/5 -translate-y-2'
           : 'border-border bg-card text-card-foreground hover:border-primary hover:shadow-xl hover:-translate-y-1.5',

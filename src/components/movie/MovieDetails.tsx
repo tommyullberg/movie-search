@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
+import { useWatchlist } from '../../contexts/WatchlistContext';
 import { imageConfig } from '../../config/imageConfig';
 import { Button } from '../ui/button';
 import {
@@ -13,6 +14,12 @@ import {
   MovieRecommendationsSection,
 } from './details';
 
+const STORAGE_KEY_RATING_NOTES_VISIBLE = 'movie_search_rating_notes_visible';
+const STORAGE_KEY_BUDGET_VISIBLE = 'movie_search_budget_visible';
+const STORAGE_KEY_WHERE_TO_WATCH_VISIBLE = 'movie_search_where_to_watch_visible';
+const STORAGE_KEY_CAST_VISIBLE = 'movie_search_cast_visible';
+const STORAGE_KEY_RECOMMENDATIONS_VISIBLE = 'movie_search_recommendations_visible';
+
 export function MovieDetails() {
   const {
     movieData,
@@ -21,8 +28,76 @@ export function MovieDetails() {
     navigateToPerson,
     goBackDetail,
   } = useSearchContext();
+  const { isWatched } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  const trailerSectionRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Persistent visibility states: default visible (true)
+  const [isRatingNotesVisible, setIsRatingNotesVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_RATING_NOTES_VISIBLE);
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  const [isBudgetVisible, setIsBudgetVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_BUDGET_VISIBLE);
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  const [isWhereToWatchVisible, setIsWhereToWatchVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_WHERE_TO_WATCH_VISIBLE);
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  const [isCastVisible, setIsCastVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_CAST_VISIBLE);
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  const [isRecommendationsVisible, setIsRecommendationsVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_RECOMMENDATIONS_VISIBLE);
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  const handleToggleRatingNotes = () => {
+    setIsRatingNotesVisible((prev) => {
+      const next = !prev;
+      localStorage.setItem(STORAGE_KEY_RATING_NOTES_VISIBLE, String(next));
+      return next;
+    });
+  };
+
+  const handleToggleBudget = () => {
+    setIsBudgetVisible((prev) => {
+      const next = !prev;
+      localStorage.setItem(STORAGE_KEY_BUDGET_VISIBLE, String(next));
+      return next;
+    });
+  };
+
+  const handleToggleWhereToWatch = () => {
+    setIsWhereToWatchVisible((prev) => {
+      const next = !prev;
+      localStorage.setItem(STORAGE_KEY_WHERE_TO_WATCH_VISIBLE, String(next));
+      return next;
+    });
+  };
+
+  const handleToggleCast = () => {
+    setIsCastVisible((prev) => {
+      const next = !prev;
+      localStorage.setItem(STORAGE_KEY_CAST_VISIBLE, String(next));
+      return next;
+    });
+  };
+
+  const handleToggleRecommendations = () => {
+    setIsRecommendationsVisible((prev) => {
+      const next = !prev;
+      localStorage.setItem(STORAGE_KEY_RECOMMENDATIONS_VISIBLE, String(next));
+      return next;
+    });
+  };
 
   const { URL_IMAGE_BACKDROP_w1280 } = imageConfig;
 
@@ -65,6 +140,53 @@ export function MovieDetails() {
     }
   };
 
+  const handleToggleTrailer = () => {
+    setShowTrailer((prev) => {
+      const nextState = !prev;
+      if (nextState) {
+        // Scroll trailer into view with bottom edge ~1rem above dialog bottom
+        setTimeout(() => {
+          if (trailerSectionRef.current) {
+            const el = trailerSectionRef.current;
+            const scrollContainer = el.closest('.overflow-y-auto') as HTMLElement | null;
+            if (scrollContainer) {
+              const elRect = el.getBoundingClientRect();
+              const containerRect = scrollContainer.getBoundingClientRect();
+              const offsetBottom = 16; // 1rem
+              const targetScrollTop =
+                scrollContainer.scrollTop +
+                (elRect.bottom - containerRect.bottom) +
+                offsetBottom;
+
+              scrollContainer.scrollTo({
+                top: Math.max(0, targetScrollTop),
+                behavior: 'smooth',
+              });
+            } else {
+              el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+          }
+        }, 100);
+      }
+      return nextState;
+    });
+  };
+
+  // Determine availability of sections
+  const watchResults = movieData['watch/providers']?.results;
+  const seProviders = watchResults?.SE;
+  const usProviders = watchResults?.US;
+  const activeProviders = (seProviders?.flatrate?.length || seProviders?.free?.length || seProviders?.ads?.length || seProviders?.rent?.length || seProviders?.buy?.length) ? seProviders : usProviders;
+  const hasWhereToWatch = Boolean(
+    activeProviders?.flatrate?.length ||
+    activeProviders?.free?.length ||
+    activeProviders?.ads?.length ||
+    activeProviders?.rent?.length ||
+    activeProviders?.buy?.length
+  );
+  const hasCast = topCast.length > 0;
+  const hasRecommendations = recommendations.length > 0;
+
   return (
     <div className="relative overflow-hidden bg-card text-card-foreground">
       {/* Back button (Only rendered when navigating deeper from another detail) */}
@@ -75,7 +197,7 @@ export function MovieDetails() {
             variant="outline"
             size="sm"
             onClick={goBackDetail}
-            className="flex items-center gap-1.5 h-8 px-2.5 text-xs font-semibold rounded-lg bg-background/80 hover:bg-background backdrop-blur-md border-border shadow-sm text-foreground transition-all cursor-pointer"
+            className="flex items-center gap-1.5 h-8 px-2.5 text-xs font-semibold rounded-lg bg-background/80 hover:bg-background backdrop-blur-md border-border shadow-sm text-foreground transition-all"
             aria-label={`Go back to ${previousTitle}`}
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
@@ -106,29 +228,59 @@ export function MovieDetails() {
           director={director}
           trailer={trailer}
           showTrailer={showTrailer}
-          onToggleTrailer={() => setShowTrailer((prev) => !prev)}
+          onToggleTrailer={handleToggleTrailer}
           onSelectDirector={navigateToPerson}
+          isRatingNotesVisible={isRatingNotesVisible}
+          onToggleRatingNotes={handleToggleRatingNotes}
+          isWatchedMovie={isWatched(movieData.id)}
+          isBudgetVisible={isBudgetVisible}
+          onToggleBudget={handleToggleBudget}
+          hasWhereToWatch={hasWhereToWatch}
+          isWhereToWatchVisible={isWhereToWatchVisible}
+          onToggleWhereToWatch={handleToggleWhereToWatch}
+          hasCast={hasCast}
+          isCastVisible={isCastVisible}
+          onToggleCast={handleToggleCast}
+          hasRecommendations={hasRecommendations}
+          isRecommendationsVisible={isRecommendationsVisible}
+          onToggleRecommendations={handleToggleRecommendations}
         >
-          <KeyFactsSection movie={movieData} />
-          <RatingNotesSection movie={movieData} />
+          <KeyFactsSection
+            movie={movieData}
+            isBudgetVisible={isBudgetVisible}
+            onToggleBudget={handleToggleBudget}
+          />
+          <RatingNotesSection
+            movie={movieData}
+            isVisible={isRatingNotesVisible}
+            onToggleVisibility={handleToggleRatingNotes}
+          />
         </MovieHeroSection>
 
         {/* Embedded Trailer Section */}
         {showTrailer && trailer && (
-          <MovieTrailerSection
-            movieTitle={movieData.title}
-            trailer={trailer}
-            onClose={() => setShowTrailer(false)}
-          />
+          <div ref={trailerSectionRef}>
+            <MovieTrailerSection
+              movieTitle={movieData.title}
+              trailer={trailer}
+              onClose={() => setShowTrailer(false)}
+            />
+          </div>
         )}
 
         {/* Where to Watch (Streaming & Buy/Rent Providers) */}
-        <WhereToWatchSection movie={movieData} />
+        <WhereToWatchSection
+          movie={movieData}
+          isVisible={isWhereToWatchVisible}
+          onToggleVisibility={handleToggleWhereToWatch}
+        />
 
         {/* Top Cast Section */}
         <MovieCastSection
           cast={topCast}
           onSelectPerson={navigateToPerson}
+          isVisible={isCastVisible}
+          onToggleVisibility={handleToggleCast}
         />
 
         {/* More Like This (Recommendations) Section */}
@@ -136,6 +288,8 @@ export function MovieDetails() {
           recommendations={recommendations}
           onSelectMovie={handleSelectMovie}
           isLoading={isLoadingRelated}
+          isVisible={isRecommendationsVisible}
+          onToggleVisibility={handleToggleRecommendations}
         />
       </div>
     </div>

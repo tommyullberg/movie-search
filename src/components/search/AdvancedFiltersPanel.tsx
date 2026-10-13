@@ -62,7 +62,7 @@ export function AdvancedFiltersPanel({ isOpen, onApply, onReset }: AdvancedFilte
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors font-medium flex items-center gap-1 cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors font-medium flex items-center gap-1"
               >
                 <RotateCcw className="h-3 w-3" />
                 Reset filters

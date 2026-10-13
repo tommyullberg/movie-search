@@ -58,7 +58,7 @@ export function WatchlistToolbar(_props: WatchlistToolbarProps = {}) {
           <button
             type="button"
             onClick={() => updateSearchCategory('watchlist')}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all ${
               searchCategory === 'watchlist'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -70,7 +70,7 @@ export function WatchlistToolbar(_props: WatchlistToolbarProps = {}) {
           <button
             type="button"
             onClick={() => updateSearchCategory('watched')}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all ${
               searchCategory === 'watched'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -91,7 +91,7 @@ export function WatchlistToolbar(_props: WatchlistToolbarProps = {}) {
               id="library-sort-select"
               value={librarySort}
               onChange={(e) => setLibrarySort(e.target.value as LibrarySortOption)}
-              className="h-8 px-2.5 rounded-lg border border-border bg-background text-foreground text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+              className="h-8 px-2.5 rounded-lg border border-border bg-background text-foreground text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="added.desc">Date Added (Newest)</option>
               <option value="added.asc">Date Added (Oldest)</option>
@@ -150,7 +150,7 @@ export function WatchlistToolbar(_props: WatchlistToolbarProps = {}) {
           <button
             type="button"
             onClick={() => setImportFeedback(null)}
-            className="text-muted-foreground hover:text-foreground cursor-pointer"
+            className="text-muted-foreground hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
           </button>

@@ -84,7 +84,7 @@ export function PersonFilmography({
               key={`${movie.id}-${movie.role}`}
               type="button"
               onClick={() => onSelectMovie(movie.id, movie.title)}
-              className="group flex flex-col text-left rounded-xl border border-border bg-card p-2 hover:border-primary transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+              className="group flex flex-col text-left rounded-xl border border-border bg-card p-2 hover:border-primary transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {/* Movie Poster */}
               <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden bg-muted mb-2">

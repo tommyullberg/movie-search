@@ -22,7 +22,7 @@ export function PersonCard({ person, onClick, onKeyDown }: PersonCardProps) {
       aria-label={`View profile for ${person.name}`}
       onClick={onClick}
       onKeyDown={onKeyDown}
-      className="cursor-pointer overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
+      className="overflow-hidden border border-border bg-card text-card-foreground hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full focus-visible:ring-4 focus-visible:ring-ring"
     >
       {/* Profile Image Container */}
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">

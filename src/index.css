@@ -128,6 +128,20 @@ body {
   color: var(--foreground);
 }
 
+/* Ensure all interactive buttons, role=button and selects have cursor: pointer when not disabled */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+select:not(:disabled),
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+select:disabled {
+  cursor: not-allowed;
+}
+
 /* Ensure accessible focus outlines globally */
 :focus-visible {
   outline: 3px solid var(--ring) !important;

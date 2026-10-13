@@ -1,5 +1,5 @@
 import React from 'react';
-import { Film, Sparkles, Star } from 'lucide-react';
+import { Film, Sparkles, Star, X } from 'lucide-react';
 import type { RecommendedMovie } from '../../../types';
 import { imageConfig } from '../../../config/imageConfig';
 import { formatYear } from '../../../utils/helpers';
@@ -8,23 +8,44 @@ export interface MovieRecommendationsSectionProps {
   recommendations: RecommendedMovie[];
   onSelectMovie: (movieId: number, title?: string) => void;
   isLoading?: boolean;
+  isVisible?: boolean;
+  onToggleVisibility?: () => void;
 }
 
 export function MovieRecommendationsSection({
   recommendations,
   onSelectMovie,
   isLoading = false,
+  isVisible = true,
+  onToggleVisibility,
 }: MovieRecommendationsSectionProps) {
   if (!recommendations || recommendations.length === 0) {
     return null;
   }
 
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <section aria-labelledby="recommendations-heading" className="mt-8 pt-6 border-t border-border">
-      <h3 id="recommendations-heading" className="text-base sm:text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
-        <span>More Like This</span>
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 id="recommendations-heading" className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+          <span>More Like This</span>
+        </h3>
+        {onToggleVisibility && (
+          <button
+            type="button"
+            onClick={onToggleVisibility}
+            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            title="Hide recommended movies"
+            aria-label="Hide recommended movies"
+          >
+            <X className="h-3.5 w-3.5" aria-hidden="true" />
+          </button>
+        )}
+      </div>
       <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-3 sm:gap-4">
         {recommendations.map((rec) => (
           <button

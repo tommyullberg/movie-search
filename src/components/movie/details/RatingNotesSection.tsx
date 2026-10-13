@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Star, MessageSquare, Edit3 } from 'lucide-react';
+import { Star, MessageSquare, Edit3, X } from 'lucide-react';
 import { useWatchlist } from '../../../contexts/WatchlistContext';
 import type { MovieDetails } from '../../../types';
 
 export interface RatingNotesSectionProps {
   movie: MovieDetails;
+  isVisible?: boolean;
+  onToggleVisibility?: () => void;
 }
 
-export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
+export function RatingNotesSection({
+  movie,
+  isVisible = true,
+  onToggleVisibility,
+}: RatingNotesSectionProps) {
   const { getReview, saveReview, isWatched } = useWatchlist();
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [tempNotes, setTempNotes] = useState('');
@@ -16,20 +22,37 @@ export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
     return null;
   }
 
+  if (!isVisible) {
+    return null;
+  }
+
   const currentReview = getReview(movie.id);
 
   return (
-    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 sm:p-4 text-xs transition-all">
+    <div className="relative group rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 sm:p-4 text-xs transition-all">
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <div className="flex items-center gap-2">
           <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
           <span className="font-bold text-sm text-foreground">My Rating & Notes</span>
         </div>
-        {currentReview?.rating && (
-          <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/60">
-            {currentReview.rating} / 10
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {currentReview?.rating && (
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/60">
+              {currentReview.rating} / 10
+            </span>
+          )}
+          {onToggleVisibility && (
+            <button
+              type="button"
+              onClick={onToggleVisibility}
+              className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-emerald-500/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              title="Hide My Rating & Notes"
+              aria-label="Hide My Rating & Notes"
+            >
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Rating 1-10 selector buttons */}
@@ -54,7 +77,7 @@ export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
                 aria-label={`Rate ${star} out of 10`}
                 aria-checked={isSelected}
                 role="radio"
-                className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg text-xs font-bold transition-all flex items-center justify-center cursor-pointer ${
+                className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg text-xs font-bold transition-all flex items-center justify-center ${
                   isSelected
                     ? 'bg-amber-500 text-black font-extrabold shadow-sm scale-105'
                     : 'bg-card border border-border text-foreground hover:border-amber-500 hover:text-amber-500'
@@ -68,7 +91,7 @@ export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
             <button
               type="button"
               onClick={() => saveReview(movie.id, { rating: undefined })}
-              className="ml-1 text-[11px] text-muted-foreground hover:text-destructive transition-colors font-medium cursor-pointer"
+              className="ml-1 text-[11px] text-muted-foreground hover:text-destructive transition-colors font-medium"
             >
               Clear
             </button>
@@ -90,7 +113,7 @@ export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
                 setTempNotes(currentReview?.notes || '');
                 setIsEditingNotes(true);
               }}
-              className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer"
+              className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
             >
               <Edit3 className="h-3 w-3" />
               Edit
@@ -111,7 +134,7 @@ export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
               <button
                 type="button"
                 onClick={() => setIsEditingNotes(false)}
-                className="px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground font-medium rounded cursor-pointer"
+                className="px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground font-medium rounded"
               >
                 Cancel
               </button>
@@ -121,7 +144,7 @@ export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
                   saveReview(movie.id, { notes: tempNotes.trim() || undefined });
                   setIsEditingNotes(false);
                 }}
-                className="px-3 py-1 text-xs font-bold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                className="px-3 py-1 text-xs font-bold rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Save Notes
               </button>
@@ -138,7 +161,7 @@ export function RatingNotesSection({ movie }: RatingNotesSectionProps) {
               setTempNotes('');
               setIsEditingNotes(true);
             }}
-            className="mt-1 text-[11px] text-primary hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+            className="mt-1 text-[11px] text-primary hover:underline font-semibold flex items-center gap-1"
           >
             + Add a personal note or review
           </button>

@@ -275,7 +275,7 @@ export function SurprisePickerModal({
                 disabled={isRolling || isLoadingPool}
                 onChange={(e) => handleSourceChange(e.target.value)}
                 aria-label="Select source to roll from"
-                className="h-8 pl-3 pr-8 rounded-lg bg-background border border-border text-xs font-semibold text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary appearance-none disabled:opacity-50"
+                className="h-8 pl-3 pr-8 rounded-lg bg-background border border-border text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none disabled:opacity-50"
               >
                 <option value="watchlist">Watchlist ({watchlist.length})</option>
                 <option value="watched">Watched ({watchedList.length})</option>

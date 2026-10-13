@@ -174,7 +174,7 @@ export function SearchForm() {
                 aria-label="Search type"
                 value={searchType}
                 onChange={(e) => updateSearchType(e.target.value as SearchType)}
-                className="h-14 pl-3.5 pr-7 bg-transparent text-xs sm:text-sm font-bold text-foreground cursor-pointer focus:outline-none appearance-none rounded-l-xl border-r border-border hover:bg-muted/50 transition-colors"
+                className="h-14 pl-3.5 pr-7 bg-transparent text-xs sm:text-sm font-bold text-foreground focus:outline-none appearance-none rounded-l-xl border-r border-border hover:bg-muted/50 transition-colors"
               >
                 <option value="movie" className="bg-popover text-popover-foreground">
                   Movies

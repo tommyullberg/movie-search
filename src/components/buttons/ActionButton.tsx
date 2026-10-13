@@ -59,7 +59,7 @@ export function ActionButton({
           aria-label={active ? `Remove ${movieTitle} from watchlist` : `Add ${movieTitle} to watchlist`}
           title={active ? 'In Watchlist' : 'Add to Watchlist'}
           className={cn(
-            'p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
+            'p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             active
               ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 dark:text-amber-950'
               : 'bg-background/80 text-foreground hover:bg-background hover:text-amber-500',
@@ -120,7 +120,7 @@ export function ActionButton({
           aria-label={active ? `Remove ${movieTitle} from watched` : `Mark ${movieTitle} as watched`}
           title={active ? 'Watched' : 'Mark as Watched'}
           className={cn(
-            'p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
+            'p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-md shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             active
               ? 'bg-emerald-600 text-white hover:bg-emerald-500'
               : 'bg-background/80 text-foreground hover:bg-background hover:text-emerald-500',
@@ -227,7 +227,7 @@ export function ActionButton({
         disabled={disabled}
         aria-label={`Back to ${targetTitle || 'previous'}`}
         className={cn(
-          'inline-flex items-center gap-1.5 rounded-full bg-background/85 px-3 py-1.5 text-xs font-semibold text-foreground/90 backdrop-blur-md shadow-lg transition-all hover:bg-background hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring border border-border cursor-pointer',
+          'inline-flex items-center gap-1.5 rounded-full bg-background/85 px-3 py-1.5 text-xs font-semibold text-foreground/90 backdrop-blur-md shadow-lg transition-all hover:bg-background hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring border border-border',
           className
         )}
         {...restProps}

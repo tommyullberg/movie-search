@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, Calendar, Clock, Globe, Star, Play, X } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Globe, Star, Play, X, DollarSign, Tv, Users, Sparkles } from 'lucide-react';
 import type { MovieDetails, CrewMember, VideoItem } from '../../../types';
 import { imageConfig } from '../../../config/imageConfig';
 import { formatDate, formatYear } from '../../../utils/helpers';
@@ -15,6 +15,25 @@ export interface MovieHeroSectionProps {
   showTrailer: boolean;
   onToggleTrailer: () => void;
   onSelectDirector: (personId: number, name?: string) => void;
+  // Rating & Notes visibility state
+  isRatingNotesVisible?: boolean;
+  onToggleRatingNotes?: () => void;
+  isWatchedMovie?: boolean;
+  // Budget visibility state
+  isBudgetVisible?: boolean;
+  onToggleBudget?: () => void;
+  // Where to watch visibility state
+  hasWhereToWatch?: boolean;
+  isWhereToWatchVisible?: boolean;
+  onToggleWhereToWatch?: () => void;
+  // Cast visibility state
+  hasCast?: boolean;
+  isCastVisible?: boolean;
+  onToggleCast?: () => void;
+  // Recommendations visibility state
+  hasRecommendations?: boolean;
+  isRecommendationsVisible?: boolean;
+  onToggleRecommendations?: () => void;
   children?: React.ReactNode;
 }
 
@@ -34,12 +53,30 @@ export function MovieHeroSection({
   showTrailer,
   onToggleTrailer,
   onSelectDirector,
+  isRatingNotesVisible = true,
+  onToggleRatingNotes,
+  isWatchedMovie = false,
+  isBudgetVisible = true,
+  onToggleBudget,
+  hasWhereToWatch = false,
+  isWhereToWatchVisible = true,
+  onToggleWhereToWatch,
+  hasCast = false,
+  isCastVisible = true,
+  onToggleCast,
+  hasRecommendations = false,
+  isRecommendationsVisible = true,
+  onToggleRecommendations,
   children,
 }: MovieHeroSectionProps) {
   const {
     URL_IMAGE_POSTER_w500,
     URL_IMAGE_POSTER_w780,
   } = imageConfig;
+
+  const hasBudgetOrFacts = Boolean(
+    movie.budget > 0 || movie.revenue > 0 || movie.status || movie.production_companies?.length
+  );
 
   return (
     <div className="flex flex-col sm:flex-row gap-5 lg:gap-8 items-start">
@@ -115,7 +152,7 @@ export function MovieHeroSection({
               <button
                 type="button"
                 onClick={() => onSelectDirector(director.id, director.name)}
-                className="font-semibold text-foreground hover:text-primary hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded px-0.5 cursor-pointer"
+                className="font-semibold text-foreground hover:text-primary hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded px-0.5"
                 aria-label={`View profile for director ${director.name}`}
               >
                 {director.name}
@@ -192,6 +229,86 @@ export function MovieHeroSection({
           )}
 
           <ActionButton type="share" movie={movie} />
+
+          {/* Button to restore Budget / Financial facts when hidden */}
+          {!isBudgetVisible && hasBudgetOrFacts && onToggleBudget && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onToggleBudget}
+              className="rounded-lg font-semibold border-border flex items-center gap-1.5 text-xs text-foreground hover:text-primary transition-colors"
+              title="Show budget and financial facts"
+              aria-label="Show budget and financial facts"
+            >
+              <DollarSign className="h-3.5 w-3.5 text-amber-500 fill-amber-500/20 stroke-[2.5]" aria-hidden="true" />
+              <span>Budget</span>
+            </Button>
+          )}
+
+          {/* Button to restore My Rating & Notes when it has been hidden */}
+          {!isRatingNotesVisible && isWatchedMovie && onToggleRatingNotes && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onToggleRatingNotes}
+              className="rounded-lg font-semibold border-border flex items-center gap-1.5 text-xs text-foreground hover:text-primary transition-colors"
+              title="Show My Rating & Notes"
+              aria-label="Show My Rating & Notes"
+            >
+              <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" aria-hidden="true" />
+              <span>Rating & Notes</span>
+            </Button>
+          )}
+
+          {/* Button to restore Where To Watch when hidden */}
+          {!isWhereToWatchVisible && hasWhereToWatch && onToggleWhereToWatch && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onToggleWhereToWatch}
+              className="rounded-lg font-semibold border-border flex items-center gap-1.5 text-xs text-foreground hover:text-primary transition-colors"
+              title="Show streaming and watch providers"
+              aria-label="Show streaming and watch providers"
+            >
+              <Tv className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+              <span>Where to Watch</span>
+            </Button>
+          )}
+
+          {/* Button to restore Top Cast when hidden */}
+          {!isCastVisible && hasCast && onToggleCast && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onToggleCast}
+              className="rounded-lg font-semibold border-border flex items-center gap-1.5 text-xs text-foreground hover:text-primary transition-colors"
+              title="Show top cast"
+              aria-label="Show top cast"
+            >
+              <Users className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+              <span>Top Cast</span>
+            </Button>
+          )}
+
+          {/* Button to restore Recommendations when hidden */}
+          {!isRecommendationsVisible && hasRecommendations && onToggleRecommendations && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onToggleRecommendations}
+              className="rounded-lg font-semibold border-border flex items-center gap-1.5 text-xs text-foreground hover:text-primary transition-colors"
+              title="Show more like this"
+              aria-label="Show more like this"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+              <span>More Like This</span>
+            </Button>
+          )}
         </div>
 
         {/* Additional child sections (KeyFactsSection, RatingNotesSection) */}
