@@ -1,10 +1,15 @@
 # Movie Search - React App
 
+![Movie Search v2 Showcase](docs/images/v2-showcase.png)
+
+> **Visual Showcase**: Additional full-resolution screenshots and an interactive video recording can be found in the [Screenshots & Media](#screenshots--media) section at the bottom of this page.
+
 Source code:
 - [GitHub Repository](https://github.com/tommyullberg/movie-search)
 
 Live demo:
-- [GitHub Pages (v1.0.0 live)](https://tommyullberg.github.io/movie-search/)
+- [GitHub Pages (v2.x main)](https://tommyullberg.github.io/movie-search/)
+- [GitHub Pages (v1.0.0 legacy)](https://tommyullberg.github.io/movie-search/v1/)
 
 ## About
 
@@ -104,6 +109,88 @@ Visit [http://localhost:5173/movie-search/](http://localhost:5173/movie-search/)
 ```bash
 npm run build
 ```
+
+## <a id="screenshots--media"></a>Screenshots & Media
+
+<details>
+<summary><strong>Click to expand all screenshots and video walkthrough</strong></summary>
+
+### 1. Version 2.0 (Modern)
+
+<br />
+
+#### 🎬 **Home & Discovery Grid**
+
+Main search view featuring dark theme, category selector, rating gauges, and modern movie cards.
+
+![v2 Preview](docs/images/v2-preview.png)
+
+<br />
+
+#### 🔍 **Advanced Filters & Swedish Streaming**
+
+Discover movies by Swedish streaming services, genre, year, minimum rating, and sort order.
+
+![v2 Filters](docs/images/v2-filters.png)
+
+<br />
+
+#### 🎲 **3D Surprise Movie Reel**
+
+Interactive 3D spinning card reel with deceleration physics, reticle highlighting, and spotlight winner.
+
+![v2 Surprise Reel](docs/images/v2-surprise.png)
+
+<br />
+
+#### 📋 **Movie Details View**
+
+Comprehensive detail modal featuring backdrop, trailer toggle, budget overview, rating and notes, where to watch streaming options, and quick actions.
+
+![v2 Details](docs/images/v2-details.png)
+
+<br />
+
+#### 🎥 **Surprise Movie Reel Video Walkthrough**
+
+Live screen recording showing the 3D card reel in action, rolling and decelerating to a winner.
+
+<video src="docs/images/v2-surprise-me.mp4" controls="controls" width="100%" style="max-width: 100%; border-radius: 12px; border: 1px solid #3f3f46;">
+  Your browser does not support the video tag. You can view or download the video directly at <a href="docs/images/v2-surprise-me.mp4">docs/images/v2-surprise-me.mp4</a>.
+</video>
+
+<br />
+
+#### 📜 **Full Movie Details Dialog**
+
+Entire scroll height of the movie details view, including key financial facts, user rating notes, streaming providers, top cast with avatars, and movie recommendations.
+
+![v2 Details Full](docs/images/v2-details-full.png)
+
+<br />
+<br />
+
+### 2. Version 1.0 (Legacy)
+
+<br />
+
+#### 🏛️ **Home Page (v1.0.0)**
+
+The original 2023 movie search interface with classic categories and poster grid.
+
+![v1 Preview](docs/images/v1-preview.png)
+
+<br />
+
+#### 📑 **Movie Details (v1.0.0)**
+
+The legacy movie details modal layout.
+
+![v1 Details](docs/images/v1-details.png)
+
+<br />
+
+</details>
 
 --------------------------------
 
