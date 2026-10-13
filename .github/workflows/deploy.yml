@@ -93,6 +93,15 @@ jobs:
             fi
           fi
 
+          # Ensure v2 documentation media (docs/images) and root SPA 404 fallback are present
+          echo "Copying documentation media and setting up root SPA 404 fallback..."
+          if [ -d docs ]; then
+            cp -r docs dist/
+          fi
+          if [ -f dist/index.html ]; then
+            cp dist/index.html dist/404.html
+          fi
+
       - name: Deploy to GitHub Pages (clean root, preserving /v1/)
         uses: peaceiris/actions-gh-pages@v4
         with:
