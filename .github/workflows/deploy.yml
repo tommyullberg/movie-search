@@ -84,12 +84,14 @@ jobs:
             echo "Warning: No v1/ directory found on gh-pages branch."
           fi
 
-          # Ensure v1 About page dependencies (README.md and SPA 404 fallback) are present
+          # Ensure v1 About page dependencies (README.md, SPA 404 fallback, and pre-rendered /about/ route) are present
           if [ -d dist/v1 ]; then
             echo "Ensuring v1 About markdown and SPA fallback..."
             git show v1.0.0:README.md > dist/v1/README.md 2>/dev/null || true
-            if [ -f dist/v1/index.html ] && [ ! -f dist/v1/404.html ]; then
+            if [ -f dist/v1/index.html ]; then
               cp dist/v1/index.html dist/v1/404.html
+              mkdir -p dist/v1/about
+              cp dist/v1/index.html dist/v1/about/index.html
             fi
           fi
 
