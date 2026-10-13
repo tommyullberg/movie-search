@@ -67,48 +67,54 @@ Movie Search is a modern web application built with React and TypeScript that co
 - Framer Motion 14
 - Native Fetch API with CacheStorage
 - Marked 18 (Markdown parser)
-- Husky & Commitlint (Conventional Commits)
+- GitHub Actions (Automated CI/CD Release Pipeline)
+
+## CI/CD Pipeline & Release Runbook
+
+Modern releases are built and published automatically to GitHub Pages using GitHub Actions (`.github/workflows/deploy.yml`). Pushing a Semantic Version tag (e.g. `v2.0.0`, `v2.1.0`) triggers automated typechecking, Vite bundling with Node.js 22, preservation of legacy Version 1 in `/v1/`, and clean root deployment.
+
+For full architectural details, secrets setup, and release procedures, see the [Release Runbook](docs/runbook.md).
 
 ## Planned next steps
 
 - Expand automated integration and component tests with Vitest.
-- Set up a GitHub Actions CI/CD pipeline to automatically run typechecks, tests, build, and deploy tagged release versions to GitHub Pages (and optionally mirror production builds to custom web hosting via secure FTP/SFTP).
+- Optionally mirror production builds to custom external web hosting via secure FTP/SFTP.
 
 ## Getting Started
 
 1. Clone the repository and install dependencies:
 
-```bash
-git clone https://github.com/tommyullberg/movie-search.git
-cd movie-search
-npm install
-```
+   ```bash
+   git clone https://github.com/tommyullberg/movie-search.git
+   cd movie-search
+   npm install
+   ```
 
 2. Configure your TMDB API credentials:
 
-```bash
-cp .env.example .env.local
-```
+   ```bash
+   cp .env.example .env.local
+   ```
 
-Open `.env.local` and add your TMDB API Read Access Token:
+   Open `.env.local` and add your TMDB API Read Access Token:
 
-```env
-VITE_TMDB_READ_ACCESS_TOKEN=your_token_here
-```
+   ```env
+   VITE_TMDB_READ_ACCESS_TOKEN=your_token_here
+   ```
 
 3. Start the development server:
 
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
-Visit [http://localhost:5173/movie-search/](http://localhost:5173/movie-search/) in your browser.
+   Visit [http://localhost:5173/movie-search/](http://localhost:5173/movie-search/) in your browser.
 
 4. Build for production:
 
-```bash
-npm run build
-```
+   ```bash
+   npm run build
+   ```
 
 ## <a id="screenshots--media"></a>Screenshots & Media
 

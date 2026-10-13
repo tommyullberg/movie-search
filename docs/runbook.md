@@ -1,118 +1,130 @@
-# Movie Search Runbook
+# Release Runbook
 
-This runbook covers how to install, develop, build, verify, and deploy the Movie Search application.
+This document details the CI/CD deployment architecture, release procedure, and operational guidelines for the **Movie Search** application.
 
-## Prerequisites
+---
 
-- Node.js 22.12 or newer and npm (required for modern tooling and Commitlint).
-- Git installed.
-- TMDB API Read Access Token (from [The Movie Database](https://www.themoviedb.org/)).
-- Access to the [movie-search repository](https://github.com/tommyullberg/movie-search) to push changes and publish to GitHub Pages.
+## 1. Architecture Overview
 
-## Local Development
+The repository deploys to **GitHub Pages** using an automated GitHub Actions workflow defined in [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml).
 
-1. Clone the repository and enter the directory:
-
-   ```bash
-   git clone https://github.com/tommyullberg/movie-search.git
-   cd movie-search
-   ```
-
-2. Create a local environment file from the template:
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Set `VITE_TMDB_READ_ACCESS_TOKEN` in `.env.local` to your TMDB API Read Access Token.
-   Never commit `.env.local`; it is ignored by Git.
-
-3. Install project dependencies:
-
-   ```bash
-   npm install
-   ```
-
-4. Start the Vite development server:
-
-   ```bash
-   npm run dev
-   ```
-
-   Vite serves the application at [http://localhost:5173/movie-search/](http://localhost:5173/movie-search/) with fast Hot Module Replacement (HMR).
-
-## API Smoke Check and Verification
-
-To verify that your TMDB API credentials and network connectivity are operational before building or deploying, run the smoke check:
-
-```bash
-npm run check:api
-```
-
-This runs `scripts/check-tmdb-api.cjs`, loads `VITE_TMDB_READ_ACCESS_TOKEN` from `.env.local`, queries the TMDB Popular Movies endpoint, and reports success or error diagnostics without starting the browser.
-
-## Build for Production
-
-Compile TypeScript and build the optimized static bundle with Vite:
-
-```bash
-npm run build
-```
-
-This command runs `tsc -b` for strict typechecking, followed by `vite build`. The production-ready static assets are output to the `dist/` directory.
-
-To preview the production build locally:
-
-```bash
-npm run preview
-```
-
-## Commit Conventions & Pre-commit Hooks
-
-Commits must strictly adhere to the Conventional Commits specification. A Husky pre-commit hook runs Commitlint automatically on each commit.
-
-Format: `<type>(<scope>): <description>`
-
-- Allowed types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `ci`, `build`, `style`, `perf`, `revert`.
-- Scope is optional and must be lowercase, e.g. `(ui)`, `(api)`, `(deps)`.
-- The first line must not exceed 100 characters.
-- Breaking changes can append `!` before the colon, e.g. `feat(api)!: upgrade authentication`.
-
-Examples:
+### Hosting Layout
 
 ```text
-feat(ui): add high contrast theme toggle
-fix(search): prevent duplicate movie card rendering
-docs(runbook): update deployment guide for Vite
-chore(deps): upgrade dependencies to React 19
+https://tommyullberg.github.io/movie-search/
+├── /              Modern Version 2 (React 19, Vite, Tailwind CSS v4)
+├── /about/        Modern v2 About documentation
+├── /docs/images/  Showcase screenshots, media, and video assets
+├── /v1/           Legacy Version 1 (React 18, Create React App)
+└── /v1/about/     Legacy v1 documentation
 ```
 
-## Deploy to GitHub Pages
+### Key Workflow Characteristics
 
-The application is deployed to GitHub Pages using the `gh-pages` package, which publishes the contents of the `dist/` directory directly to the `gh-pages` branch.
+- **Trigger Policy**: Triggered on pushing Git release tags matching SemVer (`v[2-9].*`, e.g., `v2.0.0`, `v2.1.0`), as well as manual trigger (`workflow_dispatch`).
+- **SemVer Validation**: Enforces SemVer compliance and verifies that the tag's major version is >= 2.
+- **Node.js 22 Runtime**: Executes on Node.js 22 with dependency caching, performs automated typechecking (`tsc -b`), and compiles the Vite production bundle.
+- **Legacy v1 Preservation**: Extracts the legacy Version 1 build artifact from the `gh-pages` branch into `dist/v1/`, including its original README markdown and dedicated SPA route handling (`/v1/about/index.html`).
+- **Clean Root Deployment**: Cleans up legacy Create React App root files on the `gh-pages` branch while deploying modern Version 2 to the root, preserving `/v1/` intact.
+- **SPA Fallback**: Prepares a root `404.html` and pre-rendered subroutes so direct URLs and page refreshes work seamlessly on GitHub Pages.
 
-1. Ensure all changes are committed and pushed to `main`:
+---
+
+## 2. Standard Release Procedure
+
+Follow these steps to release a new version of the application:
+
+### Step 1: Verify Working Copy and Branch
+
+Ensure all intended changes are committed and pushed to `main`:
+
+```bash
+git checkout main
+git pull origin main
+git status
+```
+
+### Step 2: Create a Semantic Version Tag
+
+Create an annotated or standard tag adhering to Semantic Versioning:
+
+- Feature release (minor bump):
+
+  ```bash
+  git tag v2.1.0
+  ```
+
+- Bug fix release (patch bump):
+
+  ```bash
+  git tag v2.0.1
+  ```
+
+### Step 3: Push Tag to GitHub
+
+Push the release tag to GitHub to trigger the deployment pipeline:
+
+```bash
+git push origin v2.1.0
+```
+
+### Step 4: Monitor Pipeline Execution
+
+Inspect workflow progress using the GitHub CLI:
+
+```bash
+gh run list --limit 2
+gh run watch <run-id>
+```
+
+Or monitor live in the browser under the **Actions** tab on GitHub:
+[https://github.com/tommyullberg/movie-search/actions](https://github.com/tommyullberg/movie-search/actions)
+
+### Step 5: Post-Deployment Verification
+
+Verify both live application targets once the pipeline completes:
+
+1. **Modern Version 2 (Root)**:
+   - URL: [https://tommyullberg.github.io/movie-search/](https://tommyullberg.github.io/movie-search/)
+   - Check movie grid rendering, filters, modal dialogs, and SVG favicon.
+2. **Modern Version 2 About View**:
+   - URL: [https://tommyullberg.github.io/movie-search/about](https://tommyullberg.github.io/movie-search/about)
+   - Verify screenshots, collapsible gallery, and local video walkthrough playback.
+3. **Legacy Version 1 (Subdirectory)**:
+   - URL: [https://tommyullberg.github.io/movie-search/v1/](https://tommyullberg.github.io/movie-search/v1/)
+   - Verify movie cards and gauge meters load via TMDB API.
+4. **Legacy Version 1 About View**:
+   - URL: [https://tommyullberg.github.io/movie-search/v1/about](https://tommyullberg.github.io/movie-search/v1/about)
+   - Verify direct loading and browser reload without 404 errors.
+
+---
+
+## 3. Secrets & Configuration
+
+The deployment pipeline requires the following GitHub repository secret:
+
+| Secret Name | Purpose | Location |
+| :--- | :--- | :--- |
+| `VITE_TMDB_READ_ACCESS_TOKEN` | Injected into the Vite build environment to authenticate client TMDB API requests | GitHub Repo Settings > Secrets and variables > Actions |
+
+To update the secret via GitHub CLI:
+
+```bash
+gh secret set VITE_TMDB_READ_ACCESS_TOKEN --body "your_tmdb_token_here"
+```
+
+---
+
+## 4. Rollback & Emergency Recovery
+
+In case of a critical issue in a release:
+
+1. Locate the last stable release tag (e.g. `v2.0.0`).
+2. If necessary, re-tag the stable commit and force push:
 
    ```bash
-   git status
-   git push origin main
+   git tag -f v2.0.0 <stable-commit-sha>
+   git push origin -f v2.0.0
    ```
 
-2. Run the deploy script:
-
-   ```bash
-   npm run deploy
-   ```
-
-   This automatically triggers `predeploy` (`npm run build`) and publishes `dist/` to the remote `gh-pages` branch.
-
-3. GitHub Pages Settings:
-   - Ensure repository settings under **Settings > Pages** are configured to deploy from branch `gh-pages`, folder `/(root)`.
-   - Access the live application at: [https://tommyullberg.github.io/movie-search/](https://tommyullberg.github.io/movie-search/)
-
-## Deployment Checklist
-
-- Confirm that `base` in `vite.config.ts` is set to `/movie-search/`.
-- Confirm that `homepage` in `package.json` is set to `https://tommyullberg.github.io/movie-search`.
-- Ensure `.env.local` is never staged or committed.
-- Verify the live site after deployment and check browser console for zero errors.
+3. Alternatively, trigger the workflow manually with `workflow_dispatch` selecting the target ref.
