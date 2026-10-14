@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { Header, AnimatedRoutes, MovieModal, PersonModal } from './components';
+import { Header, AnimatedRoutes, MovieModal, PersonModal, SettingsPanel, Footer } from './components';
 import { SearchContextProvider, useSearchContext } from './contexts/SearchContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { WatchlistProvider } from './contexts/WatchlistContext';
+import { SettingsProvider } from './contexts/SettingsContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 function DetailModals() {
@@ -34,27 +35,31 @@ export default function App() {
     <ThemeProvider>
       <WatchlistProvider>
         <Router basename={import.meta.env.BASE_URL}>
-          <SearchContextProvider>
-            <div className="min-h-screen bg-background text-foreground flex flex-col">
-              {/* Skip to Main Content Link for WCAG Keyboard Accessibility */}
-              <a
-                href="#main-content"
-                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:font-semibold focus:shadow-xl focus:outline-none focus:ring-4 focus:ring-ring"
-              >
-                Skip to main content
-              </a>
+          <SettingsProvider>
+            <SearchContextProvider>
+              <div className="min-h-screen bg-background text-foreground flex flex-col">
+                {/* Skip to Main Content Link for WCAG Keyboard Accessibility */}
+                <a
+                  href="#main-content"
+                  className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:font-semibold focus:shadow-xl focus:outline-none focus:ring-4 focus:ring-ring"
+                >
+                  Skip to main content
+                </a>
 
-              <Header />
-              <main
-                id="main-content"
-                tabIndex={-1}
-                className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 outline-none"
-              >
-                <AnimatedRoutes />
-              </main>
-              <DetailModals />
-            </div>
-          </SearchContextProvider>
+                <Header />
+                <SettingsPanel />
+                <main
+                  id="main-content"
+                  tabIndex={-1}
+                  className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 outline-none"
+                >
+                  <AnimatedRoutes />
+                </main>
+                <Footer />
+                <DetailModals />
+              </div>
+            </SearchContextProvider>
+          </SettingsProvider>
         </Router>
       </WatchlistProvider>
     </ThemeProvider>

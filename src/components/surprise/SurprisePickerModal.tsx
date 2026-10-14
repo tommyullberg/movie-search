@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from '../ui/dialog';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 import { SearchResult } from '../../types';
 import { TMDB_GENRES, fetchSearchResults } from '../../utils/apiUtils';
+import { useSettings } from '../../contexts/SettingsContext';
 import { SurpriseReel } from './SurpriseReel';
 import { SurpriseWinnerSpotlight } from './SurpriseWinnerSpotlight';
 
@@ -28,6 +29,7 @@ export function SurprisePickerModal({
   onSelectWinner,
   onOpenDetails,
 }: SurprisePickerModalProps) {
+  const { region } = useSettings();
   const getNormalizedSource = (src: string) => {
     const valid = ['watchlist', 'watched', 'trending', 'popular', 'toprated', 'nowplaying', 'upcoming'];
     if (valid.includes(src) || src.startsWith('genre_')) {
@@ -109,9 +111,9 @@ export function SurprisePickerModal({
 
     // Fetch pages 1, 2, and 3 concurrently to reach top 50
     const [p1, p2, p3] = await Promise.all([
-      fetchSearchResults('', category, 1, 'movie', filters),
-      fetchSearchResults('', category, 2, 'movie', filters),
-      fetchSearchResults('', category, 3, 'movie', filters),
+      fetchSearchResults('', category, 1, 'movie', filters, region),
+      fetchSearchResults('', category, 2, 'movie', filters, region),
+      fetchSearchResults('', category, 3, 'movie', filters, region),
     ]);
 
     const combined = [

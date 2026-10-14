@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal, RotateCcw, Tv } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useSearchContext } from '../../contexts/SearchContext';
-import { TMDB_GENRES, TMDB_STREAMING_PROVIDERS_SE } from '../../utils/apiUtils';
+import { useSettings } from '../../contexts/SettingsContext';
+import { TMDB_GENRES } from '../../utils/apiUtils';
 
 export interface AdvancedFiltersPanelProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ export function AdvancedFiltersPanel({ isOpen, onApply, onReset }: AdvancedFilte
     updateAdvancedFilters,
     updateSearchCategory,
   } = useSearchContext();
+
+  const { regionName, activeProviders } = useSettings();
 
   const handleResetFilters = () => {
     if (onReset) {
@@ -75,7 +78,7 @@ export function AdvancedFiltersPanel({ isOpen, onApply, onReset }: AdvancedFilte
             <div>
               <label htmlFor="filter-provider" className="block text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
                 <Tv className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                <span>Stream in Sweden</span>
+                <span>Stream in {regionName}</span>
               </label>
               <select
                 id="filter-provider"
@@ -88,8 +91,8 @@ export function AdvancedFiltersPanel({ isOpen, onApply, onReset }: AdvancedFilte
                 className="w-full h-9 px-3 rounded-lg border border-border bg-background text-foreground text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">Any / All Providers</option>
-                <option value="any">Any Swedish Stream</option>
-                {TMDB_STREAMING_PROVIDERS_SE.map((p) => (
+                <option value="any">Any Stream in {regionName}</option>
+                {activeProviders.map((p) => (
                   <option key={p.id} value={p.id.toString()}>
                     {p.name}
                   </option>

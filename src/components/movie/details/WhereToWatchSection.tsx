@@ -2,6 +2,7 @@ import React from 'react';
 import { ExternalLink, Tv, X } from 'lucide-react';
 import type { MovieDetails } from '../../../types';
 import { imageConfig } from '../../../config/imageConfig';
+import { useSettings } from '../../../contexts/SettingsContext';
 
 export interface WhereToWatchSectionProps {
   movie: MovieDetails;
@@ -14,9 +15,19 @@ export function WhereToWatchSection({
   isVisible = true,
   onToggleVisibility,
 }: WhereToWatchSectionProps) {
+  const { region, regionName } = useSettings();
   const watchResults = movie['watch/providers']?.results;
+  const userRegionProviders = watchResults?.[region];
   const seProviders = watchResults?.SE;
   const usProviders = watchResults?.US;
+
+  const hasUserRegionContent = !!(
+    userRegionProviders?.flatrate?.length ||
+    userRegionProviders?.free?.length ||
+    userRegionProviders?.ads?.length ||
+    userRegionProviders?.rent?.length ||
+    userRegionProviders?.buy?.length
+  );
 
   const hasSeContent = !!(
     seProviders?.flatrate?.length ||
@@ -26,8 +37,12 @@ export function WhereToWatchSection({
     seProviders?.buy?.length
   );
 
-  const activeCountry = hasSeContent ? 'Sweden' : 'US';
-  const activeData = hasSeContent ? seProviders : usProviders;
+  const activeCountry = hasUserRegionContent
+    ? regionName
+    : hasSeContent
+    ? 'Sweden'
+    : 'United States';
+  const activeData = hasUserRegionContent ? userRegionProviders : hasSeContent ? seProviders : usProviders;
 
   const freeStreamingServices = activeData?.free || [];
   const subscriptionServices = activeData?.flatrate || [];

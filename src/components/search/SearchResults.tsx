@@ -8,6 +8,7 @@ import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { EmptyState } from '../ui/empty-state';
 import { useWatchlist } from '../../contexts/WatchlistContext';
+import { useSettings } from '../../contexts/SettingsContext';
 import { SearchResult } from '../../types';
 import { MovieCard } from '../movie';
 import { PersonCard } from '../person';
@@ -36,6 +37,7 @@ export function SearchResults() {
   } = useSearchContext();
 
   const { getReview } = useWatchlist();
+  const { region } = useSettings();
 
   const openModal = (movieId: number, title?: string, event?: FormEvent<Element> | KeyboardEvent<Element>) => {
     if (event) event.preventDefault();
@@ -64,7 +66,7 @@ export function SearchResults() {
       updateIsFetchingMore(true);
       const nextPage = page + 1;
       updatePage(nextPage);
-      const { results } = await fetchSearchResults(searchTerm, searchCategory, nextPage, searchType, advancedFilters);
+      const { results } = await fetchSearchResults(searchTerm, searchCategory, nextPage, searchType, advancedFilters, region);
       appendSearchResults(results as SearchResult[]);
       updateIsFetchingMore(false);
     }

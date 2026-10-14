@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, HelpCircle, Sun, Moon, Film, Contrast } from 'lucide-react';
+import { Home, HelpCircle, Sun, Moon, Film, Contrast, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { Button } from './ui/button';
 import { GradientText } from './ui/GradientText';
+import { APP_NAME } from '../config/version';
 
 export function Header() {
   const { theme, highContrast, toggleTheme, toggleHighContrast } = useTheme();
+  const { toggleSettings, openSettings, isSettingsOpen } = useSettings();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -97,10 +100,12 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-colors ${
+      className={`sticky top-0 z-50 w-full transition-colors ${
         highContrast
           ? 'border-b border-foreground bg-background text-foreground'
-          : 'bg-[#15803d] text-white border-b border-emerald-800/40 shadow-xs dark:bg-background/90 dark:text-foreground dark:border-border dark:backdrop-blur-md'
+          : isSettingsOpen || isMobileMenuOpen
+            ? 'bg-[#15803d] text-white border-b border-emerald-800/40 shadow-xs dark:bg-background dark:text-foreground dark:border-border'
+            : 'bg-[#15803d] text-white border-b border-emerald-800/40 shadow-xs dark:bg-background/90 dark:text-foreground dark:border-border dark:backdrop-blur-md'
       }`}
     >
       <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
@@ -175,7 +180,7 @@ export function Header() {
               }
               animationSpeed={6}
             >
-              The Movie DB
+              {APP_NAME}
             </GradientText>
           </NavLink>
         </div>
@@ -221,6 +226,30 @@ export function Header() {
             <HelpCircle className="h-4 w-4" aria-hidden="true" />
             <span>About</span>
           </NavLink>
+
+          <Button
+            variant={highContrast ? 'default' : 'ghost'}
+            size="icon"
+            onClick={() => {
+              closeMenu();
+              toggleSettings();
+            }}
+            aria-label="Settings"
+            aria-haspopup="dialog"
+            aria-expanded={isSettingsOpen}
+            title="Settings"
+            className={`rounded-lg h-9 w-9 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white dark:focus-visible:ring-ring ${
+              highContrast
+                ? isSettingsOpen
+                  ? 'border-2 border-foreground bg-foreground text-background font-bold'
+                  : 'text-foreground hover:bg-foreground hover:text-background border-2 border-transparent'
+                : isSettingsOpen
+                  ? 'bg-white/25 text-white border border-white/40 shadow-xs dark:bg-secondary dark:text-foreground dark:border-border font-bold'
+                  : 'text-white/80 hover:text-white hover:bg-white/15 dark:text-muted-foreground dark:hover:bg-secondary dark:hover:text-foreground'
+            }`}
+          >
+            <Settings className="h-4 w-4" aria-hidden="true" />
+          </Button>
         </nav>
 
         {/* Mobile Navigation Trigger (< 640px) */}
@@ -228,7 +257,10 @@ export function Header() {
           <button
             ref={toggleBtnRef}
             type="button"
-            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            onClick={() => {
+              if (isSettingsOpen) toggleSettings();
+              setIsMobileMenuOpen((prev) => !prev);
+            }}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-navigation-dropdown"
             aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -276,21 +308,31 @@ export function Header() {
           {/* Mobile Dropdown Menu */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <motion.div
-                ref={menuRef}
-                id="mobile-navigation-dropdown"
-                initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                transition={{ duration: 0.16, ease: 'easeOut' }}
-                className={`absolute right-0 top-12 z-50 mt-2 w-56 origin-top-right overflow-hidden rounded-2xl shadow-2xl backdrop-blur-xl ${
-                  highContrast
-                    ? 'border-2 border-foreground bg-background text-foreground'
-                    : 'border border-border/80 bg-card/95 text-card-foreground shadow-emerald-950/10'
-                }`}
-                role="menu"
-                aria-label="Mobile Navigation"
-              >
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  onClick={closeMenu}
+                  className="fixed inset-0 top-16 mt-px z-40 bg-black/40 sm:hidden"
+                  aria-hidden="true"
+                />
+                <motion.div
+                  ref={menuRef}
+                  id="mobile-navigation-dropdown"
+                  initial={{ x: '100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '100%' }}
+                  transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                  className={`fixed right-0 top-16 mt-px z-50 w-64 origin-top-right overflow-hidden rounded-none rounded-bl-2xl shadow-2xl backdrop-blur-xl ${
+                    highContrast
+                      ? 'border-2 border-t-0 border-r-0 border-foreground bg-background text-foreground'
+                      : 'border-l border-b border-border/80 bg-card/98 text-card-foreground shadow-emerald-950/20'
+                  }`}
+                  role="menu"
+                  aria-label="Mobile Navigation"
+                >
                 <div className="flex flex-col w-full p-1.5 gap-1">
                   <NavLink
                     to="/"
@@ -381,10 +423,43 @@ export function Header() {
                     <Contrast className={`h-4 w-4 shrink-0 ${highContrast ? 'text-current' : 'text-primary'}`} aria-hidden="true" />
                     <span>High Contrast Mode</span>
                   </button>
+
+                  {/* Separator */}
+                  <div
+                    className={`my-1 h-px w-full ${
+                      highContrast ? 'bg-foreground' : 'bg-border/60'
+                    }`}
+                    role="separator"
+                    aria-orientation="horizontal"
+                  />
+
+                  {/* Settings */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeMenu();
+                      openSettings();
+                    }}
+                    role="menuitem"
+                    aria-label="Settings"
+                    className={`flex items-center gap-3 w-full px-3.5 py-2.5 text-sm font-semibold rounded-lg transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
+                      highContrast
+                        ? isSettingsOpen
+                          ? 'border border-foreground bg-foreground text-background font-bold'
+                          : 'text-foreground hover:bg-foreground hover:text-background'
+                        : isSettingsOpen
+                          ? 'bg-emerald-500/20 text-foreground font-bold hover:bg-emerald-500/40 active:bg-emerald-500/45'
+                          : 'text-foreground/80 hover:text-foreground hover:bg-black/10 dark:hover:bg-white/20 active:bg-black/15 dark:active:bg-white/25'
+                    }`}
+                  >
+                    <Settings className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                    <span>Settings</span>
+                  </button>
                 </div>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </>
+          )}
+        </AnimatePresence>
         </div>
       </div>
     </header>

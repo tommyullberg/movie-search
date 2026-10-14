@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
+import { useSettings } from '../../contexts/SettingsContext';
 import { fetchSearchResults, SearchType } from '../../utils/apiUtils';
 import { SearchResult } from '../../types';
 import { Input } from '../ui/input';
@@ -57,6 +58,7 @@ export function SearchForm() {
   } = useSearchContext();
 
   const { watchlist, watchedList, getSortedList, librarySort } = useWatchlist();
+  const { region } = useSettings();
 
   const [isSurpriseModalOpen, setIsSurpriseModalOpen] = useState(false);
 
@@ -68,6 +70,15 @@ export function SearchForm() {
       updateSearchResults(getSortedList('watched'));
     }
   }, [watchlist, watchedList, searchCategory, librarySort]);
+
+  // Re-fetch when region changes if currently viewing In Theaters or using watch provider filter
+  useEffect(() => {
+    if (searchCategory === 'nowplaying') {
+      runSearch('', 'nowplaying');
+    } else if (isAdvancedOpen && advancedFilters.watchProvider) {
+      runSearch(searchTerm, searchCategory);
+    }
+  }, [region]);
 
   const handleSelectWinner = (movie: SearchResult, pool: SearchResult[]) => {
     const uniquePool = Array.from(new Map(pool.map((m) => [m.id, m])).values());
@@ -98,7 +109,8 @@ export function SearchForm() {
       category,
       1,
       sType,
-      isAdvancedOpen ? advancedFilters : undefined
+      isAdvancedOpen ? advancedFilters : undefined,
+      region
     );
     updateSearchResults(results as SearchResult[]);
     updateTotalPages(totalPages || 0);

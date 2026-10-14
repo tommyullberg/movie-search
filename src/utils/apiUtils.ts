@@ -1,4 +1,5 @@
 import { MovieDetails, PersonDetails, PersonSearchResult } from '../types';
+import { getProvidersForRegion } from '../config/regions';
 
 const apiReadAccessToken = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
 
@@ -65,7 +66,8 @@ export async function fetchSearchResults(
   searchCategory: string,
   page: number = 1,
   searchType: SearchType = 'movie',
-  advancedFilters?: AdvancedFilterOptions
+  advancedFilters?: AdvancedFilterOptions,
+  region: string = 'SE'
 ): Promise<{ results: unknown[]; totalPages?: number; error?: string }> {
   try {
     let url = '';
@@ -100,10 +102,11 @@ export async function fetchSearchResults(
         params.append('vote_count.gte', '50');
       }
       if (advancedFilters.watchProvider) {
-        params.append('watch_region', 'SE');
+        params.append('watch_region', region);
         params.append('with_watch_monetization_types', 'flatrate|free|ads');
         if (advancedFilters.watchProvider === 'any') {
-          const allProviderIds = TMDB_STREAMING_PROVIDERS_SE.map((p) => p.id).join('|');
+          const providers = getProvidersForRegion(region);
+          const allProviderIds = providers.map((p) => p.id).join('|');
           params.append('with_watch_providers', allProviderIds);
         } else {
           params.append('with_watch_providers', advancedFilters.watchProvider);
@@ -116,7 +119,7 @@ export async function fetchSearchResults(
           url = `https://api.themoviedb.org/3/trending/movie/week?language=en-US&page=${page}`;
           break;
         case 'nowplaying':
-          url = `https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=${page}`;
+          url = `https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=${page}&region=${encodeURIComponent(region)}`;
           break;
         case 'popular':
           url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;

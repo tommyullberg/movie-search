@@ -64,3 +64,5 @@ export {
   type SurpriseReelProps,
   type SurpriseWinnerSpotlightProps,
 } from './surprise';
+export { SettingsPanel } from './settings/SettingsPanel';
+export { Footer } from './Footer';
