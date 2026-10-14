@@ -29,7 +29,7 @@
 
   [data-theme="light"], .light {
     /* Light Mode Defaults - High contrast WCAG AA compliant */
-    --background: #e8eaec; /* Light gray background */
+    --background: #d8dde3; /* Deeper neutral gray so white cards & forms pop */
     --foreground: #090d16; /* Slate-950: 18:1 contrast against white/background */
     --card: #ffffff;
     --card-foreground: #090d16;
@@ -142,10 +142,10 @@ select:disabled {
   cursor: not-allowed;
 }
 
-/* Ensure accessible focus outlines globally */
+/* Ensure accessible focus outlines globally (elements can customize via focus-visible:ring or outline) */
 :focus-visible {
-  outline: 3px solid var(--ring) !important;
-  outline-offset: 2px !important;
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
 }
 
 /* High Contrast Mode Specific Adjustments */
@@ -177,7 +177,43 @@ select:disabled {
   background: var(--muted-foreground);
 }
 
+/* Respect user motion preferences globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Optical vertical alignment adjustment for Inter font specifically in Chromium/Chrome */
 .is-chromium .chrome-text-adjust {
   transform: translateY(1px);
+}
+
+/* Smooth gradient animation for living gradient text */
+@keyframes gradient-text {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-text {
+  background-size: 300% 300%;
+  animation: gradient-text 8s ease infinite;
+}
+
+/* Fluid responsive title: text-xl (1.25rem/20px) up to 320px, scales linearly to text-3xl (1.875rem/30px) at 500px, and stays 3xl above */
+#search-section-title {
+  font-size: clamp(1.25rem, 0.1389rem + 5.556vw, 1.875rem);
+  line-height: 1.25;
 }

@@ -169,7 +169,7 @@ export function SearchForm() {
       <div className="mx-auto max-w-3xl text-center">
         <h1
           id="search-section-title"
-          className="mb-2 text-3xl font-extrabold tracking-tight sm:text-4xl text-foreground"
+          className="mb-2 font-extrabold tracking-tight text-foreground"
         >
           Find your next favorite movie
         </h1>
