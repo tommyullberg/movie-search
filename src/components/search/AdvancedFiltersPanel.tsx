@@ -54,7 +54,7 @@ export function AdvancedFiltersPanel({ isOpen, onApply, onReset }: AdvancedFilte
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-border">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden="true" />
-              <span className="font-bold text-xs sm:text-sm text-foreground">
+              <span className="font-bold text-xs md:text-sm text-foreground">
                 Advanced Discover & Filters
               </span>
             </div>
@@ -70,7 +70,7 @@ export function AdvancedFiltersPanel({ isOpen, onApply, onReset }: AdvancedFilte
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
             {/* Streaming in Sweden */}
             <div>
               <label htmlFor="filter-provider" className="block text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">

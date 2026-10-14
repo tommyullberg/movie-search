@@ -173,89 +173,98 @@ export function SearchForm() {
         >
           Find your next favorite movie
         </h1>
-        <p className="mb-6 text-sm text-muted-foreground sm:text-base font-medium">
+        <p className="mb-6 text-sm text-muted-foreground md:text-base font-medium">
           Search millions of titles, explore trending releases, and check out top-rated movies.
         </p>
 
         <form onSubmit={handleSearch} role="search" aria-label="Movie search" className="mb-6">
-          <div className="relative flex items-center shadow-md rounded-xl bg-card border border-border focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
-            {/* Integrated Search Type Dropdown */}
-            <div className="relative shrink-0 flex items-center">
-              <label htmlFor="search-type-select" className="sr-only">
-                Select search type
-              </label>
-              <select
-                id="search-type-select"
-                aria-label="Search type"
-                value={searchType}
-                onChange={(e) => updateSearchType(e.target.value as SearchType)}
-                className="h-14 pl-3.5 pr-7 bg-transparent text-xs sm:text-sm font-bold text-foreground focus:outline-none appearance-none rounded-l-xl border-r border-border hover:bg-muted/50 transition-colors"
-              >
-                <option value="movie" className="bg-popover text-popover-foreground">
-                  Movies
-                </option>
-                <option value="person" className="bg-popover text-popover-foreground">
-                  Cast & Crew
-                </option>
-                <option value="keyword" className="bg-popover text-popover-foreground">
-                  Keywords
-                </option>
-              </select>
-              <ChevronDown className="absolute right-2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <div className="relative flex flex-col sm:flex-row sm:items-center shadow-md rounded-2xl sm:rounded-xl bg-card border border-border focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all overflow-hidden sm:overflow-visible">
+            {/* Top Row on mobile (< sm) / Middle Item on desktop (>= sm): Search Icon + Input */}
+            <div className="flex items-center w-full px-3 py-1 sm:p-0 sm:flex-1 sm:min-w-0 sm:order-2">
+              <Search className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground pointer-events-none shrink-0 mr-2 sm:mr-0 sm:ml-3 sm:hidden md:block" aria-hidden="true" />
+              <Input
+                id="movie-search-input"
+                type="search"
+                placeholder={
+                  searchType === 'person'
+                    ? 'Search actors or directors (e.g. Nolan, DiCaprio)...'
+                    : searchType === 'keyword'
+                    ? 'Search by theme (e.g. space, zombie, superhero)...'
+                    : 'Search by title, director, or keyword...'
+                }
+                value={searchTerm}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                className="h-11 sm:h-14 border-0 bg-transparent backdrop-blur-none text-sm md:text-base focus-visible:ring-0 shadow-none px-1 sm:px-3 text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
+              />
             </div>
 
-            {/* Magnifying glass icon */}
-            <Search className="ml-3 h-5 w-5 text-muted-foreground pointer-events-none shrink-0 hidden sm:block" aria-hidden="true" />
+            {/* Subtle Divider between Row 1 and Row 2 on mobile (< sm) */}
+            <div className="h-px w-full bg-border/60 sm:hidden" aria-hidden="true" />
 
-            {/* Main Input field */}
-            <Input
-              id="movie-search-input"
-              type="search"
-              placeholder={
-                searchType === 'person'
-                  ? 'Search actors or directors (e.g. Nolan, DiCaprio)...'
-                  : searchType === 'keyword'
-                  ? 'Search by theme (e.g. space, zombie, superhero)...'
-                  : 'Search by title, director, or keyword...'
-              }
-              value={searchTerm}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              className="h-14 border-0 bg-transparent backdrop-blur-none text-sm sm:text-base focus-visible:ring-0 shadow-none px-3 text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
-            />
+            {/* Bottom Row on mobile (< sm) / Direct flex children via sm:contents on desktop (>= sm) */}
+            <div className="flex items-center justify-between w-full px-2.5 py-1.5 sm:p-0 sm:w-auto sm:contents">
+              {/* Integrated Search Type Dropdown: Left on mobile / Far-left (order-1) on desktop */}
+              <div className="relative shrink-0 flex items-center sm:order-1">
+                <label htmlFor="search-type-select" className="sr-only">
+                  Select search type
+                </label>
+                <select
+                  id="search-type-select"
+                  aria-label="Search type"
+                  value={searchType}
+                  onChange={(e) => updateSearchType(e.target.value as SearchType)}
+                  className="h-9 sm:h-14 pl-2.5 sm:pl-3.5 pr-6 sm:pr-7 bg-muted/40 sm:bg-transparent text-xs md:text-sm font-bold text-foreground focus:outline-none appearance-none rounded-lg sm:rounded-none sm:rounded-l-xl sm:border-r sm:border-border hover:bg-muted/60 sm:hover:bg-muted/50 transition-colors cursor-pointer"
+                >
+                  <option value="movie" className="bg-popover text-popover-foreground">
+                    Movies
+                  </option>
+                  <option value="person" className="bg-popover text-popover-foreground">
+                    Cast & Crew
+                  </option>
+                  <option value="keyword" className="bg-popover text-popover-foreground">
+                    Keywords
+                  </option>
+                </select>
+                <ChevronDown className="absolute right-1.5 sm:right-2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" aria-hidden="true" />
+              </div>
 
-            {/* Advanced Filters Toggle Button */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => updateIsAdvancedOpen(!isAdvancedOpen)}
-              aria-expanded={isAdvancedOpen}
-              aria-controls="advanced-search-panel"
-              aria-label={isAdvancedOpen ? 'Close advanced filters' : 'Open advanced filters'}
-              className={`relative z-10 h-10 px-2.5 mx-1.5 rounded-lg font-semibold transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
-                isAdvancedOpen
-                  ? 'bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              }`}
-            >
-              <SlidersHorizontal className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
-              <span className="hidden sm:inline text-xs font-bold">Filters</span>
-            </Button>
+              {/* Action buttons: Right on mobile / Far-right (order-3) on desktop */}
+              <div className="flex items-center gap-1.5 sm:gap-0 sm:order-3 shrink-0">
+                {/* Advanced Filters Toggle Button */}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => updateIsAdvancedOpen(!isAdvancedOpen)}
+                  aria-expanded={isAdvancedOpen}
+                  aria-controls="advanced-search-panel"
+                  aria-label={isAdvancedOpen ? 'Close advanced filters' : 'Open advanced filters'}
+                  className={`relative z-10 h-9 sm:h-10 px-2.5 sm:mx-1.5 rounded-lg font-semibold transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-card ${
+                    isAdvancedOpen
+                      ? 'bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <SlidersHorizontal className="h-4 w-4 md:mr-1.5" aria-hidden="true" />
+                  <span className="hidden md:inline text-xs font-bold">Filters</span>
+                </Button>
 
-            {/* Search Submit Button */}
-            <Button
-              type="submit"
-              disabled={isLoading || (!searchTerm.trim() && !isAdvancedOpen)}
-              aria-label={isLoading ? 'Searching...' : 'Submit movie search'}
-              className="relative z-10 mr-2 h-10 px-4 sm:px-5 rounded-lg font-bold shrink-0 shadow-sm focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-card"
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : (
-                'Search'
-              )}
-            </Button>
+                {/* Search Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={isLoading || (!searchTerm.trim() && !isAdvancedOpen)}
+                  aria-label={isLoading ? 'Searching...' : 'Submit movie search'}
+                  className="relative z-10 h-9 sm:h-10 px-4 md:px-5 sm:mr-2 rounded-lg font-bold shrink-0 shadow-sm focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-card"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    'Search'
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Persistent Expandable Advanced Discover & Filters Panel */}
@@ -282,7 +291,7 @@ export function SearchForm() {
         </div>
 
         {/* Dedicated Library Row: Watchlist and Watched */}
-        <div role="group" aria-label="Personal movie lists" className="mt-2.5 flex items-center justify-center gap-2.5">
+        <div role="group" aria-label="Personal movie lists" className="mt-2.5 flex flex-wrap items-center justify-center gap-2.5">
           <CategoryPill
             label="Watchlist"
             icon={Bookmark}
