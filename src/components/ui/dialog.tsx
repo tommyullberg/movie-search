@@ -41,7 +41,10 @@ const DialogContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="flex-1 min-h-0 overflow-y-auto w-full [scrollbar-width:thin] [scrollbar-color:var(--border)_transparent]">
+      <div
+        data-dialog-scroll="true"
+        className="flex-1 min-h-0 overflow-y-auto w-full [scrollbar-width:thin] [scrollbar-color:var(--border)_transparent]"
+      >
         {children}
       </div>
       <DialogPrimitive.Close

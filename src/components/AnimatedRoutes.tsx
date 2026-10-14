@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Home from '../pages/Home';
 import About from '../pages/About';
@@ -8,6 +8,12 @@ import { AnimatePresence } from 'framer-motion';
 
 export function AnimatedRoutes() {
   const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [location.pathname, location.hash]);
   return (
     <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>

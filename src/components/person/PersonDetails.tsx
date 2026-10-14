@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { PersonDetails as PersonDetailsData } from '../../types';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { formatDate } from '../../utils/helpers';
@@ -29,6 +30,18 @@ interface PersonDetailsProps {
 export function PersonDetails({ personData }: PersonDetailsProps) {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
   const { detailHistory, navigateToMovie, goBackDetail } = useSearchContext();
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  // Automatically scroll dialog to top when person changes
+  useEffect(() => {
+    if (personData?.id && rootRef.current) {
+      const scrollContainer = rootRef.current.closest('[data-dialog-scroll="true"]') as HTMLElement | null
+        || rootRef.current.closest('.overflow-y-auto') as HTMLElement | null;
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [personData?.id]);
 
   const {
     URL_IMAGE_PROFILE_h632,
@@ -66,18 +79,27 @@ export function PersonDetails({ personData }: PersonDetailsProps) {
   const bioIsLong = personData.biography && personData.biography.length > 400;
 
   return (
-    <div className="relative flex flex-col overflow-x-hidden text-foreground p-4 sm:p-6 lg:p-8">
-      {/* Back button when navigating between detail views */}
-      {hasPrevious && previousItem && (
-        <div className="mb-4 -mt-1 sm:-mt-2">
-          <ActionButton
-            type="back"
-            targetTitle={previousTitle}
-            onBack={goBackDetail}
-            className="h-8 border-border bg-card hover:bg-accent shadow-sm"
-          />
-        </div>
-      )}
+    <div ref={rootRef} className="relative flex flex-col overflow-x-hidden text-foreground">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={personData.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+          className="w-full p-4 sm:p-6 lg:p-8"
+        >
+          {/* Back button when navigating between detail views */}
+          {hasPrevious && previousItem && (
+            <div className="mb-4 -mt-1 sm:-mt-2">
+              <ActionButton
+                type="back"
+                targetTitle={previousTitle}
+                onBack={goBackDetail}
+                className="h-8 border-border bg-card hover:bg-accent shadow-sm"
+              />
+            </div>
+          )}
 
       {/* Header Info Area */}
       <div className="flex flex-col sm:flex-row gap-5 lg:gap-7 items-start pb-6 border-b border-border">
@@ -203,6 +225,8 @@ export function PersonDetails({ personData }: PersonDetailsProps) {
         movieCredits={personData.movie_credits}
         onSelectMovie={handleMovieClick}
       />
-    </div>
+    </motion.div>
+  </AnimatePresence>
+</div>
   );
 }

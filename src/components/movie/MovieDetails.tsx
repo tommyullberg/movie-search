@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchContext } from '../../contexts/SearchContext';
 import { useWatchlist } from '../../contexts/WatchlistContext';
 import { imageConfig } from '../../config/imageConfig';
@@ -30,8 +31,19 @@ export function MovieDetails() {
   } = useSearchContext();
   const { isWatched } = useWatchlist();
   const [showTrailer, setShowTrailer] = useState(false);
-  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
-  const trailerSectionRef = React.useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const trailerSectionRef = useRef<HTMLDivElement | null>(null);
+
+  // Automatically scroll dialog to top when movie changes
+  useEffect(() => {
+    if (movieData?.id && rootRef.current) {
+      const scrollContainer = rootRef.current.closest('[data-dialog-scroll="true"]') as HTMLElement | null
+        || rootRef.current.closest('.overflow-y-auto') as HTMLElement | null;
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [movieData?.id]);
 
   // Persistent visibility states: default visible (true)
   const [isRatingNotesVisible, setIsRatingNotesVisible] = useState<boolean>(() => {
@@ -130,14 +142,17 @@ export function MovieDetails() {
     : '';
 
   const handleSelectMovie = async (newMovieId: number, title?: string) => {
-    try {
-      setIsLoadingRelated(true);
-      setShowTrailer(false);
-      await navigateToMovie(newMovieId, title);
-      setIsLoadingRelated(false);
-    } catch {
-      setIsLoadingRelated(false);
+    // Scroll to top immediately on click without waiting for API fetch
+    if (rootRef.current) {
+      const scrollContainer =
+        (rootRef.current.closest('[data-dialog-scroll="true"]') as HTMLElement | null) ||
+        (rootRef.current.closest('.overflow-y-auto') as HTMLElement | null);
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
+    setShowTrailer(false);
+    await navigateToMovie(newMovieId, title);
   };
 
   const handleToggleTrailer = () => {
@@ -188,25 +203,34 @@ export function MovieDetails() {
   const hasRecommendations = recommendations.length > 0;
 
   return (
-    <div className="relative overflow-hidden bg-card text-card-foreground">
-      {/* Back button (Only rendered when navigating deeper from another detail) */}
-      {hasPrevious && (
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={goBackDetail}
-            className="flex items-center gap-1.5 h-8 px-2.5 text-xs font-semibold rounded-lg bg-background/80 hover:bg-background backdrop-blur-md border-border shadow-sm text-foreground transition-all"
-            aria-label={`Go back to ${previousTitle}`}
-          >
-            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="line-clamp-1 max-w-[140px] sm:max-w-[200px]">
-              Back to {previousTitle}
-            </span>
-          </Button>
-        </div>
-      )}
+    <div ref={rootRef} className="relative overflow-hidden bg-card text-card-foreground">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={movieData.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+          className="w-full"
+        >
+          {/* Back button (Only rendered when navigating deeper from another detail) */}
+          {hasPrevious && (
+            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={goBackDetail}
+                className="flex items-center gap-1.5 h-8 px-2.5 text-xs font-semibold rounded-lg bg-background/80 hover:bg-background backdrop-blur-md border-border shadow-sm text-foreground transition-all"
+                aria-label={`Go back to ${previousTitle}`}
+              >
+                <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className="line-clamp-1 max-w-[140px] sm:max-w-[200px]">
+                  Back to {previousTitle}
+                </span>
+              </Button>
+            </div>
+          )}
 
       {/* Backdrop Header with adaptive height */}
       {movieData.backdrop_path && (
@@ -287,11 +311,12 @@ export function MovieDetails() {
         <MovieRecommendationsSection
           recommendations={recommendations}
           onSelectMovie={handleSelectMovie}
-          isLoading={isLoadingRelated}
           isVisible={isRecommendationsVisible}
           onToggleVisibility={handleToggleRecommendations}
         />
       </div>
-    </div>
+    </motion.div>
+  </AnimatePresence>
+</div>
   );
 }

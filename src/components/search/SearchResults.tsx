@@ -83,7 +83,7 @@ export function SearchResults() {
   }
 
   return (
-    <section aria-label="Search results" className="mt-4 pb-16">
+    <section id="search-results-section" aria-label="Search results" className="mt-4 pb-16">
       {/* Toolbar for Watchlist & Watched lists */}
       {(searchCategory === 'watchlist' || searchCategory === 'watched') && (
         <WatchlistToolbar />

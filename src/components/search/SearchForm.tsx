@@ -111,9 +111,21 @@ export function SearchForm() {
     updateSearchCategory('');
   };
 
+  const scrollToResults = () => {
+    // Only scroll if user has scrolled down past the search categories
+    const resultsElement = document.getElementById('search-results-section');
+    if (resultsElement) {
+      const rect = resultsElement.getBoundingClientRect();
+      if (rect.top < 0) {
+        resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
   const handleCategoryClick = async (category: string) => {
     updateSearchCategory(category);
     updateSearchTerm('');
+    scrollToResults();
     await runSearch('', category);
   };
 
@@ -124,6 +136,7 @@ export function SearchForm() {
     updateSearchResults(getSortedList('watchlist'));
     updateTotalPages(1);
     updatePage(1);
+    scrollToResults();
   };
 
   const handleWatchedClick = () => {
@@ -133,11 +146,13 @@ export function SearchForm() {
     updateSearchResults(getSortedList('watched'));
     updateTotalPages(1);
     updatePage(1);
+    scrollToResults();
   };
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!searchTerm.trim() && !isAdvancedOpen) return;
+    scrollToResults();
     await runSearch(searchTerm, searchCategory);
   };
 

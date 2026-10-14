@@ -52,7 +52,6 @@ export function MovieRecommendationsSection({
             key={rec.id}
             type="button"
             onClick={() => onSelectMovie(rec.id, rec.title)}
-            disabled={isLoading}
             aria-label={`View details for recommended movie ${rec.title}`}
             className="group flex flex-col rounded-xl border border-border bg-card/60 overflow-hidden text-left transition-all hover:bg-card hover:border-primary hover:shadow-lg hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring outline-none"
           >
