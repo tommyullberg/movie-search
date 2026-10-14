@@ -7,6 +7,7 @@ import { useWatchlist } from "../../contexts/WatchlistContext";
 import { SUPPORTED_REGIONS } from "../../config/regions";
 import { APP_NAME, APP_VERSION } from "../../config/version";
 import { Button } from "../ui/button";
+import { RegionCombobox, CountryFlag } from "./RegionCombobox";
 
 export function SettingsPanel() {
   const {
@@ -180,39 +181,21 @@ export function SettingsPanel() {
                   region.
                 </p>
 
-                <div className='relative'>
-                  <label htmlFor='settings-region-select' className='sr-only'>
-                    Select country
-                  </label>
-                  <select
-                    id='settings-region-select'
-                    value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                    className={`w-full h-11 px-3.5 pr-10 text-sm font-semibold rounded-xl transition-colors cursor-pointer appearance-none ${
-                      highContrast
-                        ? "border-2 border-foreground bg-background text-foreground focus:ring-2 focus:ring-foreground"
-                        : "border border-border bg-muted/40 hover:bg-muted/70 text-foreground focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
-                    }`}>
-                    {SUPPORTED_REGIONS.map((r) => (
-                      <option key={r.code} value={r.code} className='bg-popover text-popover-foreground'>
-                        {r.flag} {r.name} ({r.code})
-                      </option>
-                    ))}
-                  </select>
-                  <span className='absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-xs font-bold text-muted-foreground'>
-                    ▼
-                  </span>
-                </div>
+                <RegionCombobox
+                  id="settings-region-combobox"
+                  value={region}
+                  onChange={setRegion}
+                />
 
                 <div className='flex items-center gap-2 pt-1'>
                   <span className='text-xs text-muted-foreground'>Active region:</span>
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                    className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-bold ${
                       highContrast
                         ? "border border-foreground bg-foreground text-background"
                         : "bg-primary/10 text-primary border border-primary/20"
                     }`}>
-                    <span>{regionFlag}</span>
+                    <CountryFlag code={region} name={regionName} className='w-4 h-3' />
                     <span>
                       {regionName} ({region})
                     </span>
