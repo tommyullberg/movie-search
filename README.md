@@ -21,8 +21,11 @@ Movie Search is a modern web application built with React and TypeScript that co
 
 - Real-time movie search by title, keyword, or director.
 - Integrated search type selector dropdown within the search bar: toggle between Movies, Cast & Crew (actors and directors), and Keywords/Themes.
-- Persistent Advanced Discover & Filters panel (remembers open/collapsed state in localStorage): filter by official TMDB genres, release year, minimum user rating, sort order (popularity, rating, newest, box office), and Swedish streaming service.
-- Dedicated Swedish streaming provider filtering: filter directly by major platforms in Sweden (Netflix, Max, Disney+, Prime Video, SkyShowtime, Viaplay, Apple TV+, TV4 Play, SVT Play).
+- Responsive search controls: adapts smoothly to single-row on desktop and two-row stacked layout on mobile screens (<640px) with full placeholder readability.
+- Persistent Advanced Discover & Filters panel (remembers open/collapsed state in localStorage): filter by official TMDB genres, release year, minimum user rating, sort order (popularity, rating, newest, box office), and streaming service for your active country.
+- Multi-country regional settings & streaming providers: configure and discover content across 41 countries (EU, Schengen, Ukraine, Russia, US, UK, Canada, Australia, Japan) with automatic browser language detection.
+- Dedicated regional streaming provider filtering: dynamically tailored per active country (e.g. Megogo/Sweet.tv in Ukraine, Kinopoisk/Ivi in Russia, Player/SkyShowtime in Poland, Videoland in Netherlands, TV4 Play/SVT Play in Sweden, etc.), with 'All Providers' toggle and custom selection.
+- Region-aware cinema releases: 'In Theaters' category dynamically filters release dates and movie availability for your selected country.
 - Instant category exploration: In Theaters, Trending, Popular, Top Rated, and Upcoming with subtle visual grouping separator.
 - Personal Watchlist and Watched movie tracking with localStorage persistence, one-click quick actions directly from cards and detail modal, dedicated library row, and custom empty states.
 - Personal movie ratings (1 to 10 scale) and custom reviews/notes for watched movies, preserved in localStorage and displayed with badges in Watched view.
@@ -36,7 +39,7 @@ Movie Search is a modern web application built with React and TypeScript that co
 - Rich movie detail dialogs featuring high-resolution backdrop art and official posters.
 - Embedded official YouTube trailers with responsive widescreen player and toggle control.
 - Key movie facts including production status, budget, box office revenue, and studio names.
-- Where to Watch streaming guide powered by JustWatch with official logos for subscription streaming, digital rental, and purchase in Sweden (with US fallback).
+- Where to Watch streaming guide powered by JustWatch with official logos for subscription streaming, digital rental, and purchase localized to your selected region.
 - Top cast section showcasing actor profile photos, real names, and character roles, plus director credits.
 - Dedicated Person / Actor & Director profile views featuring high-resolution portrait photos, full biography, birthday with calculated age, birthplace, external IMDb links, and comprehensive chronological filmographies.
 - Bidirectional in-modal navigation between movies, actors, directors, and recommendations with a contextual Back button ('Back to [Previous]') that tracks modal browsing history and only displays after internal navigation.
@@ -47,6 +50,11 @@ Movie Search is a modern web application built with React and TypeScript that co
 ### Design, Theming & Accessibility Features
 
 - Modern UI built with Tailwind CSS v4 and shadcn/ui (Radix UI primitives).
+- Settings Panel: accessible drawer sliding out flush from header bottom-left rounded edge, containing regional content selection, streaming provider toggles, and privacy controls.
+- Privacy & Local Data Management: explains client-side LocalStorage usage and zero tracking cookies, with a verified 'Clear All Stored Data' action.
+- Responsive mobile navigation drawer: animated hamburger trigger, flush right-edge layout, full focus trap, and integrated quick settings access.
+- Automated Git-driven versioning: application version dynamically extracted from Git semantic version tags (e.g. `v2.1.0`) at build time via Vite.
+- Dynamic site footer: reusable across Home and About pages with version tag and direct attributions to TMDB and JustWatch.
 - Light mode and Dark mode with smooth transitions, customized neutral background (#e8eaec), and deep, crisp contrast.
 - Dedicated WCAG AAA High Contrast mode with specialized contrast themes for both dark and light palettes.
 - Complete keyboard accessibility: fully operable without mouse, with prominent focus rings and skip-to-content link.
@@ -133,9 +141,9 @@ Main search view featuring dark theme, category selector, rating gauges, and mod
 
 <br />
 
-#### 🔍 **Advanced Filters & Swedish Streaming**
+#### 🔍 **Advanced Filters & Regional Streaming**
 
-Discover movies by Swedish streaming services, genre, year, minimum rating, and sort order.
+Discover movies by your selected country's streaming services, genre, year, minimum rating, and sort order.
 
 ![v2 Filters](docs/images/v2-filters.png)
 
